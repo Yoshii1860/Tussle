@@ -8,7 +8,6 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected InputReader inputReader;
     [SerializeField] protected Rigidbody2D rb;
     [SerializeField] protected Animator animator;
-    [SerializeField] protected GameObject projectilePrefab; // For Peasant (arrow) and Priest (spell)
 
     [Header("Movement Settings")]
     [SerializeField] protected float moveSpeed = 5f;
@@ -21,8 +20,11 @@ public abstract class Character : NetworkBehaviour
     protected NetworkVariable<bool> isFacingLeft = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isAttacking = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryAction = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    protected NetworkVariable<bool> isSecondaryTrigger = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     protected Vector2 previousMovementInput;
+
+    public bool IsFacingLeft => isFacingLeft.Value;
 
     public override void OnNetworkSpawn()
     {
@@ -33,11 +35,13 @@ public abstract class Character : NetworkBehaviour
             isFacingLeft.OnValueChanged += OnFacingLeftChanged;
             isAttacking.OnValueChanged += OnIsAttackingChanged;
             isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
+            isSecondaryTrigger.OnValueChanged += OnIsSecondaryTriggerChanged;
             // Apply initial states
             OnIsMovingChanged(false, isMoving.Value);
             OnFacingLeftChanged(false, isFacingLeft.Value);
             OnIsAttackingChanged(false, isAttacking.Value);
             OnIsSecondaryActionChanged(false, isSecondaryAction.Value);
+            OnIsSecondaryTriggerChanged(false, isSecondaryTrigger.Value);
             return;
         }
 
@@ -47,13 +51,12 @@ public abstract class Character : NetworkBehaviour
             return;
         }
         inputReader.MoveEvent += HandleMove;
-        inputReader.PrimaryAttackEvent += HandlePrimaryAttack;
-        inputReader.SecondaryAttackEvent += HandleSecondaryAttack;
 
         isMoving.OnValueChanged += OnIsMovingChanged;
         isFacingLeft.OnValueChanged += OnFacingLeftChanged;
         isAttacking.OnValueChanged += OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
+        isSecondaryTrigger.OnValueChanged += OnIsSecondaryTriggerChanged;
     }
 
     public override void OnNetworkDespawn()
@@ -61,13 +64,12 @@ public abstract class Character : NetworkBehaviour
         if (IsOwner)
         {
             inputReader.MoveEvent -= HandleMove;
-            inputReader.PrimaryAttackEvent -= HandlePrimaryAttack;
-            inputReader.SecondaryAttackEvent -= HandleSecondaryAttack;
         }
         isMoving.OnValueChanged -= OnIsMovingChanged;
         isFacingLeft.OnValueChanged -= OnFacingLeftChanged;
         isAttacking.OnValueChanged -= OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged -= OnIsSecondaryActionChanged;
+        isSecondaryTrigger.OnValueChanged -= OnIsSecondaryTriggerChanged;
     }
 
     private void Update()
@@ -103,39 +105,6 @@ public abstract class Character : NetworkBehaviour
         previousMovementInput = movementInput;
     }
 
-    private void HandlePrimaryAttack()
-    {
-        if (!IsOwner) return;
-        PerformPrimaryAction();
-        isAttacking.Value = true;
-        Invoke(nameof(ResetAttack), 0.4f);
-    }
-
-    private void HandleSecondaryAttack(bool isPressed)
-    {
-        if (!IsOwner) return;
-        if (isPressed)
-        {
-            PerformSecondaryAction();
-            isSecondaryAction.Value = true;
-        }
-        else
-        {
-            isSecondaryAction.Value = false;
-        }
-    }
-
-    protected abstract void PerformPrimaryAction();
-    protected abstract void PerformSecondaryAction();
-
-    [ServerRpc]
-    protected void SpawnProjectileServerRpc(Vector3 position, Quaternion rotation)
-    {
-        GameObject projectile = Instantiate(projectilePrefab, position, rotation);
-        NetworkObject networkObject = projectile.GetComponent<NetworkObject>();
-        networkObject.Spawn();
-    }
-
     private void UpdateScale()
     {
         if (!IsOwner) return;
@@ -149,20 +118,18 @@ public abstract class Character : NetworkBehaviour
         // NetworkTransform syncs scale
     }
 
-    private void UpdateAnimations()
+    protected virtual void UpdateAnimations()
     {
         if (!IsOwner) return;
-
         animator.SetBool("Walk", isMoving.Value);
-        animator.SetBool("Secondary", isSecondaryAction.Value);
     }
 
-    private void OnIsMovingChanged(bool previousValue, bool newValue)
+    protected virtual void OnIsMovingChanged(bool previousValue, bool newValue)
     {
         animator.SetBool("Walk", newValue);
     }
 
-    private void OnIsAttackingChanged(bool previousValue, bool newValue)
+    protected virtual void OnIsAttackingChanged(bool previousValue, bool newValue)
     {
         if (newValue)
         {
@@ -170,17 +137,17 @@ public abstract class Character : NetworkBehaviour
         }
     }
 
-    private void OnIsSecondaryActionChanged(bool previousValue, bool newValue)
+    protected virtual void OnIsSecondaryActionChanged(bool previousValue, bool newValue)
     {
-        // Use Bool for continuous actions (e.g., block), Trigger for one-shot actions (e.g., spell)
-        animator.SetBool("Secondary", newValue);
+        // Derived classes can override or use this directly
+        if (newValue)
+        {
+            animator.SetTrigger("SecondaryAction");
+        }
     }
 
-    private void ResetAttack()
+    protected virtual void OnIsSecondaryTriggerChanged(bool previousValue, bool newValue)
     {
-        if (IsOwner)
-        {
-            isAttacking.Value = false;
-        }
+        // Derived classes can override or use this directly
     }
 }

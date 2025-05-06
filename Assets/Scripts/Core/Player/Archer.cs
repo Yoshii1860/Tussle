@@ -2,17 +2,82 @@ using UnityEngine;
 
 public class Archer : Character
 {
-    protected override void PerformPrimaryAction()
+    [SerializeField] private ProjectileLauncher projectileLauncher;
+
+    public override void OnNetworkSpawn()
     {
-        Debug.Log("Archer: No Primary Action");
+        base.OnNetworkSpawn();
+        if (IsOwner && inputReader != null)
+        {
+            inputReader.PrimaryAttackEvent += OnPrimaryAttack;
+            inputReader.SecondaryAttackEvent += OnSecondaryAttack;
+            if (projectileLauncher == null)
+            {
+                projectileLauncher = GetComponentInChildren<ProjectileLauncher>();
+                if (projectileLauncher == null)
+                {
+                    Debug.LogWarning("ProjectileLauncher not found on Archer!");
+                }
+            }
+        }
     }
 
-    protected override void PerformSecondaryAction()
+    public override void OnNetworkDespawn()
     {
-        Debug.Log("Archer: Shoot Arrow");
-        // Calculate projectile spawn position (e.g., at the bow)
-        Vector3 spawnPosition = transform.position + (isFacingLeft.Value ? Vector3.right : Vector3.left) * 1f;
-        Quaternion rotation = Quaternion.identity;
-        SpawnProjectileServerRpc(spawnPosition, rotation);
+        base.OnNetworkDespawn();
+        if (IsOwner && inputReader != null)
+        {
+            inputReader.PrimaryAttackEvent -= OnPrimaryAttack;
+            inputReader.SecondaryAttackEvent -= OnSecondaryAttack;
+        }
+    }
+
+    private void OnPrimaryAttack()
+    {
+        if (!IsOwner) return;
+        Debug.Log("Archer: No Primary Attack");
+    }
+
+    private void OnSecondaryAttack(bool isPressed)
+    {
+        if (!IsOwner) return;
+        if (isPressed)
+        {
+            isSecondaryTrigger.Value = true;
+            Debug.Log("Archer: Shoot Arrow");
+        }
+    }
+
+    protected override void OnIsSecondaryTriggerChanged(bool previousValue, bool newValue)
+    {
+        if (newValue && !previousValue)
+        {
+            animator.SetTrigger("SecondaryRelease");
+        }
+    }
+
+    public void ShootArrow()
+    {
+        if (projectileLauncher != null)
+        {
+            projectileLauncher.HandleSecondaryAttack(true);
+            Invoke(nameof(ResetSecondaryAttack), 0.2f);
+        }
+    }
+
+    private void ResetAttack()
+    {
+        if (IsOwner)
+        {
+            isAttacking.Value = false;
+        }
+    }
+
+    private void ResetSecondaryAttack()
+    {
+        if (IsOwner)
+        {
+            isSecondaryTrigger.Value = false;
+        }
     }
 }

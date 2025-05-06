@@ -8,7 +8,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Projectile
   - Water
   - UI
   - 
@@ -43,6 +43,9 @@ TagManager:
     locked: 0
   - name: Background
     uniqueID: 1667055139
+    locked: 0
+  - name: Props
+    uniqueID: 3838010761
     locked: 0
   - name: Player
     uniqueID: 2053933951
