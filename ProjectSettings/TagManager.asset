@@ -11,7 +11,7 @@ TagManager:
   - Projectile
   - Water
   - UI
-  - 
+  - Pickup
   - 
   - 
   - 
@@ -43,6 +43,9 @@ TagManager:
     locked: 0
   - name: Background
     uniqueID: 1667055139
+    locked: 0
+  - name: Coins
+    uniqueID: 3683201949
     locked: 0
   - name: Props
     uniqueID: 3838010761

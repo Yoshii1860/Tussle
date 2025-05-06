@@ -51,7 +51,6 @@ public class NetworkUI : MonoBehaviour
     {
         if (clientId == NetworkManager.Singleton.LocalClientId)
         {
-            Debug.Log($"Client {clientId} connected.");
             selectionManager.SetCharacterSelectionServerRpc(clientId, selectedCharacterType);
         }
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
@@ -60,7 +59,6 @@ public class NetworkUI : MonoBehaviour
     private void OnCharacterDropdownChanged(int value)
     {
         selectedCharacterType = (CharacterType)value;
-        Debug.Log($"Selected character index: {value}, Type: {selectedCharacterType}");
     }
 
     private void OnDestroy()

@@ -35,7 +35,6 @@ public class Archer : Character
     private void OnPrimaryAttack()
     {
         if (!IsOwner) return;
-        Debug.Log("Archer: No Primary Attack");
     }
 
     private void OnSecondaryAttack(bool isPressed)
@@ -44,7 +43,6 @@ public class Archer : Character
         if (isPressed)
         {
             isSecondaryTrigger.Value = true;
-            Debug.Log("Archer: Shoot Arrow");
         }
     }
 

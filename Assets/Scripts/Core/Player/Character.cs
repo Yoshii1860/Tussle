@@ -21,6 +21,7 @@ public abstract class Character : NetworkBehaviour
     protected NetworkVariable<bool> isAttacking = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryAction = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryTrigger = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    protected NetworkVariable<bool> isDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     protected Vector2 previousMovementInput;
 
@@ -28,6 +29,8 @@ public abstract class Character : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        isDead.OnValueChanged += OnIsDeadChanged;
+        
         Debug.Log($"OnNetworkSpawn: CharacterType={characterType}, IsOwner={IsOwner}, OwnerClientId={OwnerClientId}, NetworkObjectId={NetworkObjectId}");
         if (!IsOwner)
         {
@@ -36,18 +39,27 @@ public abstract class Character : NetworkBehaviour
             isAttacking.OnValueChanged += OnIsAttackingChanged;
             isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
             isSecondaryTrigger.OnValueChanged += OnIsSecondaryTriggerChanged;
+            if (TryGetComponent<Health>(out Health health))
+            {
+                health.OnDie += HandleDeath;
+            }
+            else 
+            {
+                Debug.LogWarning("Health component not found on Character!");
+            }
             // Apply initial states
             OnIsMovingChanged(false, isMoving.Value);
             OnFacingLeftChanged(false, isFacingLeft.Value);
             OnIsAttackingChanged(false, isAttacking.Value);
             OnIsSecondaryActionChanged(false, isSecondaryAction.Value);
             OnIsSecondaryTriggerChanged(false, isSecondaryTrigger.Value);
+            OnIsDeadChanged(false, isDead.Value);
             return;
         }
 
         if (inputReader == null)
         {
-            Debug.LogWarning("InputReader is not assigned!");
+            Debug.LogError("InputReader is not assigned!");
             return;
         }
         inputReader.MoveEvent += HandleMove;
@@ -65,11 +77,17 @@ public abstract class Character : NetworkBehaviour
         {
             inputReader.MoveEvent -= HandleMove;
         }
+
+        isDead.OnValueChanged -= OnIsDeadChanged;
         isMoving.OnValueChanged -= OnIsMovingChanged;
         isFacingLeft.OnValueChanged -= OnFacingLeftChanged;
         isAttacking.OnValueChanged -= OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged -= OnIsSecondaryActionChanged;
         isSecondaryTrigger.OnValueChanged -= OnIsSecondaryTriggerChanged;
+        if (TryGetComponent<Health>(out Health health))
+        {
+            health.OnDie -= HandleDeath;
+        }
     }
 
     private void Update()
@@ -139,7 +157,6 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void OnIsSecondaryActionChanged(bool previousValue, bool newValue)
     {
-        // Derived classes can override or use this directly
         if (newValue)
         {
             animator.SetTrigger("SecondaryAction");
@@ -148,6 +165,22 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void OnIsSecondaryTriggerChanged(bool previousValue, bool newValue)
     {
-        // Derived classes can override or use this directly
+
+    }
+
+    protected virtual void OnIsDeadChanged(bool previousValue, bool newValue)
+    {
+        if (newValue)
+        {
+            animator.SetTrigger("Die");
+        }
+    }
+
+    protected virtual void HandleDeath(Health health)
+    {
+        if (IsServer)
+        {
+            isDead.Value = true;
+        }
     }
 }

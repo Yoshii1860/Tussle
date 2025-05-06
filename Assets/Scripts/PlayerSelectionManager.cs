@@ -60,14 +60,12 @@ public class PlayerSelectionManager : NetworkBehaviour
                 var selection = playerSelections[i];
                 selection.CharacterType = characterType;
                 playerSelections[i] = selection;
-                Debug.Log($"Updated selection for Client {clientId}: {characterType}");
                 return;
             }
         }
 
         // Add new selection
         playerSelections.Add(new PlayerSelection { ClientId = clientId, CharacterType = characterType });
-        Debug.Log($"Stored selection for Client {clientId}: {characterType}");
     }
 
     public CharacterType GetCharacterSelection(ulong clientId)
@@ -76,7 +74,6 @@ public class PlayerSelectionManager : NetworkBehaviour
         {
             if (selection.ClientId == clientId)
             {
-                Debug.Log($"Found selection for Client {clientId}: {selection.CharacterType}");
                 return selection.CharacterType;
             }
         }

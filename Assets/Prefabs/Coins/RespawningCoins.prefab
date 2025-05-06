@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &1479588288046452131
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 662713585112230676, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1220021191
+      objectReference: {fileID: 0}
+    - target: {fileID: 662713585112230676, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 662713585112230676, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 1348267649
+      objectReference: {fileID: 0}
+    - target: {fileID: 8065516956604857330, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_Name
+      value: RespawningCoins
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.44856453
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.49050283
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8065516956604857330, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6956069998084111316}
+  m_SourcePrefab: {fileID: 100100000, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+--- !u!212 &7903943008401164983 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 8735012950088697620, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+  m_PrefabInstance: {fileID: 1479588288046452131}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8892064191436043857 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8065516956604857330, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+  m_PrefabInstance: {fileID: 1479588288046452131}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6956069998084111316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8892064191436043857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76af0db992f032a4eace1b7bdc0917f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  spriteRenderer: {fileID: 7903943008401164983}
+  respawnTime: 5

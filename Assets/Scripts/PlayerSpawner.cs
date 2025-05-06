@@ -47,8 +47,6 @@ public class PlayerSpawner : NetworkBehaviour
         // Spawn the player object
         GameObject playerInstance = Instantiate(prefabToSpawn, Vector3.zero, Quaternion.identity);
         playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-
-        Debug.Log($"Spawned {characterType} for Client {clientId}");
     }
 
     public override void OnNetworkDespawn()
