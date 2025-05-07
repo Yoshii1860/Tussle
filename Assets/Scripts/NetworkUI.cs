@@ -24,7 +24,7 @@ public class NetworkUI : MonoBehaviour
         if (selectionManager == null) Debug.LogError("Selection Manager is not assigned in the Inspector!");
 
         characterDropdown.ClearOptions();
-        characterDropdown.AddOptions(new System.Collections.Generic.List<string> { "Knight", "Archer", "Priest" });
+        characterDropdown.AddOptions(new System.Collections.Generic.List<string> { "Knight", "Archer", "Priest", "Soldier", "Thief" });
 
         characterDropdown.value = (int)selectedCharacterType;
         characterDropdown.onValueChanged.AddListener(OnCharacterDropdownChanged);

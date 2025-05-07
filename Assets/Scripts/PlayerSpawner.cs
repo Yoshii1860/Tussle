@@ -8,6 +8,8 @@ public class PlayerSpawner : NetworkBehaviour
     [SerializeField] private GameObject knightPrefab;
     [SerializeField] private GameObject archerPrefab;
     [SerializeField] private GameObject priestPrefab;
+    [SerializeField] private GameObject soldierPrefab;
+    [SerializeField] private GameObject thiefPrefab;
     [SerializeField] private PlayerSelectionManager selectionManager;
 
     public override void OnNetworkSpawn()
@@ -41,6 +43,8 @@ public class PlayerSpawner : NetworkBehaviour
             CharacterType.Knight => knightPrefab,
             CharacterType.Archer => archerPrefab,
             CharacterType.Priest => priestPrefab,
+            CharacterType.Soldier => soldierPrefab,
+            CharacterType.Thief => thiefPrefab,
             _ => knightPrefab // Default to Knight if something goes wrong
         };
 

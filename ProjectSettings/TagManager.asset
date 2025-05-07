@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -12,12 +13,12 @@ TagManager:
   - Water
   - UI
   - Pickup
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Walk
+  - HitBox
+  - Attack
+  - Environment
+  - Destructable
+  - Player
   - 
   - 
   - 
@@ -38,11 +39,14 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1667055139
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Background
-    uniqueID: 1667055139
+  - name: Environment
+    uniqueID: 2506699615
     locked: 0
   - name: Coins
     uniqueID: 3683201949
@@ -50,8 +54,11 @@ TagManager:
   - name: Props
     uniqueID: 3838010761
     locked: 0
-  - name: Player
-    uniqueID: 2053933951
+  - name: Foreground
+    uniqueID: 2382473851
+    locked: 0
+  - name: UI
+    uniqueID: 2542504511
     locked: 0
   m_RenderingLayers:
   - Default

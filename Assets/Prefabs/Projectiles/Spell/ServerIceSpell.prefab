@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2012374200759980931, guid: 3f2f8dab7bae7554997cd19fd1ec64d0, type: 3}
       propertyPath: m_Name
-      value: ServerArrow
+      value: ServerIceSpell
       objectReference: {fileID: 0}
     - target: {fileID: 7369636365351617370, guid: 3f2f8dab7bae7554997cd19fd1ec64d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -77,4 +77,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8348760a509f07b4381f61ca13fab431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageAmount: 10
+  damageAmount: 6
