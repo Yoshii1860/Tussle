@@ -718,10 +718,14 @@ PrefabInstance:
     - target: {fileID: 4655381192614449144, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
       propertyPath: NetworkConfig.PlayerPrefab
       value: 
-      objectReference: {fileID: 1000010755293042, guid: 978fa2fb617654f5eaeff9da6fc7d116, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 4655381192614449144, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
       propertyPath: NetworkConfig.NetworkTopology
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4655381192614449144, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
+      propertyPath: NetworkConfig.ConnectionApproval
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -793,6 +797,6 @@ SceneRoots:
   - {fileID: 2536719690268700478}
   - {fileID: 4227566808051106223}
   - {fileID: 1891044082}
-  - {fileID: 1472759285}
   - {fileID: 281677153}
+  - {fileID: 1472759285}
   - {fileID: 1882892246}

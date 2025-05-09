@@ -11,13 +11,18 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using System.Collections.Generic;
 using System.Collections;
+using Unity.Services.Authentication;
+using System.Threading;
 
 
-public class HostGameManager
+public class HostGameManager : IDisposable
 {
     private Allocation allocation;
     private string joinCode;
     private string lobbyId;
+
+    private NetworkServer networkServer;
+    private CancellationTokenSource heartbeatCancellationTokenSource;
 
     private const int MaxConnections = 20;
     private const string GameSceneName = "Game";
@@ -63,11 +68,14 @@ public class HostGameManager
                 }
             };
 
+            string playerName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Unknown");
+
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(
-                "MyLobby", MaxConnections, lobbyOptions);
+                $"{playerName}'s Lobby", MaxConnections, lobbyOptions);
             lobbyId = lobby.Id;
 
-            _ = HeartbeatLobbyAsync(15); // Start the heartbeat asynchronously
+            heartbeatCancellationTokenSource = new CancellationTokenSource();
+            _ = HeartbeatLobbyAsync(15, heartbeatCancellationTokenSource.Token); // Start the heartbeat asynchronously
         }
         catch(LobbyServiceException lobbyException)
         {
@@ -75,15 +83,29 @@ public class HostGameManager
             return;
         }
 
+        networkServer = new NetworkServer(NetworkManager.Singleton);
+
+        UserData userData = new UserData
+        {
+            userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
+            userAuthId = AuthenticationService.Instance.PlayerId,
+            characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
+        };
+
+        string payload = JsonUtility.ToJson(userData);
+        byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
+
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+
         NetworkManager.Singleton.StartHost();
         Debug.Log($"HostGameManager: Host started with join code: {joinCode}");
 
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
     }
 
-    private async Task HeartbeatLobbyAsync(float waitTimeSeconds)
+    private async Task HeartbeatLobbyAsync(float waitTimeSeconds, CancellationToken cancellationToken)
     {
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
@@ -96,5 +118,32 @@ public class HostGameManager
 
             await Task.Delay(TimeSpan.FromSeconds(waitTimeSeconds)); // Wait asynchronously
         }
+    }
+
+    public async void Dispose()
+    {
+        if (heartbeatCancellationTokenSource != null)
+        {
+            heartbeatCancellationTokenSource.Cancel();
+            heartbeatCancellationTokenSource.Dispose();
+            heartbeatCancellationTokenSource = null;
+        }
+
+        if (!string.IsNullOrEmpty(lobbyId))
+        {
+            try
+            {
+                await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
+                Debug.Log($"HostGameManager: Lobby {lobbyId} is deleting.");
+            }
+            catch (LobbyServiceException ex)
+            {
+                Debug.LogError($"HostGameManager: Failed to delete lobby. Exception: {ex.Message}");
+            }
+
+            lobbyId = string.Empty;
+        }
+
+        networkServer?.Dispose();
     }
 }

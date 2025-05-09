@@ -3,15 +3,18 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ClientGameManager
+public class ClientGameManager : IDisposable
 {
     private JoinAllocation allocation;
+
+    private NetworkClient networkClient;
     private const string MenuSceneName = "MainMenu";
     public async Task<bool> InitAsync()
     {
@@ -19,6 +22,8 @@ public class ClientGameManager
         Debug.Log("ClientGameManager: Client Game Manager Initialized");
 
         await UnityServices.InitializeAsync();
+
+        networkClient = new NetworkClient(NetworkManager.Singleton);
 
         AuthState authState = await AuthenticationHandler.AuthenticateAsync(5);
 
@@ -59,7 +64,26 @@ public class ClientGameManager
         RelayServerData relayServerData = allocation.ToRelayServerData("dtls");
         transport.SetRelayServerData(relayServerData);
 
+        UserData userData = new UserData
+        {
+            userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
+            userAuthId = AuthenticationService.Instance.PlayerId,
+            characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
+        };
+
+        string payload = JsonUtility.ToJson(userData);
+        byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
+
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+
         NetworkManager.Singleton.StartClient();
         Debug.Log("ClientGameManager: Client started successfully.");
+    }
+
+    public void Dispose()
+    {
+        // Dispose of any resources if necessary
+        Debug.Log("ClientGameManager: Disposing resources.");
+        networkClient?.Dispose();
     }
 }
