@@ -26410,13 +26410,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   coinPrefab: {fileID: 6956069998084111316, guid: 0e4db2ad9c484534abc879db230efdc2, type: 3}
-  maxCoins: 50
+  maxCoins: 500
   coinValue: 10
   xSpawnRange: {x: -50, y: 50}
   ySpawnRange: {x: -50, y: 50}
   layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
 --- !u!4 &1441724325
 Transform:
   m_ObjectHideFlags: 0
@@ -33255,6 +33255,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   respawnTime: 5
+  keptCoinPercentage: 0.66
 --- !u!1001 &1822898097
 PrefabInstance:
   m_ObjectHideFlags: 0

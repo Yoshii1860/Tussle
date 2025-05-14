@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &1479588288046452131
+--- !u!1001 &911048454697414472
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 662713585112230676, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1220021191
+      value: 3850892625
       objectReference: {fileID: 0}
     - target: {fileID: 662713585112230676, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
       propertyPath: SceneMigrationSynchronization
@@ -22,15 +22,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8065516956604857330, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
       propertyPath: m_Name
-      value: RespawningCoins
+      value: BountyCoin
       objectReference: {fileID: 0}
+    - target: {fileID: 8735012950088697620, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7bfd0a0977e81b84a8f1d12195e5883a, type: 3}
     - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.44856453
+      value: 6.51475
       objectReference: {fileID: 0}
     - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.49050283
+      value: 12.56495
       objectReference: {fileID: 0}
     - target: {fileID: 8868264014548939905, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
       propertyPath: m_LocalPosition.z
@@ -69,79 +73,30 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8065516956604857330, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
-      insertIndex: 2
-      addedObject: {fileID: -8043922724275128813}
-    - targetCorrespondingSourceObject: {fileID: 8065516956604857330, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6956069998084111316}
+      addedObject: {fileID: 299007157586753494}
   m_SourcePrefab: {fileID: 100100000, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
---- !u!212 &7903943008401164983 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 8735012950088697620, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
-  m_PrefabInstance: {fileID: 1479588288046452131}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8892064191436043857 stripped
+--- !u!1 &7154752296809272506 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8065516956604857330, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
-  m_PrefabInstance: {fileID: 1479588288046452131}
+  m_PrefabInstance: {fileID: 911048454697414472}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-8043922724275128813
+--- !u!114 &299007157586753494
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8892064191436043857}
+  m_GameObject: {fileID: 7154752296809272506}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Script: {fileID: 11500000, guid: 42da4020d42c83d4eaa12d7455c936b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  NetworkTransformExpanded: 0
-  AutoOwnerAuthorityTickOffset: 1
-  PositionInterpolationType: 0
-  RotationInterpolationType: 0
-  ScaleInterpolationType: 0
-  PositionLerpSmoothing: 1
-  PositionMaxInterpolationTime: 0.1
-  RotationLerpSmoothing: 1
-  RotationMaxInterpolationTime: 0.1
-  ScaleLerpSmoothing: 1
-  ScaleMaxInterpolationTime: 0.1
-  AuthorityMode: 0
-  TickSyncChildren: 0
-  UseUnreliableDeltas: 0
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
-  SyncRotAngleZ: 0
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  SwitchTransformSpaceWhenParented: 0
-  Interpolate: 0
-  SlerpPosition: 0
---- !u!114 &6956069998084111316
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  spriteRenderer: {fileID: 8474734641579894876}
+--- !u!212 &8474734641579894876 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 8735012950088697620, guid: 46f5586e03b1ffd41a72c04a42167154, type: 3}
+  m_PrefabInstance: {fileID: 911048454697414472}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8892064191436043857}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76af0db992f032a4eace1b7bdc0917f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  spriteRenderer: {fileID: 7903943008401164983}
