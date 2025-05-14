@@ -44,26 +44,34 @@ public class PlayerSpawner : NetworkBehaviour
 
         if (NetworkServer.Instance.TryGetCharacterId(clientId, out int characterId))
         {
-            Debug.Log($"PlayerSpawner: Found character ID {characterId} for client {clientId}");
-            GameObject prefabToSpawn = characterId switch
+            GameObject prefabToSpawn = PrefabManager.Instance.GetPrefabByCharacterId(characterId);
+            if (prefabToSpawn == null)
             {
-                0 => knightPrefab,
-                1 => archerPrefab,
-                2 => priestPrefab,
-                3 => soldierPrefab,
-                4 => thiefPrefab,
-                _ => knightPrefab // Default to Knight if something goes wrong
-            };
-            Debug.Log($"PlayerSpawner: Spawning prefab {prefabToSpawn.name} for character ID {characterId}");
+                Debug.LogError($"PlayerSpawner: Failed to retrieve prefab for CharacterId {characterId}. Defaulting to Knight.");
+                prefabToSpawn = PrefabManager.Instance.GetPrefabByCharacterId(0); // Default to Knight
+            }
+
+            float[] spawnPosition;
+            if (NetworkServer.Instance.TryGetSpawnPosition(clientId, out spawnPosition))
+            {
+                Debug.Log($"PlayerSpawner: Spawn position for client {clientId} is {spawnPosition}");
+            }
+            else
+            {
+                Debug.LogError($"PlayerSpawner: Failed to get spawn position for client {clientId}, defaulting to Vector3.zero");
+                spawnPosition = new float[] { 0, 0, 0 };
+            }
+            Vector3 newSpawnPosition = new Vector3(spawnPosition[0], spawnPosition[1], spawnPosition[2]);
 
             // Spawn the player object
-            GameObject playerInstance = Instantiate(prefabToSpawn, Vector3.zero, Quaternion.identity);
+            GameObject playerInstance = Instantiate(prefabToSpawn, newSpawnPosition, Quaternion.identity);
             playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, destroyWithScene: true);
             Debug.Log($"Spawned player {clientId} as character ID {characterId}");
         }
         else
         {
             Debug.LogError($"Failed to get character ID for client {clientId}, defaulting to Knight");
+            GameObject prefabToSpawn = PrefabManager.Instance.GetPrefabByCharacterId(0); // Default to Knight
             GameObject playerInstance = Instantiate(knightPrefab, Vector3.zero, Quaternion.identity);
             playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, destroyWithScene: true);
         }

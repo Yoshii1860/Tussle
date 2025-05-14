@@ -21,9 +21,9 @@ public class Health : NetworkBehaviour
         CurrentHealth.Value = MaxHealth;
     }
 
-    public void TakeDamage(int damageAmount)
+    public void TakeDamage(int damageAmount, ulong attackerClientId)
     {
-        ModifyHealthServerRpc(-damageAmount);
+        ModifyHealthServerRpc(-damageAmount, attackerClientId);
     }
 
     public void Heal(int healAmount)
@@ -32,7 +32,7 @@ public class Health : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void ModifyHealthServerRpc(int value)
+    private void ModifyHealthServerRpc(int value, ulong lastAttackerClientId = default)
     {
         if (isDead) { return; }
 
@@ -43,6 +43,15 @@ public class Health : NetworkBehaviour
         {
             OnDie?.Invoke(this);
             isDead = true;
+
+            NetworkServer.Instance.AddKill(lastAttackerClientId);
         }
+    }
+
+    [ClientRpc]
+    public void PlayDeathAnimationClientRpc()
+    {
+        Animator animator = GetComponent<Animator>();
+        animator.SetTrigger("Die");
     }
 }

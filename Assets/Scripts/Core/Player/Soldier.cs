@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.EventSystems;
 
 
 public class Soldier : Character
@@ -39,18 +40,14 @@ public class Soldier : Character
     private void OnPrimaryAttack()
     {
         if (!IsOwner) return;
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
         isAttacking.Value = true;
         animator.SetTrigger("Attack");
         Invoke(nameof(ResetAttack), 0.4f);
-        Debug.Log("Knight: Sword Attack");
-    }
-
-    protected override void OnIsAttackingChanged(bool previousValue, bool newValue)
-    {
-        if (newValue)
-        {
-            animator.SetTrigger("Attack");
-        }
+        Debug.Log("Soldier: Sword Attack");
     }
 
     public void EnableSwordCollider()

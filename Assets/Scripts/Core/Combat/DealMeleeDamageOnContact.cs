@@ -29,11 +29,8 @@ public class DealMeleeDamageOnContact : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (parentNetworkObject == null || !parentNetworkObject.IsOwner) return;
-
         if (Time.time - lastDamageTime < damageCooldown || hasDealtDamageThisFrame) return;
-
         if (other.attachedRigidbody == null) return;
-
         if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {
             if (networkObject.OwnerClientId == ownerClientId) return;
@@ -42,7 +39,7 @@ public class DealMeleeDamageOnContact : MonoBehaviour
         if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
             Debug.Log($"Dealing {damageAmount} damage to {other.name}");
-            health.TakeDamage(damageAmount);
+            health.TakeDamage(damageAmount, ownerClientId);
             lastDamageTime = Time.time;
             hasDealtDamageThisFrame = true;
         }

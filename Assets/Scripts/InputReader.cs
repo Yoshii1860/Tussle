@@ -11,6 +11,7 @@ public class InputReader : ScriptableObject, IPlayerActions
     public event Action<Vector2> MoveEvent;
     public event Action<bool> SprintEvent;
     public event Action<bool> SecondaryAttackEvent;
+    public event Action<Vector2> ZoomEvent;
 
     private Controls controls;
 
@@ -74,6 +75,14 @@ public class InputReader : ScriptableObject, IPlayerActions
         else if (context.canceled)
         {
             SecondaryAttackEvent?.Invoke(false);
+        }
+    }
+
+    public void OnZoom(InputAction.CallbackContext context)
+    {
+        if (context.performed || context.canceled)
+        {
+            ZoomEvent?.Invoke(context.ReadValue<Vector2>());
         }
     }
 }

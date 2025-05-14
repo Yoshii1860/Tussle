@@ -1,6 +1,8 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using Unity.Cinemachine;
+using UnityEngine.EventSystems;
 
 public abstract class Character : NetworkBehaviour
 {
@@ -8,6 +10,7 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected InputReader inputReader;
     [SerializeField] protected Rigidbody2D rb;
     [SerializeField] protected Animator animator;
+    [SerializeField] protected CinemachineCamera cmCamera;
 
     [Header("Movement Settings")]
     [SerializeField] protected float moveSpeed = 5f;
@@ -16,21 +19,23 @@ public abstract class Character : NetworkBehaviour
     [Header("Character Settings")]
     [SerializeField] protected CharacterType characterType;
 
+    [Header("Zoom Settings")]
+    [SerializeField] protected float zoomSpeed = 0.5f;
+    [SerializeField] protected float minFOV = 5f;
+    [SerializeField] protected float maxFOV = 10f;
+
     protected NetworkVariable<bool> isMoving = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isFacingLeft = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isAttacking = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryAction = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryTrigger = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    protected NetworkVariable<bool> isDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
+   
     protected Vector2 previousMovementInput;
 
     public bool IsFacingLeft => isFacingLeft.Value;
 
     public override void OnNetworkSpawn()
     {
-        isDead.OnValueChanged += OnIsDeadChanged;
-        
         Debug.Log($"OnNetworkSpawn: CharacterType={characterType}, IsOwner={IsOwner}, OwnerClientId={OwnerClientId}, NetworkObjectId={NetworkObjectId}");
         if (!IsOwner)
         {
@@ -39,21 +44,13 @@ public abstract class Character : NetworkBehaviour
             isAttacking.OnValueChanged += OnIsAttackingChanged;
             isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
             isSecondaryTrigger.OnValueChanged += OnIsSecondaryTriggerChanged;
-            if (TryGetComponent<Health>(out Health health))
-            {
-                health.OnDie += HandleDeath;
-            }
-            else 
-            {
-                Debug.LogWarning("Health component not found on Character!");
-            }
+
             // Apply initial states
             OnIsMovingChanged(false, isMoving.Value);
             OnFacingLeftChanged(false, isFacingLeft.Value);
             OnIsAttackingChanged(false, isAttacking.Value);
             OnIsSecondaryActionChanged(false, isSecondaryAction.Value);
             OnIsSecondaryTriggerChanged(false, isSecondaryTrigger.Value);
-            OnIsDeadChanged(false, isDead.Value);
             return;
         }
 
@@ -63,6 +60,7 @@ public abstract class Character : NetworkBehaviour
             return;
         }
         inputReader.MoveEvent += HandleMove;
+        inputReader.ZoomEvent += HandleZoom;
 
         isMoving.OnValueChanged += OnIsMovingChanged;
         isFacingLeft.OnValueChanged += OnFacingLeftChanged;
@@ -76,18 +74,14 @@ public abstract class Character : NetworkBehaviour
         if (IsOwner)
         {
             inputReader.MoveEvent -= HandleMove;
+            inputReader.ZoomEvent -= HandleZoom;
         }
 
-        isDead.OnValueChanged -= OnIsDeadChanged;
         isMoving.OnValueChanged -= OnIsMovingChanged;
         isFacingLeft.OnValueChanged -= OnFacingLeftChanged;
         isAttacking.OnValueChanged -= OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged -= OnIsSecondaryActionChanged;
         isSecondaryTrigger.OnValueChanged -= OnIsSecondaryTriggerChanged;
-        if (TryGetComponent<Health>(out Health health))
-        {
-            health.OnDie -= HandleDeath;
-        }
     }
 
     private void Update()
@@ -168,19 +162,13 @@ public abstract class Character : NetworkBehaviour
 
     }
 
-    protected virtual void OnIsDeadChanged(bool previousValue, bool newValue)
+    private void HandleZoom(Vector2 vector)
     {
-        if (newValue)
+        float scrollInput = vector.y;
+        if (scrollInput != 0)
         {
-            animator.SetTrigger("Die");
-        }
-    }
-
-    protected virtual void HandleDeath(Health health)
-    {
-        if (IsServer)
-        {
-            isDead.Value = true;
+            float newFOV = cmCamera.Lens.OrthographicSize - (scrollInput * zoomSpeed);
+            cmCamera.Lens.OrthographicSize = Mathf.Clamp(newFOV, minFOV, maxFOV);
         }
     }
 }

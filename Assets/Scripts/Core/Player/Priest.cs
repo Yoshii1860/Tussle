@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.EventSystems;
 
 
 public class Priest : Character
@@ -42,6 +43,10 @@ public class Priest : Character
     private void OnPrimaryAttack()
     {
         if (!IsOwner) return;
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
         isAttacking.Value = true;
         animator.SetTrigger("Attack");
         Invoke(nameof(ResetAttack), 0.4f);
@@ -63,14 +68,6 @@ public class Priest : Character
         if (newValue && !previousValue)
         {
             animator.SetTrigger("SecondaryRelease");
-        }
-    }
-
-    protected override void OnIsAttackingChanged(bool previousValue, bool newValue)
-    {
-        if (newValue)
-        {
-            animator.SetTrigger("Attack");
         }
     }
 

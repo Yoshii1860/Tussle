@@ -15,7 +15,6 @@ public class DealDamageOnContact : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.attachedRigidbody == null) { return; }
-
         if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {
             if (networkObject.OwnerClientId == ownerClientId) 
@@ -26,7 +25,7 @@ public class DealDamageOnContact : MonoBehaviour
 
         if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
-            health.TakeDamage(damageAmount);
+            health.TakeDamage(damageAmount, ownerClientId);
         }
     }
 }
