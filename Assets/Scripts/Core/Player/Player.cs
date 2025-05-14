@@ -13,6 +13,8 @@ public class Player : NetworkBehaviour
     [SerializeField] private CinemachineCamera cmCamera;
     [SerializeField] private GameObject blackScreen;
     [SerializeField] public Animator Animator;
+    [SerializeField] public GameObject playerUICanvas;
+    
     [field: SerializeField] public Health Health { get; private set; }
     [field: SerializeField] public CoinWallet Wallet { get; private set; }
 
@@ -53,6 +55,75 @@ public class Player : NetworkBehaviour
 
         cmCamera.Follow = transform;
         cmCamera.LookAt = transform;
+    }
+
+    public void Invisibility(float duration)
+    {
+        if (IsServer)
+        {
+            // Broadcast invisibility state to all clients
+            SetInvisibilityClientRpc(duration);
+        }
+    }
+
+    [ClientRpc]
+    private void SetInvisibilityClientRpc(float duration)
+    {
+        if (IsOwner)
+        {
+            // For the owner, disable only the SpriteRenderers (keep UI visible)
+            foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
+            {
+                sr.enabled = false;
+            }
+
+            // Schedule reset for the owner
+            Invoke(nameof(ResetInvisibility), duration);
+        }
+        else
+        {
+            // For other clients, disable both the SpriteRenderers and the UI
+            foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
+            {
+                sr.enabled = false;
+            }
+
+            if (playerUICanvas != null)
+            {
+                playerUICanvas.SetActive(false);
+            }
+        }
+
+        // Schedule reset for all clients
+        if (IsServer)
+        {
+            Invoke(nameof(ResetInvisibilityClientRpc), duration);
+        }
+    }
+
+    [ClientRpc]
+    private void ResetInvisibilityClientRpc()
+    {
+        // Re-enable SpriteRenderers for all clients
+        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
+        {
+            sr.enabled = true;
+        }
+
+        // Re-enable the UI for other clients
+        if (!IsOwner && playerUICanvas != null)
+        {
+            playerUICanvas.SetActive(true);
+        }
+    }
+
+    private void ResetInvisibility()
+    {
+        // Re-enable SpriteRenderers for the owner
+        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
+        {
+            sr.enabled = true;
+        }
     }
 
     private IEnumerator FadeOutBlackscreen()

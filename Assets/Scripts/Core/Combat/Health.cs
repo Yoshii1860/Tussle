@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-
+using System.Collections;
 
 public class Health : NetworkBehaviour
 {
@@ -11,6 +11,7 @@ public class Health : NetworkBehaviour
     public NetworkVariable<int> CurrentHealth = new NetworkVariable<int>();
 
     private bool isDead;
+    private float protectionPercentage = 1;
 
     public Action<Health> OnDie;
 
@@ -31,12 +32,43 @@ public class Health : NetworkBehaviour
         ModifyHealthServerRpc(healAmount);
     }
 
+    public void ApplyProtection(float protectionPercentage, float duration)
+    {
+        if (isDead) { return; }
+
+        this.protectionPercentage = protectionPercentage;
+        Invoke(nameof(RemoveProtection), duration);
+    }
+
+    private void RemoveProtection()
+    {
+        protectionPercentage = 1;
+    }
+
+    public void ApplyRegeneration(int regenerationAmount, float duration)
+    {
+        if (isDead) { return; }
+
+        StartCoroutine(RegenerateHealth(regenerationAmount, duration));
+    }
+
+    private IEnumerator RegenerateHealth(int regenerationAmount, float duration)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < duration + 0.5f) // Adding 0.5f to ensure the last regeneration is applied
+        {
+            elapsedTime += Time.deltaTime;
+            ModifyHealthServerRpc(regenerationAmount);
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
     [ServerRpc(RequireOwnership = false)]
     private void ModifyHealthServerRpc(int value, ulong lastAttackerClientId = default)
     {
         if (isDead) { return; }
 
-        int newHealth = CurrentHealth.Value + value;
+        int newHealth = CurrentHealth.Value + (int)(value * protectionPercentage);
         CurrentHealth.Value = Mathf.Clamp(newHealth, 0, MaxHealth);
 
         if (CurrentHealth.Value == 0)

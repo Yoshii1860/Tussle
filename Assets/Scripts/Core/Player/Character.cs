@@ -34,6 +34,8 @@ public abstract class Character : NetworkBehaviour
 
     public bool IsFacingLeft => isFacingLeft.Value;
 
+    private float startMoveSpeed;
+
     public override void OnNetworkSpawn()
     {
         Debug.Log($"OnNetworkSpawn: CharacterType={characterType}, IsOwner={IsOwner}, OwnerClientId={OwnerClientId}, NetworkObjectId={NetworkObjectId}");
@@ -67,6 +69,8 @@ public abstract class Character : NetworkBehaviour
         isAttacking.OnValueChanged += OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
         isSecondaryTrigger.OnValueChanged += OnIsSecondaryTriggerChanged;
+
+        startMoveSpeed = moveSpeed;
     }
 
     public override void OnNetworkDespawn()
@@ -110,6 +114,20 @@ public abstract class Character : NetworkBehaviour
         {
             isFacingLeft.Value = previousMovementInput.x > 0;
         }
+    }
+
+    public void MovementBoost(float boost, float duration)
+    {
+        if (!IsOwner) return;
+
+        moveSpeed *= boost;
+        Invoke(nameof(ResetMovement), duration);
+    }
+
+    private object ResetMovement()
+    {
+        moveSpeed = startMoveSpeed;
+        return null;
     }
 
     private void HandleMove(Vector2 movementInput)

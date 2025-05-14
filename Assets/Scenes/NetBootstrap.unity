@@ -671,6 +671,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3603295987764638738, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
+      propertyPath: m_MaxPacketQueueSize
+      value: 2048
+      objectReference: {fileID: 0}
     - target: {fileID: 4206908091973641587, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 562.4426

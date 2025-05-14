@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System;
 
 public class DealMeleeDamageOnContact : MonoBehaviour
 {
@@ -11,6 +12,13 @@ public class DealMeleeDamageOnContact : MonoBehaviour
     private bool hasDealtDamageThisFrame;
     private NetworkObject parentNetworkObject;
 
+    private int damageOnStart;
+
+    private void Start()
+    {
+        damageOnStart = damageAmount;
+    }
+
     public void SetOwner(ulong ownerClientId)
     {
         this.ownerClientId = ownerClientId;
@@ -19,6 +27,18 @@ public class DealMeleeDamageOnContact : MonoBehaviour
         {
             Debug.LogWarning("No NetworkObject found in parent hierarchy for DealMeleeDamageOnContact!");
         }
+    }
+
+    public void DamageBoost(float damageMultiplier, float duration)
+    {
+        damageAmount = (int)(damageOnStart * damageMultiplier);
+        Invoke(nameof(ResetDamage), duration);
+    }
+
+    private object ResetDamage()
+    {
+        damageAmount = damageOnStart;
+        return null;
     }
 
     private void Update()
@@ -38,7 +58,6 @@ public class DealMeleeDamageOnContact : MonoBehaviour
 
         if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
-            Debug.Log($"Dealing {damageAmount} damage to {other.name}");
             health.TakeDamage(damageAmount, ownerClientId);
             lastDamageTime = Time.time;
             hasDealtDamageThisFrame = true;

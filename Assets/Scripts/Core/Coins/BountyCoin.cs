@@ -3,8 +3,6 @@ using System;
 
 public class BountyCoin : Coin
 {
-    public event Action<BountyCoin> OnCollected;
-
     public override int Collect()
     {
         if (!IsServer)
