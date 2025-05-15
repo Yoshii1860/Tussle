@@ -18,6 +18,10 @@ public class PotionDamageIncrease : InteractableObject
             {
                 meleeScript.DamageBoost(damageMultiplier, duration);
             }
+            else if (playerObj.TryGetComponent<ProjectileLauncher>(out ProjectileLauncher rangedScript))
+            {
+                rangedScript.ApplyDamageBoost(damageMultiplier, duration);
+            }
             buffUIManager.SpawnBuffClientRpc((ObjectType)ObjectTypeId.Value, duration);
         }
     }

@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 public class DealDamageOnContact : MonoBehaviour
 {
-    [SerializeField] private int damageAmount = 10;
+    [SerializeField] public int DamageAmount = 15;
 
     private ulong ownerClientId;
 
@@ -25,7 +25,7 @@ public class DealDamageOnContact : MonoBehaviour
 
         if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
-            health.TakeDamage(damageAmount, ownerClientId);
+            health.TakeDamage(DamageAmount, ownerClientId);
         }
     }
 }

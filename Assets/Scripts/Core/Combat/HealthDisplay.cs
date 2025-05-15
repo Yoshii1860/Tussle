@@ -14,7 +14,6 @@ public class HealthDisplay : NetworkBehaviour
     {
         if (!IsClient) { return; }
 
-        health.OnDie += OnDie;
         health.CurrentHealth.OnValueChanged += OnHealthChanged;
         OnHealthChanged(0, health.CurrentHealth.Value);
     }
@@ -23,7 +22,6 @@ public class HealthDisplay : NetworkBehaviour
     {
         if (!IsClient) { return; }
 
-        health.OnDie -= OnDie;
         health.CurrentHealth.OnValueChanged -= OnHealthChanged;
     }
 
@@ -32,10 +30,5 @@ public class HealthDisplay : NetworkBehaviour
         float healthPercentage = (float)newHealth / health.MaxHealth;
         healthBarImage.fillAmount = healthPercentage;
         healthBarImage.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercentage);
-    }
-
-    private void OnDie(Health health)
-    {
-        GetComponent<Animator>().SetTrigger("Die");
     }
 }

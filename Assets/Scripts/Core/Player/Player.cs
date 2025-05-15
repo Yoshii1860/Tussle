@@ -14,6 +14,8 @@ public class Player : NetworkBehaviour
     [SerializeField] private GameObject blackScreen;
     [SerializeField] public Animator Animator;
     [SerializeField] public GameObject playerUICanvas;
+    [SerializeField] private SpriteRenderer minimapIconRenderer;
+    [SerializeField] private GameObject mapsPrefab;
     
     [field: SerializeField] public Health Health { get; private set; }
     [field: SerializeField] public CoinWallet Wallet { get; private set; }
@@ -21,6 +23,7 @@ public class Player : NetworkBehaviour
     [Header("Player Settings")]
     [SerializeField] private int ownerPriority = 15;
     [SerializeField] private float fadeDuration = 1f;
+    [SerializeField] private Color playerIconColor = Color.orange;
 
     public NetworkVariable<FixedString32Bytes> PlayerName = new NetworkVariable<FixedString32Bytes>(new FixedString32Bytes("Player"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -47,10 +50,15 @@ public class Player : NetworkBehaviour
 
             blackScreen.SetActive(true);
             StartCoroutine(FadeOutBlackscreen());
+
+            minimapIconRenderer.color = playerIconColor;
+
+            Instantiate(mapsPrefab, GameObject.FindWithTag("GameHUD").transform);
         }
         else
         {
             cmCamera.Priority = 10;
+            minimapIconRenderer.color = new Color(playerIconColor.r, playerIconColor.g, playerIconColor.b, 0f);
         }
 
         cmCamera.Follow = transform;

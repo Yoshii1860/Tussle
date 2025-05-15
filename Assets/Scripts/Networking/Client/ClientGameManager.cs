@@ -61,6 +61,7 @@ public class ClientGameManager : IDisposable
         }
 
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        
         RelayServerData relayServerData = allocation.ToRelayServerData("dtls");
         transport.SetRelayServerData(relayServerData);
 
@@ -78,6 +79,11 @@ public class ClientGameManager : IDisposable
 
         NetworkManager.Singleton.StartClient();
         Debug.Log("ClientGameManager: Client started successfully.");
+    }
+
+    public void Disconnect()
+    {
+        networkClient.Disconnect();
     }
 
     public void Dispose()

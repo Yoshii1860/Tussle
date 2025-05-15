@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Weapon
   - Graveyard
+  - GameHUD
   layers:
   - Default
   - TransparentFX
@@ -20,9 +21,9 @@ TagManager:
   - Environment
   - Destructable
   - Player
-  - 
-  - 
-  - 
+  - Minimap
+  - Sun
+  - Ground
   - 
   - 
   - 

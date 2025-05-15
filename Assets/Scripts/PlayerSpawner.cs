@@ -14,9 +14,21 @@ public class PlayerSpawner : NetworkBehaviour
 
     private const string GameSceneName = "Game"; // Replace with your actual game scene name
 
+    public static PlayerSpawner Instance { get; private set; }
+
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
+
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     public override void OnNetworkSpawn()

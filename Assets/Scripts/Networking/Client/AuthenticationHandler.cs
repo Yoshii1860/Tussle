@@ -13,13 +13,11 @@ public static class AuthenticationHandler
     {
         if (AuthState == AuthState.Authenticated)
         {
-            Debug.Log("AuthenticationHandler: Already authenticated.");
             return AuthState;
         }
 
         if(AuthState == AuthState.Authenticating)
         {
-            Debug.LogWarning("AuthenticationHandler: Already authenticating. Waiting for completion...");
             await AuthenticatingAsync();
             return AuthState;
         }
@@ -42,7 +40,6 @@ public static class AuthenticationHandler
                 if (AuthenticationService.Instance.IsSignedIn && AuthenticationService.Instance.IsAuthorized)
                 {
                     AuthState = AuthState.Authenticated;
-                    Debug.Log("AuthenticationHandler: Authentication successful.");
                     break;
                 }
             }
@@ -67,7 +64,6 @@ public static class AuthenticationHandler
         }
         else
         {
-            Debug.Log("AuthenticationHandler: Authentication completed successfully.");
         }
     }
 
@@ -75,7 +71,6 @@ public static class AuthenticationHandler
     {
         while(AuthState == AuthState.Authenticating || AuthState == AuthState.NotAuthenticated)
         {
-            Debug.Log("AuthenticationHandler: Authenticating...");
             await Task.Delay(200); // Wait for 1 second before checking again
         }
 

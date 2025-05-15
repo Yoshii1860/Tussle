@@ -100,6 +100,8 @@ public class HostGameManager : IDisposable
         NetworkManager.Singleton.StartHost();
         Debug.Log($"HostGameManager: Host started with join code: {joinCode}");
 
+        NetworkServer.OnClientLeft += HandleClientLeft;
+
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
     }
 
@@ -120,7 +122,12 @@ public class HostGameManager : IDisposable
         }
     }
 
-    public async void Dispose()
+    public void Dispose()
+    {
+        Shutdown();
+    }
+
+    public async void Shutdown()
     {
         if (heartbeatCancellationTokenSource != null)
         {
@@ -143,7 +150,20 @@ public class HostGameManager : IDisposable
 
             lobbyId = string.Empty;
         }
+        NetworkServer.OnClientLeft -= HandleClientLeft;
 
         NetworkServer?.Dispose();
+    }
+
+    private async void HandleClientLeft(string authId)
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogError($"HostGameManager: Failed to handle client left. Exception: {ex.Message}");
+        }
     }
 }

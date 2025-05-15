@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -18,6 +19,8 @@ public class ProjectileLauncher : NetworkBehaviour
     private bool shouldFire = false;
     private Character character;
 
+    private int damageOnStart;
+
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) { return; }
@@ -28,6 +31,8 @@ public class ProjectileLauncher : NetworkBehaviour
             Debug.LogWarning("Character component not found on the GameObject.");
             return;
         }
+
+        damageOnStart = serverProjectilePrefab.GetComponent<DealDamageOnContact>().DamageAmount;
     }
 
     private void Update()
@@ -41,6 +46,25 @@ public class ProjectileLauncher : NetworkBehaviour
         SecondaryFireServerRPC(projectileSpawnPoint.position, direction);
 
         shouldFire = false;
+    }
+
+    public void ApplyDamageBoost(float damageMultiplier, float duration)
+    {
+        if (serverProjectilePrefab.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact damageComponent))
+        {
+            damageComponent.DamageAmount = Mathf.RoundToInt(damageOnStart * damageMultiplier);
+        }
+
+        Invoke(nameof(ResetDamage), duration);
+    }
+
+    private object ResetDamage()
+    {
+        if (serverProjectilePrefab.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact damageComponent))
+        {
+            damageComponent.DamageAmount = damageOnStart;
+        }
+        return null;
     }
 
     private Vector2 CalculateDirection()
