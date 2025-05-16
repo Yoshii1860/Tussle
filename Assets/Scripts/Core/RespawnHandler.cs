@@ -61,7 +61,7 @@ public class RespawnHandler : NetworkBehaviour
         yield return new WaitForSeconds(respawnTime);
 
         ulong clientId = player.OwnerClientId;
-        Destroy(player.gameObject);
+        player.NetworkObject.Despawn();
 
         int charId;
         if (NetworkServer.Instance.TryGetCharacterId(clientId, out int characterId))

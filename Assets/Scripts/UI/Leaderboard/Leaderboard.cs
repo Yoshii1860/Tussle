@@ -12,13 +12,11 @@ public class Leaderboard : NetworkBehaviour
     [Header("Settings")]
     [SerializeField] private const int MaxEntitiesToDisplay = 10;
     
-    private NetworkList<LeaderboardEntityState> leaderboardEntities = new NetworkList<LeaderboardEntityState>();
+    private NetworkList<LeaderboardEntityState> leaderboardEntities;
 
     private List<LeaderboardEntityDisplay> entityDisplays = new List<LeaderboardEntityDisplay>();
 
     public static Leaderboard Instance { get; private set; }
-
-    private bool hasBeenSpawned = false;
 
     private void Awake()
     {
@@ -28,13 +26,12 @@ public class Leaderboard : NetworkBehaviour
             return;
         }
         Instance = this;
+
+        leaderboardEntities = new NetworkList<LeaderboardEntityState>();
     }
 
     public override void OnNetworkSpawn()
     {
-        if (hasBeenSpawned) return;
-        hasBeenSpawned = true;
-
         if (IsClient)
         {
             leaderboardEntities.OnListChanged += HandleLeaderboardEntitiesChanged;
@@ -65,10 +62,7 @@ public class Leaderboard : NetworkBehaviour
     {
         if (IsClient)
         {
-            if (leaderboardEntities != null)
-            {
-                leaderboardEntities.OnListChanged -= HandleLeaderboardEntitiesChanged;
-            }
+            leaderboardEntities.OnListChanged -= HandleLeaderboardEntitiesChanged;
         }
         
         if (IsServer)
@@ -114,15 +108,10 @@ public class Leaderboard : NetworkBehaviour
     {
         foreach (LeaderboardEntityState entity in leaderboardEntities)
         {
-            if (entity.ClientId == player.OwnerClientId)
-            {
-                if (!NetworkManager.Singleton.ConnectedClients.ContainsKey(player.OwnerClientId))
-                {
-                    leaderboardEntities.Remove(entity);
-                    return;
-                }
-                break;
-            }
+            if (entity.ClientId != player.OwnerClientId) { continue; }
+
+            leaderboardEntities.Remove(entity);
+            break;
         }
 
         player.Wallet.CoinCount.OnValueChanged -= (oldCoins, newCoins) => 
@@ -133,17 +122,17 @@ public class Leaderboard : NetworkBehaviour
     {
         for (int i = 0; i < leaderboardEntities.Count; i++)
         {
-            if (leaderboardEntities[i].ClientId == clientId)
+            if (leaderboardEntities[i].ClientId != clientId) { continue; }
+
+            leaderboardEntities[i] = new LeaderboardEntityState
             {
-                leaderboardEntities[i] = new LeaderboardEntityState
-                {
-                    ClientId = clientId,
-                    PlayerName = leaderboardEntities[i].PlayerName,
-                    Kills = leaderboardEntities[i].Kills,
-                    Coins = newCoins
-                };
-                break;
-            }
+                ClientId = leaderboardEntities[i].ClientId,
+                PlayerName = leaderboardEntities[i].PlayerName,
+                Kills = leaderboardEntities[i].Kills,
+                Coins = newCoins
+            };
+
+            return;
         }
     }
 

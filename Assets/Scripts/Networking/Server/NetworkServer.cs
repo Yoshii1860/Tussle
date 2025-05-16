@@ -16,7 +16,7 @@ public class NetworkServer : IDisposable
 
     public static NetworkServer Instance { get; private set; }
 
-    private Dictionary<ulong, int> clientKills = new Dictionary<ulong, int>();
+//    private Dictionary<ulong, int> clientKills = new Dictionary<ulong, int>();
 
     public NetworkServer(NetworkManager networkManager)
     {
@@ -93,7 +93,7 @@ public class NetworkServer : IDisposable
         return clientIdToSpawnPosition.TryGetValue(clientId, out spawnPosition);
     }
 
-    public void AddKill(ulong killerClientId)
+/*    public void AddKill(ulong killerClientId)
     {
         if (clientKills.ContainsKey(killerClientId))
         {
@@ -108,7 +108,7 @@ public class NetworkServer : IDisposable
 
         Leaderboard.Instance.UpdateKills(killerClientId, clientKills[killerClientId]);
     }
-
+*/
     public void Dispose()
     {
         if (networkManager != null)

@@ -76,7 +76,22 @@ public class Health : NetworkBehaviour
             OnDie?.Invoke(this);
             isDead = true;
 
-            NetworkServer.Instance.AddKill(lastAttackerClientId);
+            UpdateKillsOnCounter(lastAttackerClientId);
+        }
+    }
+
+    private void UpdateKillsOnCounter(ulong lastAttackerClientId)
+    {
+        if (lastAttackerClientId != default &&
+            NetworkManager.Singleton.ConnectedClients.TryGetValue(lastAttackerClientId, out Unity.Netcode.NetworkClient client))
+        {
+            NetworkObject attackerNetworkObject = client.PlayerObject;
+            if (attackerNetworkObject != null &&
+                attackerNetworkObject.TryGetComponent<KillCounter>(out KillCounter attackerKillCounter))
+            {
+                attackerKillCounter.AddKillServerRpc();
+            }
+
         }
     }
 

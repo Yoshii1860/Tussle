@@ -402,6 +402,7 @@ GameObject:
   - component: {fileID: 8712038044248872339}
   - component: {fileID: -8602882873542424961}
   - component: {fileID: 692629736159201343}
+  - component: {fileID: 4834318300104304669}
   m_Layer: 7
   m_Name: Priest
   m_TagString: Untagged
@@ -775,6 +776,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   buffHolder: {fileID: 8781980892520520882}
   buffPrefab: {fileID: 553417364476102567, guid: 14d6686328f93484b84e180fc5497813, type: 3}
+--- !u!114 &4834318300104304669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013034572668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e823c145acca6343b8422ecc1beabe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1000013226060160
 GameObject:
   m_ObjectHideFlags: 0

@@ -195,6 +195,7 @@ GameObject:
   - component: {fileID: 1079095720474880309}
   - component: {fileID: 2693875559944994851}
   - component: {fileID: 8683981576003365490}
+  - component: {fileID: -7813223771516880732}
   m_Layer: 7
   m_Name: Soldier
   m_TagString: Untagged
@@ -547,6 +548,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   buffHolder: {fileID: 5281483013800891636}
   buffPrefab: {fileID: 553417364476102567, guid: 14d6686328f93484b84e180fc5497813, type: 3}
+--- !u!114 &-7813223771516880732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011742669328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e823c145acca6343b8422ecc1beabe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1000011811995576
 GameObject:
   m_ObjectHideFlags: 0

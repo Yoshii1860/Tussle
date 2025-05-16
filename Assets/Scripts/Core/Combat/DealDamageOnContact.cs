@@ -17,9 +17,9 @@ public class DealDamageOnContact : MonoBehaviour
         if (other.attachedRigidbody == null) { return; }
         if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {
-            if (networkObject.OwnerClientId == ownerClientId) 
-            { 
-                return; 
+            if (networkObject.OwnerClientId == ownerClientId)
+            {
+                return;
             }
         }
 

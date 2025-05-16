@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 4576242480703198641}
   - component: {fileID: 6111055072487640924}
   - component: {fileID: 7709889851192788287}
+  - component: {fileID: 6561417500510241249}
   m_Layer: 7
   m_Name: Archer
   m_TagString: Untagged
@@ -394,6 +395,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   buffHolder: {fileID: 2851654700989990459}
   buffPrefab: {fileID: 553417364476102567, guid: 14d6686328f93484b84e180fc5497813, type: 3}
+--- !u!114 &6561417500510241249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010854855540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e823c145acca6343b8422ecc1beabe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1000011210365404
 GameObject:
   m_ObjectHideFlags: 0
