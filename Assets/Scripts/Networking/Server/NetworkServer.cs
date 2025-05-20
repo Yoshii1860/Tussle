@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 public class NetworkServer : IDisposable
@@ -27,6 +28,14 @@ public class NetworkServer : IDisposable
         networkManager.OnServerStarted += OnNetworkReady;
     }
 
+    public bool OpenConnection(string ip, int port)
+    {
+        UnityTransport transport = networkManager.GetComponent<UnityTransport>();
+        transport.SetConnectionData(ip, (ushort)port);
+        
+        return networkManager.StartServer();
+    }
+
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
         string payload = System.Text.Encoding.UTF8.GetString(request.Payload);
@@ -40,7 +49,7 @@ public class NetworkServer : IDisposable
         clientIdToSpawnPosition[request.ClientNetworkId] = spawnPosition;
         response.Position = new UnityEngine.Vector3(spawnPosition[0], spawnPosition[1], spawnPosition[2]);
         Debug.Log($"ApprovalCheck: ClientId={request.ClientNetworkId}, AuthId={userData.userAuthId}, Position={response.Position}");
-        
+
         response.Approved = true;
         response.CreatePlayerObject = false;
 
@@ -93,22 +102,6 @@ public class NetworkServer : IDisposable
         return clientIdToSpawnPosition.TryGetValue(clientId, out spawnPosition);
     }
 
-/*    public void AddKill(ulong killerClientId)
-    {
-        if (clientKills.ContainsKey(killerClientId))
-        {
-            clientKills[killerClientId]++;
-        }
-        else
-        {
-            clientKills[killerClientId] = 1;
-        }
-
-        Debug.Log($"Client {killerClientId} has {clientKills[killerClientId]} kills.");
-
-        Leaderboard.Instance.UpdateKills(killerClientId, clientKills[killerClientId]);
-    }
-*/
     public void Dispose()
     {
         if (networkManager != null)

@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 6111055072487640924}
   - component: {fileID: 7709889851192788287}
   - component: {fileID: 6561417500510241249}
+  - component: {fileID: 6423229823438280609}
   m_Layer: 7
   m_Name: Archer
   m_TagString: Untagged
@@ -327,6 +328,10 @@ MonoBehaviour:
   playerUICanvas: {fileID: 6303602258781619991}
   minimapIconRenderer: {fileID: 3862841589685590260}
   mapsPrefab: {fileID: 9055153497834790155, guid: 05795d26b292b6f4aa87c3a54c7f497e, type: 3}
+  cursorTexture: {fileID: 2800000, guid: 6908becb5fcb8464496e4c3ea0a05c89, type: 3}
+  cursorHoverTexture: {fileID: 2800000, guid: 33964cb54b525f940b4b73fe658128d0, type: 3}
+  cursorClickTexture: {fileID: 2800000, guid: 1bcf6a9fd47e89749878b3585a2a4061, type: 3}
+  cursorHotspot: {x: 0, y: 0}
   <Health>k__BackingField: {fileID: 3729823565419170127}
   <Wallet>k__BackingField: {fileID: 3324919835249687764}
   ownerPriority: 15
@@ -408,6 +413,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &6423229823438280609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010854855540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd30581efd7fa924883866568be59a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 4576242480703198641}
 --- !u!1 &1000011210365404
 GameObject:
   m_ObjectHideFlags: 0

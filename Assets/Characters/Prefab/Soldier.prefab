@@ -196,6 +196,7 @@ GameObject:
   - component: {fileID: 2693875559944994851}
   - component: {fileID: 8683981576003365490}
   - component: {fileID: -7813223771516880732}
+  - component: {fileID: 2128758605507291033}
   m_Layer: 7
   m_Name: Soldier
   m_TagString: Untagged
@@ -480,6 +481,10 @@ MonoBehaviour:
   playerUICanvas: {fileID: 9093398898801673838}
   minimapIconRenderer: {fileID: 326829613543558786}
   mapsPrefab: {fileID: 9055153497834790155, guid: 05795d26b292b6f4aa87c3a54c7f497e, type: 3}
+  cursorTexture: {fileID: 2800000, guid: 6908becb5fcb8464496e4c3ea0a05c89, type: 3}
+  cursorHoverTexture: {fileID: 2800000, guid: 33964cb54b525f940b4b73fe658128d0, type: 3}
+  cursorClickTexture: {fileID: 2800000, guid: 1bcf6a9fd47e89749878b3585a2a4061, type: 3}
+  cursorHotspot: {x: 0, y: 0}
   <Health>k__BackingField: {fileID: 5557347444579529756}
   <Wallet>k__BackingField: {fileID: 2717726268426332005}
   ownerPriority: 15
@@ -561,6 +566,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &2128758605507291033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011742669328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd30581efd7fa924883866568be59a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1079095720474880309}
 --- !u!1 &1000011811995576
 GameObject:
   m_ObjectHideFlags: 0

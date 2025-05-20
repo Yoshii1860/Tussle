@@ -16,12 +16,10 @@ public class ClientGameManager : IDisposable
 
     private NetworkClient networkClient;
     private const string MenuSceneName = "MainMenu";
+
     public async Task<bool> InitAsync()
     {
-        // Initialize the client game manager here
         Debug.Log("ClientGameManager: Client Game Manager Initialized");
-
-        await UnityServices.InitializeAsync();
 
         networkClient = new NetworkClient(NetworkManager.Singleton);
 
@@ -41,13 +39,11 @@ public class ClientGameManager : IDisposable
 
     public void GoToMenu()
     {
-        // Logic to transition to the main menu
         Debug.Log("ClientGameManager: Transitioning to the main menu...");
-
         SceneManager.LoadScene(MenuSceneName);
     }
 
-    internal async Task StartClientAsync(string joinCode)
+    public async Task StartClientAsync(string joinCode)
     {
         try
         {
@@ -81,6 +77,36 @@ public class ClientGameManager : IDisposable
         Debug.Log("ClientGameManager: Client started successfully.");
     }
 
+    public async Task StartClientLocalAsync(string ip, int port)
+    {
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.SetConnectionData(ip, (ushort)port);
+
+        UserData userData = new UserData
+        {
+            userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
+            userAuthId = AuthenticationService.Instance.PlayerId,
+            characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
+        };
+
+        string payload = JsonUtility.ToJson(userData);
+        byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
+
+        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+
+        bool success = NetworkManager.Singleton.StartClient();
+        if (success)
+        {
+            Debug.Log($"ClientGameManager: Client started successfully, connecting to {ip}:{port}");
+        }
+        else
+        {
+            Debug.LogError($"ClientGameManager: Failed to start client, connecting to {ip}:{port}");
+        }
+
+        await Task.CompletedTask;
+    }
+
     public void Disconnect()
     {
         networkClient.Disconnect();
@@ -88,7 +114,6 @@ public class ClientGameManager : IDisposable
 
     public void Dispose()
     {
-        // Dispose of any resources if necessary
         Debug.Log("ClientGameManager: Disposing resources.");
         networkClient?.Dispose();
     }

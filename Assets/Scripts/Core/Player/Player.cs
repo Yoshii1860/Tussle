@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using Unity.Collections;
 using System;
 
-
 public class Player : NetworkBehaviour
 {
     [Header("References")]
@@ -16,6 +15,10 @@ public class Player : NetworkBehaviour
     [SerializeField] public GameObject playerUICanvas;
     [SerializeField] private SpriteRenderer minimapIconRenderer;
     [SerializeField] private GameObject mapsPrefab;
+    [SerializeField] public Texture2D cursorTexture;
+    [SerializeField] public Texture2D cursorHoverTexture;
+    [SerializeField] public Texture2D cursorClickTexture;
+    [SerializeField] public Vector2 cursorHotspot;
     
     [field: SerializeField] public Health Health { get; private set; }
     [field: SerializeField] public CoinWallet Wallet { get; private set; }
@@ -34,15 +37,44 @@ public class Player : NetworkBehaviour
     {
         if (IsServer)
         {
+            if (HostSingleton.Instance == null)
+            {
+                Debug.LogError("Player: HostSingleton.Instance is null in OnNetworkSpawn");
+                return;
+            }
+            if (HostSingleton.Instance.GameManager == null)
+            {
+                Debug.LogError("Player: GameManager is null in HostSingleton");
+                return;
+            }
+            if (HostSingleton.Instance.GameManager.NetworkServer == null)
+            {
+                Debug.LogError("Player: NetworkServer is null in GameManager");
+                return;
+            }
+
             UserData userData = HostSingleton.Instance.GameManager.NetworkServer.TryGetUserData(OwnerClientId);
-
-            PlayerName.Value = userData.userName;
-
-            OnPlayerSpawned?.Invoke(this);
+            if (userData != null)
+            {
+                PlayerName.Value = userData.userName;
+                OnPlayerSpawned?.Invoke(this);
+            }
+            else
+            {
+                Debug.LogWarning($"Player: No user data found for OwnerClientId {OwnerClientId}, using default name");
+                PlayerName.Value = new FixedString32Bytes("Unknown");
+                OnPlayerSpawned?.Invoke(this);
+            }
         }
 
         if (IsOwner)
         {
+            if (cmCamera == null) Debug.LogError("Player: cmCamera is null");
+            if (blackScreen == null) Debug.LogError("Player: blackScreen is null");
+            if (minimapIconRenderer == null) Debug.LogError("Player: minimapIconRenderer is null");
+            if (mapsPrefab == null) Debug.LogError("Player: mapsPrefab is null");
+            if (cursorTexture == null) Debug.LogError("Player: cursorTexture is null");
+
             cmCamera.Priority = ownerPriority;
             Debug.Log($"Player: OnNetworkSpawn - OwnerClientId: {OwnerClientId}, NetworkObjectId: {NetworkObjectId}");
 
@@ -53,7 +85,24 @@ public class Player : NetworkBehaviour
 
             minimapIconRenderer.color = playerIconColor;
 
-            Instantiate(mapsPrefab, GameObject.FindWithTag("GameHUD").transform);
+            GameObject hud = GameObject.FindWithTag("GameHUD");
+            if (hud != null)
+            {
+                Instantiate(mapsPrefab, hud.transform);
+            }
+            else
+            {
+                Debug.LogError("Player: GameHUD not found in scene");
+            }
+
+            if (cursorTexture != null)
+            {
+                Cursor.SetCursor(cursorTexture, cursorHotspot, CursorMode.Auto);
+            }
+            else
+            {
+                Debug.LogWarning("Player: cursorTexture is null, using default cursor");
+            }
         }
         else
         {
@@ -61,15 +110,21 @@ public class Player : NetworkBehaviour
             minimapIconRenderer.color = new Color(playerIconColor.r, playerIconColor.g, playerIconColor.b, 0f);
         }
 
-        cmCamera.Follow = transform;
-        cmCamera.LookAt = transform;
+        if (cmCamera != null)
+        {
+            cmCamera.Follow = transform;
+            cmCamera.LookAt = transform;
+        }
+        else
+        {
+            Debug.LogError("Player: cmCamera is null, cannot set Follow or LookAt");
+        }
     }
 
     public void Invisibility(float duration)
     {
         if (IsServer)
         {
-            // Broadcast invisibility state to all clients
             SetInvisibilityClientRpc(duration);
         }
     }
@@ -79,30 +134,24 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner)
         {
-            // For the owner, disable only the SpriteRenderers (keep UI visible)
             foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
             {
                 sr.enabled = false;
             }
-
-            // Schedule reset for the owner
             Invoke(nameof(ResetInvisibility), duration);
         }
         else
         {
-            // For other clients, disable both the SpriteRenderers and the UI
             foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
             {
                 sr.enabled = false;
             }
-
             if (playerUICanvas != null)
             {
                 playerUICanvas.SetActive(false);
             }
         }
 
-        // Schedule reset for all clients
         if (IsServer)
         {
             Invoke(nameof(ResetInvisibilityClientRpc), duration);
@@ -112,13 +161,10 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     private void ResetInvisibilityClientRpc()
     {
-        // Re-enable SpriteRenderers for all clients
         foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
         {
             sr.enabled = true;
         }
-
-        // Re-enable the UI for other clients
         if (!IsOwner && playerUICanvas != null)
         {
             playerUICanvas.SetActive(true);
@@ -127,7 +173,6 @@ public class Player : NetworkBehaviour
 
     private void ResetInvisibility()
     {
-        // Re-enable SpriteRenderers for the owner
         foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
         {
             sr.enabled = true;
@@ -139,19 +184,25 @@ public class Player : NetworkBehaviour
         yield return new WaitForSeconds(0.5f);
 
         Image blackScreenImage = blackScreen.GetComponentInChildren<Image>();
-        Color color = blackScreenImage.color;
-
-        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        if (blackScreenImage != null)
         {
-            color.a = Mathf.Lerp(1, 0, t / fadeDuration);
+            Color color = blackScreenImage.color;
+            for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+            {
+                color.a = Mathf.Lerp(1, 0, t / fadeDuration);
+                blackScreenImage.color = color;
+                yield return null;
+            }
+            color.a = 0;
             blackScreenImage.color = color;
-            yield return null;
+            blackScreen.SetActive(false);
+            blackScreenImage.color = new Color(color.r, color.g, color.b, 1);
         }
-
-        color.a = 0;
-        blackScreenImage.color = color;
-        blackScreen.SetActive(false);
-        blackScreenImage.color = new Color(color.r, color.g, color.b, 1);
+        else
+        {
+            Debug.LogError("Player: blackScreenImage is null in FadeOutBlackscreen");
+            blackScreen.SetActive(false);
+        }
     }
 
     public override void OnNetworkDespawn()

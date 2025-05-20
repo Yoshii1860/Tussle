@@ -15,10 +15,10 @@ public class NameSelector : MonoBehaviour
 
     private void Start()
     {
-        if(SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+        if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
         {
             Debug.LogError("Headless Server detected. Name input is disabled.");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            SceneManager.LoadScene("ServerBootstrap");
             return;
         }
 
@@ -36,6 +36,6 @@ public class NameSelector : MonoBehaviour
     public void Connect()
     {
         PlayerPrefs.SetString(PlayerNameKey, nameInputField.text);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        SceneManager.LoadScene("NetBootstrap");
     }
 }

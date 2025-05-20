@@ -1,45 +1,57 @@
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
+using Unity.Services.Core;
 
 public class ApplicationController : MonoBehaviour
 {
     [SerializeField] private ClientSingleton clientPrefab;
     [SerializeField] private HostSingleton hostPrefab;
+    [SerializeField] private ServerSingleton serverPrefab;
 
-    private bool isServer;
+    private ApplicationData appData;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     private async void Start()
     {
-        DontDestroyOnLoad(gameObject);
+        appData = new ApplicationData();
 
-        #if UNITY_SERVER
+        // Initialize Unity Services only if not in server mode
+        if (ApplicationData.Mode() != "server")
+        {
+            try
+            {
+                await UnityServices.InitializeAsync();
+                Debug.Log("Unity Services initialized successfully.");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to initialize Unity Services: {e.Message}");
+                return;
+            }
+        }
 
-            isServer = true;
-
-        #else
-
-            isServer = false;
-
-        #endif
-
-        await LaunchInMode(isServer);
+        await LaunchInMode(ApplicationData.Mode());
     }
 
-    private async Task LaunchInMode(bool isDedicatedServer)
+    private async Task LaunchInMode(string mode)
     {
-        if (isDedicatedServer)
+        if (mode == "server")
         {
-            // Start server logic here
+            ServerSingleton serverSingleton = Instantiate(serverPrefab);
+            await serverSingleton.CreateServer();
+            await serverSingleton.GameManager.StartGameServerAsync();
         }
-        else
+        else if (mode == "host")
         {
             HostSingleton hostSingleton = Instantiate(hostPrefab);
             hostSingleton.CreateHost();
 
             ClientSingleton clientSingleton = Instantiate(clientPrefab);
             bool authenticated = await clientSingleton.CreateClient();
-
             if (authenticated)
             {
                 clientSingleton.GameManager.GoToMenu();
@@ -49,5 +61,22 @@ public class ApplicationController : MonoBehaviour
                 Debug.LogError("ApplicationController: Client authentication failed.");
             }
         }
+        else
+        {
+            ClientSingleton clientSingleton = Instantiate(clientPrefab);
+            bool authenticated = await clientSingleton.CreateClient();
+            if (authenticated)
+            {
+                clientSingleton.GameManager.GoToMenu();
+            }
+            else
+            {
+                Debug.LogError("ApplicationController: Client authentication failed.");
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
     }
 }

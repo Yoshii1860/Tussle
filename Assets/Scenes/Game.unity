@@ -26967,7 +26967,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   coinPrefab: {fileID: 6956069998084111316, guid: 0e4db2ad9c484534abc879db230efdc2, type: 3}
-  maxCoins: 500
+  maxCoins: 0
   coinValue: 10
   xSpawnRange: {x: -50, y: 50}
   ySpawnRange: {x: -50, y: 50}

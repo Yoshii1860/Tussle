@@ -403,6 +403,7 @@ GameObject:
   - component: {fileID: -8602882873542424961}
   - component: {fileID: 692629736159201343}
   - component: {fileID: 4834318300104304669}
+  - component: {fileID: -1101450898049586053}
   m_Layer: 7
   m_Name: Priest
   m_TagString: Untagged
@@ -708,6 +709,10 @@ MonoBehaviour:
   playerUICanvas: {fileID: 6685465546059637782}
   minimapIconRenderer: {fileID: 2381998743022261002}
   mapsPrefab: {fileID: 9055153497834790155, guid: 05795d26b292b6f4aa87c3a54c7f497e, type: 3}
+  cursorTexture: {fileID: 2800000, guid: 6908becb5fcb8464496e4c3ea0a05c89, type: 3}
+  cursorHoverTexture: {fileID: 2800000, guid: 33964cb54b525f940b4b73fe658128d0, type: 3}
+  cursorClickTexture: {fileID: 2800000, guid: 1bcf6a9fd47e89749878b3585a2a4061, type: 3}
+  cursorHotspot: {x: 0, y: 0}
   <Health>k__BackingField: {fileID: 7931177626035245099}
   <Wallet>k__BackingField: {fileID: 9128414420166295979}
   ownerPriority: 15
@@ -789,6 +794,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &-1101450898049586053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013034572668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd30581efd7fa924883866568be59a32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 8712038044248872339}
 --- !u!1 &1000013226060160
 GameObject:
   m_ObjectHideFlags: 0
