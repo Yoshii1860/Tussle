@@ -35,37 +35,25 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        
+#if UNITY_SERVER
         if (IsServer)
         {
-            if (HostSingleton.Instance == null)
+            UserData userData = null;
+            if (IsHost)
             {
-                Debug.LogError("Player: HostSingleton.Instance is null in OnNetworkSpawn");
-                return;
-            }
-            if (HostSingleton.Instance.GameManager == null)
-            {
-                Debug.LogError("Player: GameManager is null in HostSingleton");
-                return;
-            }
-            if (HostSingleton.Instance.GameManager.NetworkServer == null)
-            {
-                Debug.LogError("Player: NetworkServer is null in GameManager");
-                return;
-            }
-
-            UserData userData = HostSingleton.Instance.GameManager.NetworkServer.TryGetUserData(OwnerClientId);
-            if (userData != null)
-            {
+                userData = HostSingleton.Instance.GameManager.NetworkServer.TryGetUserData(OwnerClientId);
                 PlayerName.Value = userData.userName;
                 OnPlayerSpawned?.Invoke(this);
             }
             else
             {
-                Debug.LogWarning($"Player: No user data found for OwnerClientId {OwnerClientId}, using default name");
-                PlayerName.Value = new FixedString32Bytes("Unknown");
+                userData = ServerSingleton.Instance.GameManager.NetworkServer.TryGetUserData(OwnerClientId);
+                PlayerName.Value = userData.userName;
                 OnPlayerSpawned?.Invoke(this);
             }
         }
+#endif
 
         if (IsOwner)
         {

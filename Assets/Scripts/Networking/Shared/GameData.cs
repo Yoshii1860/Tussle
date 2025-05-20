@@ -22,7 +22,7 @@ public class UserData
     public string userName;
     public string userAuthId;
     public int characterId;
-    public GameInfo userGamePreferences;
+    public GameInfo userGamePreferences = new GameInfo();
 }
 
 [Serializable]
@@ -34,6 +34,11 @@ public class GameInfo
 
     public string ToMultiplayQueue()
     {
-        return $"{gameMode.ToString()}_{gameQueue.ToString()}";
+        return gameQueue switch
+        {
+            GameQueue.Solo => "solo-queue",
+            GameQueue.Team => "team-queue",
+            _ => "solo-queue"
+        };
     }
 }

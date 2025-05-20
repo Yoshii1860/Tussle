@@ -72,6 +72,7 @@ public class PlayerSpawner : NetworkBehaviour
             yield break;
         }
 
+#if UNITY_SERVER
         if (NetworkServer.Instance == null)
         {
             Debug.LogError("PlayerSpawner: NetworkServer.Instance is null, cannot spawn player");
@@ -133,6 +134,7 @@ public class PlayerSpawner : NetworkBehaviour
                 Destroy(playerInstance);
             }
         }
+#endif
     }
 
     public override void OnNetworkDespawn()

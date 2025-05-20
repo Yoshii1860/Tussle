@@ -63,7 +63,10 @@ public class RespawnHandler : NetworkBehaviour
         ulong clientId = player.OwnerClientId;
         player.NetworkObject.Despawn();
 
+#if UNITY_SERVER
         int charId;
+
+
         if (NetworkServer.Instance.TryGetCharacterId(clientId, out int characterId))
         {
             Debug.Log($"RespawnHandler: Respawning player with CharacterId {characterId} for client {clientId}");
@@ -74,6 +77,7 @@ public class RespawnHandler : NetworkBehaviour
             Debug.LogError($"RespawnHandler: Failed to retrieve CharacterId for client {clientId}. Defaulting to Knight.");
             charId = 0; // Default to Knight
         }
+
         
         GameObject prefabToSpawn = PrefabManager.Instance.GetPrefabByCharacterId(charId);
         if (prefabToSpawn == null)
@@ -91,5 +95,6 @@ public class RespawnHandler : NetworkBehaviour
         playerInstance.Wallet.CoinCount.Value += coinsKept;
 
         Leaderboard.Instance.GetEntityDisplay(playerInstance.OwnerClientId).UpdateDisplayText();
+#endif
     }
 }

@@ -1,3 +1,4 @@
+#if UNITY_SERVER
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
@@ -46,3 +47,4 @@ public class ServerSingleton : MonoBehaviour
         GameManager?.Dispose();
     }
 }
+#endif

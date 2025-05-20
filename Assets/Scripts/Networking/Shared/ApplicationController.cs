@@ -6,7 +6,9 @@ public class ApplicationController : MonoBehaviour
 {
     [SerializeField] private ClientSingleton clientPrefab;
     [SerializeField] private HostSingleton hostPrefab;
+#if UNITY_SERVER
     [SerializeField] private ServerSingleton serverPrefab;
+#endif
 
     private ApplicationData appData;
 
@@ -41,11 +43,15 @@ public class ApplicationController : MonoBehaviour
     {
         if (mode == "server")
         {
+
+#if UNITY_SERVER
             ServerSingleton serverSingleton = Instantiate(serverPrefab);
             await serverSingleton.CreateServer();
             await serverSingleton.GameManager.StartGameServerAsync();
+#endif
+
         }
-        else if (mode == "host")
+        else // if (mode == "host")
         {
             HostSingleton hostSingleton = Instantiate(hostPrefab);
             hostSingleton.CreateHost();
@@ -61,6 +67,7 @@ public class ApplicationController : MonoBehaviour
                 Debug.LogError("ApplicationController: Client authentication failed.");
             }
         }
+        /*
         else
         {
             ClientSingleton clientSingleton = Instantiate(clientPrefab);
@@ -74,6 +81,7 @@ public class ApplicationController : MonoBehaviour
                 Debug.LogError("ApplicationController: Client authentication failed.");
             }
         }
+        */
     }
 
     private void OnDestroy()

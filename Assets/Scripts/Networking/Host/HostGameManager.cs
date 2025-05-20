@@ -21,7 +21,9 @@ public class HostGameManager : IDisposable
     private string joinCode;
     private string lobbyId;
 
+#if UNITY_SERVER
     public NetworkServer NetworkServer { get; private set; }
+#endif
     private CancellationTokenSource heartbeatCancellationTokenSource;
 
     private const int MaxConnections = 20;
@@ -83,7 +85,9 @@ public class HostGameManager : IDisposable
             return;
         }
 
+#if UNITY_SERVER
         NetworkServer = new NetworkServer(NetworkManager.Singleton);
+#endif
 
         UserData userData = new UserData
         {
@@ -100,7 +104,9 @@ public class HostGameManager : IDisposable
         NetworkManager.Singleton.StartHost();
         Debug.Log($"HostGameManager: Host started with join code: {joinCode}");
 
+#if UNITY_SERVER
         NetworkServer.OnClientLeft += HandleClientLeft;
+#endif
 
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
     }
@@ -129,6 +135,8 @@ public class HostGameManager : IDisposable
 
     public async void Shutdown()
     {
+        if (string.IsNullOrEmpty(lobbyId)) { return; }
+
         if (heartbeatCancellationTokenSource != null)
         {
             heartbeatCancellationTokenSource.Cancel();
@@ -136,23 +144,23 @@ public class HostGameManager : IDisposable
             heartbeatCancellationTokenSource = null;
         }
 
-        if (!string.IsNullOrEmpty(lobbyId))
+        try
         {
-            try
-            {
-                await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
-                Debug.Log($"HostGameManager: Lobby {lobbyId} is deleting.");
-            }
-            catch (LobbyServiceException ex)
-            {
-                Debug.LogError($"HostGameManager: Failed to delete lobby. Exception: {ex.Message}");
-            }
-
-            lobbyId = string.Empty;
+            await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
+            Debug.Log($"HostGameManager: Lobby {lobbyId} is deleting.");
         }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogError($"HostGameManager: Failed to delete lobby. Exception: {ex.Message}");
+        }
+
+        lobbyId = string.Empty;
+
+#if UNITY_SERVER
         NetworkServer.OnClientLeft -= HandleClientLeft;
 
         NetworkServer?.Dispose();
+#endif
     }
 
     private async void HandleClientLeft(string authId)
