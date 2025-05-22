@@ -15,12 +15,12 @@ public class NameSelector : MonoBehaviour
 
     private void Start()
     {
-        if(SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
-        {
-            Debug.LogError("Headless Server detected. Name input is disabled.");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-            return;
-        }
+
+#if UNITY_SERVER
+        Debug.Log($"Server started at {System.DateTime.Now}");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        return;
+#endif
 
         nameInputField.text = PlayerPrefs.GetString(PlayerNameKey, string.Empty);
         HandleNameChanged();

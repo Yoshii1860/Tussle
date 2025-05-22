@@ -10,6 +10,7 @@ using System;
       private static int queryPort = 0;
       private static string mode = null;
       private static string logPath = null;
+      private static bool logHandlerRegistered = false;
 
       private Dictionary<string, Action<string>> m_CommandDictionary = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase);
 
@@ -44,18 +45,22 @@ using System;
           return logPath;
       }
 
-      public ApplicationData()
-      {
-          Debug.unityLogger.logHandler = new UnityLogHandler(Debug.unityLogger.logHandler);
+    public ApplicationData()
+    {
+        if (logHandlerRegistered) { return; }
 
-          m_CommandDictionary["-" + k_IPCmd] = SetIP;
-          m_CommandDictionary["-" + k_PortCmd] = SetPort;
-          m_CommandDictionary["-" + k_QueryPortCmd] = SetQueryPort;
-          m_CommandDictionary["-" + k_ModeCmd] = SetMode;
-          m_CommandDictionary["-" + k_LogCmd] = SetLogPath;
+        Debug.unityLogger.logHandler = new UnityLogHandler(Debug.unityLogger.logHandler);
 
-          ProcessCommandLinearguments(Environment.GetCommandLineArgs());
-          ValidateMultiplayArguments();
+        m_CommandDictionary["-" + k_IPCmd] = SetIP;
+        m_CommandDictionary["-" + k_PortCmd] = SetPort;
+        m_CommandDictionary["-" + k_QueryPortCmd] = SetQueryPort;
+        m_CommandDictionary["-" + k_ModeCmd] = SetMode;
+        m_CommandDictionary["-" + k_LogCmd] = SetLogPath;
+
+        ProcessCommandLinearguments(Environment.GetCommandLineArgs());
+        ValidateMultiplayArguments();
+        
+        logHandlerRegistered = true;
       }
 
       void ProcessCommandLinearguments(string[] args)

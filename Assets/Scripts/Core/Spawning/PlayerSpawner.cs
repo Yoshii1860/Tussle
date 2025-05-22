@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
@@ -18,6 +19,11 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void Awake()
     {
+
+#if !UNITY_SERVER
+        Destroy(gameObject);
+#endif
+
         Debug.Log($"PlayerSpawner: Awake called in scene {SceneManager.GetActiveScene().name}");
         DontDestroyOnLoad(gameObject);
 
@@ -33,25 +39,16 @@ public class PlayerSpawner : NetworkBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        Debug.Log($"PlayerSpawner: Enabled in scene {SceneManager.GetActiveScene().name}");
-    }
-
     public override void OnNetworkSpawn()
     {
-        Debug.Log($"PlayerSpawner: OnNetworkSpawn called, IsServer: {IsServer}, Scene: {SceneManager.GetActiveScene().name}");
-        if (IsServer)
-        {
-            Debug.Log("PlayerSpawner: Server spawned, registering OnClientConnected callback.");
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        Debug.Log("PlayerSpawner: Server spawned, registering OnClientConnected callback.");
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
 
-            // Check if any clients are already connected
-            foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
-            {
-                Debug.Log($"PlayerSpawner: Found existing client {clientId}, triggering spawn");
-                StartCoroutine(SpawnPlayer(clientId));
-            }
+        // Check if any clients are already connected
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            Debug.Log($"PlayerSpawner: Found existing client {clientId}, triggering spawn");
+            StartCoroutine(SpawnPlayer(clientId));
         }
     }
 
@@ -69,10 +66,10 @@ public class PlayerSpawner : NetworkBehaviour
         if (SceneManager.GetActiveScene().name != GameSceneName)
         {
             Debug.LogWarning($"PlayerSpawner: Expected Game scene but current scene is {SceneManager.GetActiveScene().name}, aborting spawn for client {clientId}");
-            yield break;
+            yield return new WaitUntil(() => SceneManager.GetActiveScene().name == GameSceneName);
+            Debug.Log($"PlayerSpawner: Game scene loaded, continuing spawn for client {clientId}");
         }
 
-#if UNITY_SERVER
         if (NetworkServer.Instance == null)
         {
             Debug.LogError("PlayerSpawner: NetworkServer.Instance is null, cannot spawn player");
@@ -88,20 +85,34 @@ public class PlayerSpawner : NetworkBehaviour
                 Debug.LogError($"PlayerSpawner: Failed to retrieve prefab for CharacterId {characterId}. Defaulting to Knight.");
                 prefabToSpawn = PrefabManager.Instance.GetPrefabByCharacterId(0); // Default to Knight
             }
-
-            float[] spawnPosition;
-            if (NetworkServer.Instance.TryGetSpawnPosition(clientId, out spawnPosition))
+            /*
+                        float[] spawnPosition;
+                        if (NetworkServer.Instance.TryGetSpawnPosition(clientId, out spawnPosition))
+                        {
+                            Debug.Log($"PlayerSpawner: Spawn position for client {clientId} is {spawnPosition[0]}, {spawnPosition[1]}, {spawnPosition[2]}");
+                            if (spawnPosition[0] == 0 && spawnPosition[1] == 0 && spawnPosition[2] == 0)
+                            {
+                                Debug.LogError($"PlayerSpawner: Spawn position for client {clientId} is zero, defaulting to random spawn point");
+                                spawnPosition = SpawnPoint.GetRandomSpawnPos();
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"PlayerSpawner: Failed to get spawn position for client {clientId}, defaulting to Vector3.zero");
+                            spawnPosition = SpawnPoint.GetRandomSpawnPos();
+                        }
+            */
+            float[] spawnPosition = SpawnPoint.GetRandomSpawnPos();
+            if (spawnPosition == null || spawnPosition.Length != 3)
             {
-                Debug.Log($"PlayerSpawner: Spawn position for client {clientId} is {spawnPosition[0]}, {spawnPosition[1]}, {spawnPosition[2]}");
-            }
-            else
-            {
-                Debug.LogError($"PlayerSpawner: Failed to get spawn position for client {clientId}, defaulting to Vector3.zero");
+                Debug.LogError($"PlayerSpawner: Invalid spawn position for client {clientId}, defaulting to Vector3.zero");
                 spawnPosition = new float[] { 0, 0, 0 };
             }
+
             Vector3 newSpawnPosition = new Vector3(spawnPosition[0], spawnPosition[1], spawnPosition[2]);
 
             Debug.Log($"PlayerSpawner: Instantiating prefab {prefabToSpawn.name} for client {clientId}");
+            yield return new WaitForSeconds(0.5f); // Optional delay for smoother spawning
             GameObject playerInstance = Instantiate(prefabToSpawn, newSpawnPosition, Quaternion.identity);
             if (playerInstance.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
             {
@@ -134,15 +145,11 @@ public class PlayerSpawner : NetworkBehaviour
                 Destroy(playerInstance);
             }
         }
-#endif
     }
 
     public override void OnNetworkDespawn()
     {
         Debug.Log("PlayerSpawner: OnNetworkDespawn called");
-        if (IsServer)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-        }
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
     }
 }

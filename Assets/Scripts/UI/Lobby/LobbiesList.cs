@@ -16,7 +16,6 @@ public class LobbiesList : MonoBehaviour
     [SerializeField] private LobbyItem lobbyItemPrefab;
     [SerializeField] private Transform lobbyItemContainer;
     [SerializeField] public MainMenu MainMenu;
-    private bool isJoining = false;
     private bool isRefreshing = false;
 
     public static LobbiesList Instance { get; private set; }
@@ -73,29 +72,8 @@ public class LobbiesList : MonoBehaviour
 
         isRefreshing = false;
     }
-
-    public async Task JoinLobbyWithCharacter(Lobby lobby)
-    {
-        if (isJoining) return;
-        isJoining = true;
-
-        try
-        {
-            Lobby joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id);
-            string joinCode = joiningLobby.Data["JoinCode"].Value;
-            Debug.Log($"LobbiesList: Join code: {joinCode}");
-
-            await ClientSingleton.Instance.GameManager.StartClientAsync(joinCode);
-            Debug.Log($"LobbiesList: Joined lobby: {lobby.Name}");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Failed to join lobby: {e.Message}");
-        }
-
-        isJoining = false;
-    }
 }
+
 
 /*
 

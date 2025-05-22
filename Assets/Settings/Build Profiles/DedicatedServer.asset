@@ -18,10 +18,10 @@ MonoBehaviour:
   m_PlatformId: 91d938b35f6f4798811e41f2acf9377f
   m_PlatformBuildProfile:
     rid: 3465600551116079229
-  m_OverrideGlobalSceneList: 1
+  m_OverrideGlobalSceneList: 0
   m_Scenes:
   - m_enabled: 1
-    m_path: Assets/Scenes/ServerBootstrap.unity
+    m_path: Assets/Scenes/Bootstrap.unity
   - m_enabled: 1
     m_path: Assets/Scenes/NetBootstrap.unity
   - m_enabled: 1

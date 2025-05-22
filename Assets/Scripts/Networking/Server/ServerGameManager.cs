@@ -11,6 +11,8 @@ using Unity.Netcode;
 using Unity.Services.Multiplay;
 using UnityEngine.SceneManagement;
 using System;
+using Unity.Services.Matchmaker.Models;
+using Newtonsoft.Json;
 
 public class ServerGameManager : IDisposable
 {
@@ -33,6 +35,21 @@ public class ServerGameManager : IDisposable
         Debug.Log("ServerGameManager: NetworkServer created");
         isLocalTest = !Application.isBatchMode || serverIP == "127.0.0.1" || serverIP == "172.27.205.68";
         multiplayAllocationService = new MultiplayAllocationService();
+/*
+        var config = NetworkManager.Singleton.NetworkConfig;
+
+        string protocolVersion = config.ProtocolVersion.ToString();
+        ushort tickRate = (ushort)config.TickRate;
+        string networkTransport = config.NetworkTransport?.GetType().Name ?? "None";
+
+        var prefabNames = new System.Text.StringBuilder();
+        foreach (var prefab in config.Prefabs.Prefabs)
+        {
+            prefabNames.AppendLine(prefab.Prefab.name);
+        }
+
+        Debug.Log($"NetworkConfig Server: ProtocolVersion={protocolVersion}, TickRate={tickRate}, NetworkTransport={networkTransport}, Prefabs=[{prefabNames}]");
+*/
     }
 
     public async Task StartGameServerAsync()
@@ -60,19 +77,32 @@ public class ServerGameManager : IDisposable
             await multiplayAllocationService.BeginServerCheck();
             Debug.Log("ServerGameManager: Server check started");
 
-            MatchmakingResults matchmakerPayload = await multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
+            // Add a timeout for payload retrieval
+            var payloadTask = multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
+            if (await Task.WhenAny(payloadTask, Task.Delay(30000)) != payloadTask)
+            {
+                Debug.LogWarning("ServerGameManager: Timed out waiting for matchmaker payload. Shutting down.");
+                Dispose();
+                Application.Quit();
+                return;
+            }
+
+            MatchmakingResults rawPayload = payloadTask.Result;
             Debug.Log("ServerGameManager: Multiplay allocation service initialized");
 
-            if (matchmakerPayload != null)
+            if (rawPayload != null)
             {
-                Debug.Log($"ServerGameManager: Matchmaker payload received: {JsonUtility.ToJson(matchmakerPayload)}");
-                await StartBackfill(matchmakerPayload);
+                string payloadJson = JsonConvert.SerializeObject(rawPayload, Formatting.Indented);
+                Debug.Log($"ServerGameManager: Matchmaker payload received JsonConvert: {payloadJson}");
+                await StartBackfill(rawPayload);
                 NetworkServer.OnUserJoined += UserJoined;
                 NetworkServer.OnUserLeft += UserLeft;
             }
             else
             {
-                Debug.LogWarning("ServerGameManager: No matchmaker payload received.");
+                Debug.LogWarning("ServerGameManager: No matchmaker payload received. Shutting down.");
+                Dispose();
+                Application.Quit();
             }
         }
         catch (Exception e)
@@ -107,9 +137,9 @@ public class ServerGameManager : IDisposable
         }
     }
 
-    private void UserLeft(UserData user)
+    private async void UserLeft(UserData user)
     {
-        int playerCount = matchplayBackfiller.RemovePlayerFromMatch(user.userAuthId);
+        int playerCount = await matchplayBackfiller.RemovePlayerFromMatch(user.userAuthId);
         multiplayAllocationService?.RemovePlayer();
         if (playerCount <= 0)
         {
@@ -126,7 +156,10 @@ public class ServerGameManager : IDisposable
     
     private async void CloseServer()
     {
-        await matchplayBackfiller.StopBackfill();
+        if (matchplayBackfiller != null && matchplayBackfiller.IsBackfilling)
+        {
+            await matchplayBackfiller.StopBackfill();
+        }
         Dispose();
         Application.Quit();
     }

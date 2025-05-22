@@ -20,10 +20,8 @@ public class HostGameManager : IDisposable
     private Allocation allocation;
     private string joinCode;
     private string lobbyId;
-
-#if UNITY_SERVER
     public NetworkServer NetworkServer { get; private set; }
-#endif
+
     private CancellationTokenSource heartbeatCancellationTokenSource;
 
     private const int MaxConnections = 20;
@@ -85,9 +83,7 @@ public class HostGameManager : IDisposable
             return;
         }
 
-#if UNITY_SERVER
         NetworkServer = new NetworkServer(NetworkManager.Singleton);
-#endif
 
         UserData userData = new UserData
         {
@@ -104,9 +100,7 @@ public class HostGameManager : IDisposable
         NetworkManager.Singleton.StartHost();
         Debug.Log($"HostGameManager: Host started with join code: {joinCode}");
 
-#if UNITY_SERVER
         NetworkServer.OnClientLeft += HandleClientLeft;
-#endif
 
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
     }
@@ -156,11 +150,9 @@ public class HostGameManager : IDisposable
 
         lobbyId = string.Empty;
 
-#if UNITY_SERVER
         NetworkServer.OnClientLeft -= HandleClientLeft;
 
         NetworkServer?.Dispose();
-#endif
     }
 
     private async void HandleClientLeft(string authId)

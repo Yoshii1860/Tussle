@@ -135,7 +135,7 @@ public class MultiplayAllocationService : IDisposable
 
         try
         {
-            serverCheckManager = await multiplayService.StartServerQueryHandlerAsync((ushort)20, "", "", "0", "");
+            serverCheckManager = await multiplayService.StartServerQueryHandlerAsync((ushort)20, "ServerName", "", "0", "");
             Debug.Log("MultiplayAllocationService: Server query handler started");
             ServerCheckLoop(serverCheckCancel.Token);
         }
@@ -158,7 +158,7 @@ public class MultiplayAllocationService : IDisposable
         while (!cancellationToken.IsCancellationRequested)
         {
             serverCheckManager.UpdateServerCheck();
-            await Task.Delay(100);
+            await Task.Delay(500);
         }
     }
 

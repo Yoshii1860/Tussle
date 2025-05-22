@@ -6,6 +6,7 @@
 
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using Unity.Netcode;
@@ -19,6 +20,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private TMP_Text findMatchButtonText;
     [SerializeField] private TMP_Text queueTimerText;
     [SerializeField] private TMP_Text queueStatusText;
+    [SerializeField] private HostSingleton hostPrefab;
 
     private int selectedCharacterId = -1;
     private bool isHosting = false;
@@ -26,6 +28,7 @@ public class MainMenu : MonoBehaviour
     private bool isFindingMatchViaMatchmaking = false;
     private bool isMatchmaking;
     private bool isCancelling;
+    private bool isBusy = false;
     private string pendingJoinCode = "";
     private Lobby pendingLobby = null;
     private float queueTimer = 0f;
@@ -82,7 +85,7 @@ public class MainMenu : MonoBehaviour
         {
             CancelMatchmaking();
         }
-        else
+        else if (!isBusy)
         {
             isFindingMatchViaMatchmaking = true;
             characterSelectionPanel.SetActive(true);
@@ -91,33 +94,55 @@ public class MainMenu : MonoBehaviour
 
     public async Task SelectCharacter(int characterId)
     {
+        if (isBusy) { return; }
+        isBusy = true;
+
         selectedCharacterId = characterId;
         characterSelectionPanel.SetActive(false);
 
         if (selectedCharacterId < 0)
         {
             Debug.LogError("Invalid character ID selected.");
+            isBusy = false;
             return;
         }
 
-        if (isHosting)
+        try
         {
-            StartHostWithCharacter();
+            if (isHosting)
+            {
+                HostSingleton hostSingleton = Instantiate(hostPrefab);
+                hostSingleton.CreateHost();
+
+                while (hostSingleton.GameManager == null)
+                {
+                    Debug.Log("Waiting for GameManager to be created...");
+                    await Task.Delay(100);
+                }
+
+                StartHostWithCharacter();
+            }
+            else if (isJoiningLobby)
+            {
+                PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
+                await JoinLobbyWithCharacter(pendingLobby);
+                isJoiningLobby = false;
+                pendingLobby = null;
+            }
+            else if (isFindingMatchViaMatchmaking)
+            {
+                if (isCancelling) { return; }
+                StartMatchmakingWithCharacter();
+                isFindingMatchViaMatchmaking = false;
+            }
+            else
+            {
+                StartClientWithCharacter();
+            }
         }
-        else if (isJoiningLobby)
+        finally
         {
-            StartLobbyJoinWithCharacter();
-            isJoiningLobby = false;
-        }
-        else if (isFindingMatchViaMatchmaking)
-        {
-            if (isCancelling) { return; }
-            StartMatchmakingWithCharacter();
-            isFindingMatchViaMatchmaking = false;
-        }
-        else
-        {
-            StartClientWithCharacter();
+            isBusy = false;
         }
     }
 
@@ -136,6 +161,7 @@ public class MainMenu : MonoBehaviour
         queueTimerText.text = string.Empty;
         // Ensure the panel stays closed
         characterSelectionPanel.SetActive(false);
+        isBusy = false;
     }
 
     private async void StartHostWithCharacter()
@@ -150,21 +176,58 @@ public class MainMenu : MonoBehaviour
         await ClientSingleton.Instance.GameManager.StartClientAsync(pendingJoinCode);
     }
 
-    private async void StartLobbyJoinWithCharacter()
+    public async Task JoinLobbyWithCharacter(Lobby lobby)
     {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
-        await LobbiesList.Instance.JoinLobbyWithCharacter(pendingLobby);
-        pendingLobby = null;
+        try
+        {
+            Lobby joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id);
+            string joinCode = joiningLobby.Data["JoinCode"].Value;
+            Debug.Log($"LobbiesList: Join code: {joinCode}");
+
+            await ClientSingleton.Instance.GameManager.StartClientAsync(joinCode);
+            Debug.Log($"LobbiesList: Joined lobby: {lobby.Name}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to join lobby: {e.Message}");
+        }
     }
 
     private async void StartMatchmakingWithCharacter()
     {
+        if (ClientSingleton.Instance == null)
+        {
+            Debug.LogError("ClientSingleton.Instance is null!");
+            return;
+        }
+        if (ClientSingleton.Instance.GameManager == null)
+        {
+            Debug.LogError("ClientSingleton.Instance.GameManager is null!");
+            return;
+        }
+        if (findMatchButtonText == null)
+        {
+            Debug.LogError("findMatchButtonText is null!");
+            return;
+        }
+        if (queueStatusText == null)
+        {
+            Debug.LogError("queueStatusText is null!");
+            return;
+        }
+
         ClientSingleton.Instance.GameManager.MatchmakeAsync(OnMatchMade);
         PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
         findMatchButtonText.text = "Cancel";
         queueStatusText.text = "Searching...";
         queueTimer = 0f;
         isMatchmaking = true;
+    }
+
+    public void CloseCharacterSelectionPanel()
+    {
+        characterSelectionPanel.SetActive(false);
+        isBusy = false;
     }
 
     /*

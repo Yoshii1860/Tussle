@@ -4,12 +4,12 @@
 // --------------------------------------------
 // --------------------------------------------
 
-#if UNITY_SERVER
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using Newtonsoft.Json;
 
 public class NetworkServer : IDisposable
 {
@@ -21,7 +21,7 @@ public class NetworkServer : IDisposable
 
     private Dictionary<ulong, string> clientIdToAuth = new Dictionary<ulong, string>();
     private Dictionary<string, UserData> authIdToUserData = new Dictionary<string, UserData>();
-    private Dictionary<ulong, float[]> clientIdToSpawnPosition = new Dictionary<ulong, float[]>();
+   // private Dictionary<ulong, float[]> clientIdToSpawnPosition = new Dictionary<ulong, float[]>();
 
     public static NetworkServer Instance { get; private set; }
 
@@ -36,6 +36,7 @@ public class NetworkServer : IDisposable
         networkManager.OnServerStarted += OnNetworkReady;
     }
 
+
     public bool OpenConnection(string ip, int port)
     {
         UnityTransport transport = networkManager.GetComponent<UnityTransport>();
@@ -47,22 +48,21 @@ public class NetworkServer : IDisposable
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
         string payload = System.Text.Encoding.UTF8.GetString(request.Payload);
-        UserData userData = JsonUtility.FromJson<UserData>(payload);
+        UserData userData = JsonConvert.DeserializeObject<UserData>(payload);
 
         clientIdToAuth[request.ClientNetworkId] = userData.userAuthId;
         authIdToUserData[userData.userAuthId] = userData;
 
         OnUserJoined?.Invoke(userData);
-
+/*
         // Get and store a random spawn position
         float[] spawnPosition = SpawnPoint.GetRandomSpawnPos();
         clientIdToSpawnPosition[request.ClientNetworkId] = spawnPosition;
         response.Position = new UnityEngine.Vector3(spawnPosition[0], spawnPosition[1], spawnPosition[2]);
-        Debug.Log($"ApprovalCheck: ClientId={request.ClientNetworkId}, AuthId={userData.userAuthId}, Position={response.Position}");
+        Debug.Log($"ApprovalCheck: ClientId={request.ClientNetworkId}, AuthId={userData.userAuthId}, Position={response.Position}"); */
 
         response.Approved = true;
         response.CreatePlayerObject = false;
-
     }
 
     private void OnNetworkReady()
@@ -107,11 +107,12 @@ public class NetworkServer : IDisposable
         }
         return null;
     }
-
-    public bool TryGetSpawnPosition(ulong clientId, out float[] spawnPosition)
-    {
-        return clientIdToSpawnPosition.TryGetValue(clientId, out spawnPosition);
-    }
+    /*
+        public bool TryGetSpawnPosition(ulong clientId, out float[] spawnPosition)
+        {
+            return clientIdToSpawnPosition.TryGetValue(clientId, out spawnPosition);
+        }
+    */
 
     public void Dispose()
     {
@@ -128,7 +129,6 @@ public class NetworkServer : IDisposable
         }
     }
 }
-#endif
 
 /*
 

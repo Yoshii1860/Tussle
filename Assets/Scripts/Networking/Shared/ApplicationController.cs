@@ -1,16 +1,22 @@
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using Unity.Services.Core;
+using UnityEngine.SceneManagement;
 
 public class ApplicationController : MonoBehaviour
 {
     [SerializeField] private ClientSingleton clientPrefab;
     [SerializeField] private HostSingleton hostPrefab;
+
 #if UNITY_SERVER
     [SerializeField] private ServerSingleton serverPrefab;
-#endif
 
     private ApplicationData appData;
+#endif
+
+
+    private const string GameSceneName = "Game";
 
     private void Awake()
     {
@@ -19,53 +25,44 @@ public class ApplicationController : MonoBehaviour
 
     private async void Start()
     {
-        appData = new ApplicationData();
-
-        // Initialize Unity Services only if not in server mode
-        if (ApplicationData.Mode() != "server")
-        {
-            try
-            {
-                await UnityServices.InitializeAsync();
-                Debug.Log("Unity Services initialized successfully.");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"Failed to initialize Unity Services: {e.Message}");
-                return;
-            }
-        }
-
-        await LaunchInMode(ApplicationData.Mode());
-    }
-
-    private async Task LaunchInMode(string mode)
-    {
-        if (mode == "server")
-        {
 
 #if UNITY_SERVER
-            ServerSingleton serverSingleton = Instantiate(serverPrefab);
-            await serverSingleton.CreateServer();
-            await serverSingleton.GameManager.StartGameServerAsync();
+        appData = new ApplicationData();
 #endif
 
-        }
-        else // if (mode == "host")
+        try
         {
-            HostSingleton hostSingleton = Instantiate(hostPrefab);
-            hostSingleton.CreateHost();
+            await UnityServices.InitializeAsync();
+            Debug.Log("Unity Services initialized successfully.");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to initialize Unity Services: {e.Message}");
+            return;
+        }
 
-            ClientSingleton clientSingleton = Instantiate(clientPrefab);
-            bool authenticated = await clientSingleton.CreateClient();
-            if (authenticated)
-            {
-                clientSingleton.GameManager.GoToMenu();
-            }
-            else
-            {
-                Debug.LogError("ApplicationController: Client authentication failed.");
-            }
+        await Launch();
+    }
+
+    private async Task Launch()
+    {
+
+#if UNITY_SERVER
+        StartCoroutine(LoadGameSceneAsync());
+        return;
+#endif
+
+        ClientSingleton clientSingleton = Instantiate(clientPrefab);
+        bool authenticated = await clientSingleton.CreateClient();
+        if (authenticated)
+        {
+            Debug.Log("Client authenticated successfully.");
+            Debug.Log($"ClientSingleton: {clientSingleton}");
+            clientSingleton.GameManager.GoToMenu();
+        }
+        else
+        {
+            Debug.LogError("ApplicationController: Client authentication failed.");
         }
         /*
         else
@@ -83,6 +80,27 @@ public class ApplicationController : MonoBehaviour
         }
         */
     }
+
+#if UNITY_SERVER
+    private IEnumerator LoadGameSceneAsync()
+    {
+        Application.targetFrameRate = 60;
+
+        ServerSingleton serverSingleton = Instantiate(serverPrefab);
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(GameSceneName);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        Task createServerTask = serverSingleton.CreateServer();
+        yield return new WaitUntil(() => createServerTask.IsCompleted);
+
+        Task startServerTask = serverSingleton.GameManager.StartGameServerAsync();
+        yield return new WaitUntil(() => startServerTask.IsCompleted);
+    }
+#endif
 
     private void OnDestroy()
     {

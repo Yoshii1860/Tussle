@@ -15,6 +15,7 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
 
 public class ClientGameManager : IDisposable
 {
@@ -22,6 +23,8 @@ public class ClientGameManager : IDisposable
     private NetworkClient networkClient;
     private UserData userData;
     private const string MenuSceneName = "MainMenu";
+    private const string GameSceneName = "Game";
+    private TaskCompletionSource<bool> connectionTask;
 
     public async Task<bool> InitAsync()
     {
@@ -37,6 +40,21 @@ public class ClientGameManager : IDisposable
                 userAuthId = AuthenticationService.Instance.PlayerId,
                 characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
             };
+/*
+            var config = NetworkManager.Singleton.NetworkConfig;
+
+            string protocolVersion = config.ProtocolVersion.ToString();
+            ushort tickRate = (ushort)config.TickRate;
+            string networkTransport = config.NetworkTransport?.GetType().Name ?? "None";
+
+            var prefabNames = new System.Text.StringBuilder();
+            foreach (var prefab in config.Prefabs.Prefabs)
+            {
+                prefabNames.AppendLine(prefab.Prefab.name);
+            }
+
+            Debug.Log($"NetworkConfig Client: ProtocolVersion={protocolVersion}, TickRate={tickRate}, NetworkTransport={networkTransport}, Prefabs=[{prefabNames}]");
+*/
             return true;
         }
         else
@@ -83,12 +101,43 @@ public class ClientGameManager : IDisposable
 
     private void ConnectClient()
     {
-        string payload = JsonUtility.ToJson(userData);
+        connectionTask = new TaskCompletionSource<bool>();
+        string payload = JsonConvert.SerializeObject(userData);
         byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
 
-        NetworkManager.Singleton.StartClient();
+        bool hasClientStarted = NetworkManager.Singleton.StartClient();
+        if (!hasClientStarted)
+        {
+            Debug.LogError("ClientGameManager: Failed to start client.");
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+            connectionTask.SetResult(false);
+            return;
+        }
         Debug.Log("ClientGameManager: Client started successfully.");
+    }
+
+    private void OnClientConnected(ulong clientId)
+    {
+        Debug.Log($"ClientGameManager: Client connected with ID: {clientId}");
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+
+        if (NetworkManager.Singleton.IsClient && SceneManager.GetActiveScene().name != GameSceneName)
+        {
+            Debug.Log("ClientGameManager: Loading Game scene...");
+            SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+        }
+        connectionTask?.TrySetResult(true);
+    }
+
+    private void OnClientDisconnected(ulong clientId)
+    {
+        Debug.Log($"ClientGameManager: Client disconnected with ID: {clientId}");
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        connectionTask?.TrySetResult(false);
     }
 
     public async Task StartClientLocalAsync(string ip, int port)
@@ -129,6 +178,18 @@ public class ClientGameManager : IDisposable
         {
             StartClient(matchmakingResult.ip, matchmakingResult.port);
             Debug.Log($"ClientGameManager: Successfully connected to server at {matchmakingResult.ip}:{matchmakingResult.port}");
+
+            bool connected = await connectionTask.Task.WithTimeout(TimeSpan.FromSeconds(15));
+            if (connected)
+            {
+                Debug.Log("ClientGameManager: Successfully connected to the server.");
+                return MatchmakerPollingResult.Success;
+            }
+            else
+            {
+                Debug.LogError("ClientGameManager: Failed to connect to the server within the timeout period.");
+                return MatchmakerPollingResult.MatchAssignmentError;
+            }
         }
 
         return matchmakingResult.result;
@@ -147,7 +208,20 @@ public class ClientGameManager : IDisposable
     public void Dispose()
     {
         Debug.Log("ClientGameManager: Disposing resources.");
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        connectionTask?.TrySetCanceled();
         networkClient?.Dispose();
+    }
+}
+
+public static class TaskExtensions
+{
+    public static async Task<bool> WithTimeout(this Task task, TimeSpan timeout)
+    {
+        var delayTask = Task.Delay(timeout);
+        var completedTask = await Task.WhenAny(task, delayTask);
+        return completedTask == task;
     }
 }
 

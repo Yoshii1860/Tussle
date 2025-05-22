@@ -10,7 +10,7 @@ public class MatchplayBackfiller : IDisposable
     private CreateBackfillTicketOptions createBackfillOptions;
     private BackfillTicket localBackfillTicket;
     private bool localDataDirty;
-    private int maxPlayers;
+    private int maxPlayers = 20;
     private const int TicketCheckMs = 1000;
 
     private MatchProperties MatchProperties => localBackfillTicket.Properties.MatchProperties;
@@ -19,7 +19,6 @@ public class MatchplayBackfiller : IDisposable
 
     public MatchplayBackfiller(string connection, string queueName, MatchProperties matchmakerPayloadProperties, int maxPlayers)
     {
-        this.maxPlayers = maxPlayers;
         BackfillTicketProperties backfillProperties = new BackfillTicketProperties(matchmakerPayloadProperties);
         localBackfillTicket = new BackfillTicket
         {

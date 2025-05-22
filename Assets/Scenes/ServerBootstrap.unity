@@ -338,8 +338,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4655381192614449144, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
+      propertyPath: NetworkConfig.ForceSamePrefabs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4655381192614449144, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
       propertyPath: NetworkConfig.ConnectionApproval
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4655381192614449144, guid: 1b831864cb2cc384da6e9c29b9e94c1d, type: 3}
+      propertyPath: NetworkConfig.AutoSpawnPlayerPrefabClientSide
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

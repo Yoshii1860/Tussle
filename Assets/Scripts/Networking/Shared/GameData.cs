@@ -1,19 +1,20 @@
 using System;
+using Newtonsoft.Json;
 
 public enum Map
 {
-    Default
+    Default = 0
 }
 
 public enum GameMode
 {
-    Default
+    Default = 0
 }
 
 public enum GameQueue
 {
-    Solo,
-    Team
+    Solo = 0, 
+    Team = 1
 }
 
 [Serializable]
