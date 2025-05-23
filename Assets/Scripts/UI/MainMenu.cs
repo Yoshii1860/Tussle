@@ -92,21 +92,23 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    public async Task SelectCharacter(int characterId)
+    // public async Task SelectCharacter(int characterId)
+    public async Task LaunchGameMode()
     {
         if (isBusy) { return; }
         isBusy = true;
 
-        selectedCharacterId = characterId;
-        characterSelectionPanel.SetActive(false);
+    //    selectedCharacterId = characterId;
 
+        characterSelectionPanel.SetActive(false);
+    /*
         if (selectedCharacterId < 0)
         {
             Debug.LogError("Invalid character ID selected.");
             isBusy = false;
             return;
         }
-
+    */
         try
         {
             if (isHosting)
@@ -124,7 +126,7 @@ public class MainMenu : MonoBehaviour
             }
             else if (isJoiningLobby)
             {
-                PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
+            //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
                 await JoinLobbyWithCharacter(pendingLobby);
                 isJoiningLobby = false;
                 pendingLobby = null;
@@ -166,13 +168,13 @@ public class MainMenu : MonoBehaviour
 
     private async void StartHostWithCharacter()
     {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
+    //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
         await HostSingleton.Instance.GameManager.StartHostAsync();
     }
 
     private async void StartClientWithCharacter()
     {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
+    //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
         await ClientSingleton.Instance.GameManager.StartClientAsync(pendingJoinCode);
     }
 
@@ -217,7 +219,7 @@ public class MainMenu : MonoBehaviour
         }
 
         ClientSingleton.Instance.GameManager.MatchmakeAsync(OnMatchMade);
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
+    //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
         findMatchButtonText.text = "Cancel";
         queueStatusText.text = "Searching...";
         queueTimer = 0f;

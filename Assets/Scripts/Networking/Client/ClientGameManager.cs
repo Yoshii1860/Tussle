@@ -200,6 +200,11 @@ public class ClientGameManager : IDisposable
         await MatchplayMatchmaker.Instance.CancelMatchmaking();
     }
 
+    public void SetCharacterId(int characterId)
+    {
+        userData.characterId = characterId;
+    }
+
     public void Disconnect()
     {
         networkClient.Disconnect();
