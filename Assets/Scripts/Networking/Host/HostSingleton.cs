@@ -17,6 +17,11 @@ public class HostSingleton : MonoBehaviour
                 {
                     GameObject singletonObject = new GameObject(typeof(HostSingleton).Name);
                     instance = singletonObject.AddComponent<HostSingleton>();
+                    Debug.Log("HostSingleton: Created new singleton instance.");
+                }
+                else
+                {
+                    Debug.Log("HostSingleton: Found existing instance in scene.");
                 }
             }
             return instance;
@@ -26,15 +31,18 @@ public class HostSingleton : MonoBehaviour
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
+        Debug.Log("HostSingleton: Marked as DontDestroyOnLoad.");
     }
 
     public void CreateHost()
     {
         GameManager = new HostGameManager();
+        Debug.Log("HostSingleton: Creating HostGameManager.");
     }
 
     private void OnDestroy()
     {
+        Debug.Log("HostSingleton: OnDestroy called, disposing GameManager.");
         GameManager?.Dispose();
     }
 }

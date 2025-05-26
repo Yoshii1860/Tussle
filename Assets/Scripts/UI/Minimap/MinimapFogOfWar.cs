@@ -19,7 +19,8 @@ public class MinimapFogOfWar : MonoBehaviour
 
     private void Awake()
     {
-        if (fogTexture != null) return;
+        if (fogTexture != null) { return; }
+        if (NetworkManager.Singleton.IsServer) { return; }
 
         closeButton.SetActive(false);
 
@@ -43,7 +44,9 @@ public class MinimapFogOfWar : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(WaitForPlayerObject());
+        if (NetworkManager.Singleton.IsServer) { return; }
+        
+        StartCoroutine(UpdateFogOfWar());
     }
 
     public void OpenMap()
@@ -66,7 +69,6 @@ public class MinimapFogOfWar : MonoBehaviour
         }
 
         playerTransform = NetworkManager.Singleton.LocalClient.PlayerObject.transform;
-        StartCoroutine(UpdateFogOfWar());
     }
 
     private IEnumerator UpdateFogOfWar()
@@ -75,7 +77,6 @@ public class MinimapFogOfWar : MonoBehaviour
         {
             if (playerTransform == null)
             {
-                Debug.LogWarning("PlayerTransform is null in UpdateFogOfWar! Waiting for respawn...");
                 yield return StartCoroutine(WaitForPlayerObject());
                 continue;
             }

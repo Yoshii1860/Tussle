@@ -10,11 +10,10 @@ public class Player : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private CinemachineCamera cmCamera;
-    [SerializeField] private GameObject blackScreen;
+    [SerializeField] private GameObject blackscreen;
     [SerializeField] public Animator Animator;
     [SerializeField] public GameObject playerUICanvas;
     [SerializeField] private SpriteRenderer minimapIconRenderer;
-    [SerializeField] private GameObject mapsPrefab;
     [SerializeField] public Texture2D cursorTexture;
     [SerializeField] public Texture2D cursorHoverTexture;
     [SerializeField] public Texture2D cursorClickTexture;
@@ -35,7 +34,7 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        
+
 #if UNITY_SERVER
         if (IsServer)
         {
@@ -53,14 +52,15 @@ public class Player : NetworkBehaviour
                 OnPlayerSpawned?.Invoke(this);
             }
         }
+
+        return;
 #endif
 
         if (IsOwner)
         {
             if (cmCamera == null) Debug.LogError("Player: cmCamera is null");
-            if (blackScreen == null) Debug.LogError("Player: blackScreen is null");
+            if (blackscreen == null) Debug.LogError("Player: blackscreen is null");
             if (minimapIconRenderer == null) Debug.LogError("Player: minimapIconRenderer is null");
-            if (mapsPrefab == null) Debug.LogError("Player: mapsPrefab is null");
             if (cursorTexture == null) Debug.LogError("Player: cursorTexture is null");
 
             cmCamera.Priority = ownerPriority;
@@ -68,20 +68,10 @@ public class Player : NetworkBehaviour
 
             cmCamera.PreviousStateIsValid = false;
 
-            blackScreen.SetActive(true);
-            StartCoroutine(FadeOutBlackscreen());
+            blackscreen.SetActive(true);
+            StartCoroutine(FadeOutblackscreen());
 
             minimapIconRenderer.color = playerIconColor;
-
-            GameObject hud = GameObject.FindWithTag("GameHUD");
-            if (hud != null)
-            {
-                Instantiate(mapsPrefab, hud.transform);
-            }
-            else
-            {
-                Debug.LogError("Player: GameHUD not found in scene");
-            }
 
             if (cursorTexture != null)
             {
@@ -167,30 +157,38 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private IEnumerator FadeOutBlackscreen()
+    private IEnumerator FadeOutblackscreen()
     {
-        yield return new WaitForSeconds(0.5f);
-
-        Image blackScreenImage = blackScreen.GetComponentInChildren<Image>();
-        if (blackScreenImage != null)
+        Image blackscreenImage = blackscreen.GetComponentInChildren<Image>();
+        if (blackscreenImage != null)
         {
-            Color color = blackScreenImage.color;
+            Color color = blackscreenImage.color;
             for (float t = 0; t < fadeDuration; t += Time.deltaTime)
             {
                 color.a = Mathf.Lerp(1, 0, t / fadeDuration);
-                blackScreenImage.color = color;
+                blackscreenImage.color = color;
                 yield return null;
             }
             color.a = 0;
-            blackScreenImage.color = color;
-            blackScreen.SetActive(false);
-            blackScreenImage.color = new Color(color.r, color.g, color.b, 1);
+            blackscreenImage.color = color;
+            blackscreen.SetActive(false);
+            blackscreenImage.color = new Color(color.r, color.g, color.b, 1);
         }
         else
         {
-            Debug.LogError("Player: blackScreenImage is null in FadeOutBlackscreen");
-            blackScreen.SetActive(false);
+            Debug.LogError("Player: blackscreenImage is null in FadeOutblackscreen");
+            blackscreen.SetActive(false);
         }
+    }
+
+    private static GameObject FindChildWithTag(GameObject parent, string tag)
+    {
+        foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
+        {
+            if (child.CompareTag(tag))
+                return child.gameObject;
+        }
+        return null;
     }
 
     public override void OnNetworkDespawn()

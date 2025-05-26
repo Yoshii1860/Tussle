@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using Unity.Collections;
 using System;
+using Unity.Netcode;
 
 public class PlayerNameDisplay : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class PlayerNameDisplay : MonoBehaviour
     
     private void Start()
     {
+        if (!NetworkManager.Singleton.IsClient) { return; }
+
         HandlePlayerNameChanged(string.Empty, player.PlayerName.Value);
         
         player.PlayerName.OnValueChanged += HandlePlayerNameChanged;

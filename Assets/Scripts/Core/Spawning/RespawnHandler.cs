@@ -61,6 +61,8 @@ public class RespawnHandler : NetworkBehaviour
         yield return new WaitForSeconds(respawnTime);
 
         ulong clientId = player.OwnerClientId;
+        if (player == null) { Debug.LogError("RespawnHandler: player is null!"); yield break; }
+        if (player.NetworkObject == null) { Debug.LogError("RespawnHandler: player.NetworkObject is null!"); yield break; }
         player.NetworkObject.Despawn();
 
 #if UNITY_SERVER
@@ -90,10 +92,14 @@ public class RespawnHandler : NetworkBehaviour
         Vector3 spawnPosition = nearestGraveyard != null ? nearestGraveyard.transform.position : Vector3.zero;
 
         Player playerInstance = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity).GetComponent<Player>();
+        if (playerInstance == null) { Debug.LogError("RespawnHandler: Instantiated prefab does not have a Player component!"); yield break; }
+        if (playerInstance.gameObject == null) { Debug.LogError("RespawnHandler: Instantiated player GameObject is null!"); yield break; }
 
         playerInstance.NetworkObject.SpawnAsPlayerObject(clientId);
+        if (playerInstance.Wallet == null) { Debug.LogError("RespawnHandler: playerInstance.Wallet is null!"); }
         playerInstance.Wallet.CoinCount.Value += coinsKept;
 
+        if (Leaderboard.Instance == null) { Debug.LogError("RespawnHandler: Leaderboard.Instance is null!"); }
         Leaderboard.Instance.GetEntityDisplay(playerInstance.OwnerClientId).UpdateDisplayText();
 #endif
     }

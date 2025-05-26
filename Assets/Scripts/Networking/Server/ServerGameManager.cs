@@ -1,9 +1,3 @@
-// --------------------------------------------
-// --------------------------------------------
-// Trying to add dedicated server mode online 
-// --------------------------------------------
-// --------------------------------------------
-
 #if UNITY_SERVER
 using System.Threading.Tasks;
 using UnityEngine;
@@ -35,21 +29,6 @@ public class ServerGameManager : IDisposable
         Debug.Log("ServerGameManager: NetworkServer created");
         isLocalTest = !Application.isBatchMode || serverIP == "127.0.0.1" || serverIP == "172.27.205.68";
         multiplayAllocationService = new MultiplayAllocationService();
-/*
-        var config = NetworkManager.Singleton.NetworkConfig;
-
-        string protocolVersion = config.ProtocolVersion.ToString();
-        ushort tickRate = (ushort)config.TickRate;
-        string networkTransport = config.NetworkTransport?.GetType().Name ?? "None";
-
-        var prefabNames = new System.Text.StringBuilder();
-        foreach (var prefab in config.Prefabs.Prefabs)
-        {
-            prefabNames.AppendLine(prefab.Prefab.name);
-        }
-
-        Debug.Log($"NetworkConfig Server: ProtocolVersion={protocolVersion}, TickRate={tickRate}, NetworkTransport={networkTransport}, Prefabs=[{prefabNames}]");
-*/
     }
 
     public async Task StartGameServerAsync()
@@ -58,11 +37,11 @@ public class ServerGameManager : IDisposable
 
         if (!NetworkServer.OpenConnection(ApplicationData.IP(), serverPort))
         {
-            Debug.LogError("Failed to open connection.");
+            Debug.LogError("ServerGameManager: Failed to open connection.");
             return;
         }
 
-        Debug.Log("ServerGameManager: Loading Game scene on server startup");
+        Debug.Log("ServerGameManager: Loading Game scene...");
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
 
         while (SceneManager.GetActiveScene().name != GameSceneName)
@@ -70,14 +49,13 @@ public class ServerGameManager : IDisposable
             await Task.Delay(100);
         }
 
-        Debug.Log("ServerGameManager: Game scene loaded, waiting for clients");
+        Debug.Log("ServerGameManager: Game scene loaded. Waiting for clients...");
 
         try
         {
             await multiplayAllocationService.BeginServerCheck();
-            Debug.Log("ServerGameManager: Server check started");
+            Debug.Log("ServerGameManager: Server query handler started.");
 
-            // Add a timeout for payload retrieval
             var payloadTask = multiplayAllocationService.SubscribeAndAwaitMatchmakerAllocation();
             if (await Task.WhenAny(payloadTask, Task.Delay(30000)) != payloadTask)
             {
@@ -88,12 +66,10 @@ public class ServerGameManager : IDisposable
             }
 
             MatchmakingResults rawPayload = payloadTask.Result;
-            Debug.Log("ServerGameManager: Multiplay allocation service initialized");
 
             if (rawPayload != null)
             {
-                string payloadJson = JsonConvert.SerializeObject(rawPayload, Formatting.Indented);
-                Debug.Log($"ServerGameManager: Matchmaker payload received JsonConvert: {payloadJson}");
+                Debug.Log("ServerGameManager: Matchmaker payload received. Starting backfill and registering user events.");
                 await StartBackfill(rawPayload);
                 NetworkServer.OnUserJoined += UserJoined;
                 NetworkServer.OnUserLeft += UserLeft;
@@ -107,7 +83,7 @@ public class ServerGameManager : IDisposable
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"Failed to initialize MultiplayAllocationService: {e.Message}. Continuing without Multiplay.");
+            Debug.LogWarning($"ServerGameManager: MultiplayAllocationService initialization failed: {e.Message}. Continuing without Multiplay.");
             multiplayAllocationService?.Dispose();
             multiplayAllocationService = null;
         }
@@ -123,6 +99,7 @@ public class ServerGameManager : IDisposable
         if (matchplayBackfiller.NeedsPlayers())
         {
             await matchplayBackfiller.BeginBackfilling();
+            Debug.Log("ServerGameManager: Backfill started.");
         }
     }
 
@@ -134,6 +111,7 @@ public class ServerGameManager : IDisposable
         if (!matchplayBackfiller.NeedsPlayers() && matchplayBackfiller.IsBackfilling)
         {
             _ = matchplayBackfiller.StopBackfill();
+            Debug.Log("ServerGameManager: Match full, stopped backfill.");
         }
     }
 
@@ -141,25 +119,29 @@ public class ServerGameManager : IDisposable
     {
         int playerCount = await matchplayBackfiller.RemovePlayerFromMatch(user.userAuthId);
         multiplayAllocationService?.RemovePlayer();
+
         if (playerCount <= 0)
         {
-            Debug.Log("ServerGameManager: No players left, closing server.");
+            Debug.Log("ServerGameManager: All players have left. Closing server.");
             CloseServer();
             return;
         }
 
         if (matchplayBackfiller.NeedsPlayers() && !matchplayBackfiller.IsBackfilling)
         {
+            Debug.Log("ServerGameManager: Players needed after user left, restarting backfill.");
             _ = matchplayBackfiller.BeginBackfilling();
         }
     }   
-    
+        
     private async void CloseServer()
     {
         if (matchplayBackfiller != null && matchplayBackfiller.IsBackfilling)
         {
+            Debug.Log("ServerGameManager: Stopping backfill before closing server.");
             await matchplayBackfiller.StopBackfill();
         }
+        Debug.Log("ServerGameManager: Disposing and shutting down application.");
         Dispose();
         Application.Quit();
     }
@@ -172,89 +154,7 @@ public class ServerGameManager : IDisposable
         matchplayBackfiller?.Dispose();
         multiplayAllocationService?.Dispose();
         NetworkServer?.Dispose();
+        Debug.Log("ServerGameManager: Disposed resources.");
     }
 }
 #endif
-
-
-/*
-using System.Threading.Tasks;
-using UnityEngine;
-using Unity.Netcode;
-using Unity.Services.Multiplay;
-using UnityEngine.SceneManagement;
-
-public class ServerGameManager : System.IDisposable
-{
-    private string serverIP;
-    private int serverPort;
-    private int queryPort;
-    private NetworkServer networkServer;
-    private MultiplayAllocationService multiplayAllocationService;
-
-    private const string GameSceneName = "Game";
-
-    private bool isLocalTest = true;
-
-    public ServerGameManager(string serverIP, int serverPort, int queryPort, NetworkManager manager)
-    {
-        this.serverIP = serverIP;
-        this.serverPort = serverPort;
-        this.queryPort = queryPort;
-        networkServer = new NetworkServer(manager);
-        Debug.Log("ServerGameManager: NetworkServer created");
-        isLocalTest = !Application.isBatchMode || serverIP == "127.0.0.1" || serverIP == "172.27.205.68";
-    }
-
-    public async Task StartGameServerAsync()
-    {
-        if (!isLocalTest)
-        {
-            try
-            {
-                multiplayAllocationService = new MultiplayAllocationService();
-                // await multiplayAllocationService.BeginServerCheck();
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning($"Failed to initialize MultiplayAllocationService: {e.Message}. Continuing without Multiplay for local testing.");
-                multiplayAllocationService?.Dispose();
-                multiplayAllocationService = null;
-            }
-        }
-        else
-        {
-            Debug.Log("Local test detected. Skipping MultiplayAllocationService.");
-        }
-
-        if (!networkServer.OpenConnection(ApplicationData.IP(), serverPort))
-        {
-            Debug.LogError("Failed to open connection.");
-            return;
-        }
-
-        Debug.Log("ServerGameManager: Loading Game scene on server startup");
-        NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
-
-        // Wait for the Game scene to load
-        while (SceneManager.GetActiveScene().name != GameSceneName)
-        {
-            await Task.Delay(100);
-        }
-
-        Debug.Log("ServerGameManager: Game scene loaded, waiting for clients");
-        while (NetworkManager.Singleton.ConnectedClients.Count == 0)
-        {
-            await Task.Delay(1000);
-        }
-
-        Debug.Log("ServerGameManager: Client connected, server ready");
-    }
-
-    public void Dispose()
-    {
-        multiplayAllocationService?.Dispose();
-        networkServer?.Dispose();
-    }
-}
-*/

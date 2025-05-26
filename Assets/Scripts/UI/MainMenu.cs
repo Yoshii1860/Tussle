@@ -1,9 +1,3 @@
-// --------------------------------------------
-// --------------------------------------------
-// Trying to add dedicated server mode online 
-// --------------------------------------------
-// --------------------------------------------
-
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Lobbies;
@@ -37,7 +31,7 @@ public class MainMenu : MonoBehaviour
     {
         if (ApplicationData.Mode() == "server")
         {
-            Debug.Log("Dedicated server mode detected in MainMenu. Disabling UI elements.");
+            Debug.Log("MainMenu: Dedicated server mode detected. Disabling UI.");
             gameObject.SetActive(false);
         }
     }
@@ -50,16 +44,12 @@ public class MainMenu : MonoBehaviour
         findMatchButtonText.text = "Find Match";
         queueTimerText.text = string.Empty;
         queueStatusText.text = string.Empty;
-        Debug.Log($"MainMenu Start: selectedCharacterId={selectedCharacterId}, isHosting={isHosting}, " +
-                $"isJoiningLobby={isJoiningLobby}, isFindingMatchViaMatchmaking={isFindingMatchViaMatchmaking}, " +
-                $"pendingJoinCode={pendingJoinCode}, pendingLobby={pendingLobby?.Name ?? "null"}");
     }
 
     private void Update()
     {
         if (isMatchmaking)
         {
-            // Update queue timer or other UI elements related to matchmaking
             queueTimer += Time.deltaTime;
             TimeSpan ts = TimeSpan.FromSeconds(queueTimer);
             queueTimerText.text = string.Format("{0:D2}:{1:D2}", ts.Minutes, ts.Seconds);
@@ -92,23 +82,13 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    // public async Task SelectCharacter(int characterId)
     public async Task LaunchGameMode()
     {
         if (isBusy) { return; }
         isBusy = true;
 
-    //    selectedCharacterId = characterId;
-
         characterSelectionPanel.SetActive(false);
-    /*
-        if (selectedCharacterId < 0)
-        {
-            Debug.LogError("Invalid character ID selected.");
-            isBusy = false;
-            return;
-        }
-    */
+
         try
         {
             if (isHosting)
@@ -118,7 +98,6 @@ public class MainMenu : MonoBehaviour
 
                 while (hostSingleton.GameManager == null)
                 {
-                    Debug.Log("Waiting for GameManager to be created...");
                     await Task.Delay(100);
                 }
 
@@ -126,7 +105,6 @@ public class MainMenu : MonoBehaviour
             }
             else if (isJoiningLobby)
             {
-            //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
                 await JoinLobbyWithCharacter(pendingLobby);
                 isJoiningLobby = false;
                 pendingLobby = null;
@@ -161,20 +139,17 @@ public class MainMenu : MonoBehaviour
         findMatchButtonText.text = "Find Match";
         queueStatusText.text = string.Empty;
         queueTimerText.text = string.Empty;
-        // Ensure the panel stays closed
         characterSelectionPanel.SetActive(false);
         isBusy = false;
     }
 
     private async void StartHostWithCharacter()
     {
-    //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
         await HostSingleton.Instance.GameManager.StartHostAsync();
     }
 
     private async void StartClientWithCharacter()
     {
-    //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
         await ClientSingleton.Instance.GameManager.StartClientAsync(pendingJoinCode);
     }
 
@@ -184,14 +159,14 @@ public class MainMenu : MonoBehaviour
         {
             Lobby joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id);
             string joinCode = joiningLobby.Data["JoinCode"].Value;
-            Debug.Log($"LobbiesList: Join code: {joinCode}");
+            Debug.Log($"MainMenu: Join code received for lobby '{lobby.Name}'.");
 
             await ClientSingleton.Instance.GameManager.StartClientAsync(joinCode);
-            Debug.Log($"LobbiesList: Joined lobby: {lobby.Name}");
+            Debug.Log($"MainMenu: Joined lobby '{lobby.Name}'.");
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to join lobby: {e.Message}");
+            Debug.LogError($"MainMenu: Failed to join lobby '{lobby?.Name ?? "unknown"}': {e.Message}");
         }
     }
 
@@ -199,27 +174,26 @@ public class MainMenu : MonoBehaviour
     {
         if (ClientSingleton.Instance == null)
         {
-            Debug.LogError("ClientSingleton.Instance is null!");
+            Debug.LogError("MainMenu: ClientSingleton.Instance is null!");
             return;
         }
         if (ClientSingleton.Instance.GameManager == null)
         {
-            Debug.LogError("ClientSingleton.Instance.GameManager is null!");
+            Debug.LogError("MainMenu: ClientSingleton.Instance.GameManager is null!");
             return;
         }
         if (findMatchButtonText == null)
         {
-            Debug.LogError("findMatchButtonText is null!");
+            Debug.LogError("MainMenu: findMatchButtonText is null!");
             return;
         }
         if (queueStatusText == null)
         {
-            Debug.LogError("queueStatusText is null!");
+            Debug.LogError("MainMenu: queueStatusText is null!");
             return;
         }
 
         ClientSingleton.Instance.GameManager.MatchmakeAsync(OnMatchMade);
-    //    PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
         findMatchButtonText.text = "Cancel";
         queueStatusText.text = "Searching...";
         queueTimer = 0f;
@@ -231,14 +205,6 @@ public class MainMenu : MonoBehaviour
         characterSelectionPanel.SetActive(false);
         isBusy = false;
     }
-
-    /*
-    private async void StartLocalMatchWithCharacter()
-    {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
-        await ClientSingleton.Instance.GameManager.StartClientLocalAsync("172.27.205.68", 7777);
-    }
-    */
 
     private void OnMatchMade(MatchmakerPollingResult result)
     {
@@ -272,137 +238,3 @@ public class MainMenu : MonoBehaviour
         characterSelectionPanel.SetActive(true);
     }
 }
-
-/*
-using System.Threading.Tasks;
-using TMPro;
-using Unity.Services.Lobbies.Models;
-using UnityEngine;
-
-public class MainMenu : MonoBehaviour
-{
-    [SerializeField] private TMP_InputField joinCodeField;
-    [SerializeField] private GameObject characterSelectionPanel;
-    [SerializeField] private TMP_Text findMatchButtonText;
-    [SerializeField] private TMP_Text queueTimerText;
-    [SerializeField] private TMP_Text queueStatusText;
-    private int selectedCharacterId = -1;
-    private bool isHosting = false;
-    private bool isJoiningLobby = false;
-    private bool isFindingLocalMatch = false;
-    private string pendingJoinCode = "";
-    private Lobby pendingLobby = null;
-
-    private void Awake()
-    {
-        // Disable UI for dedicated server mode
-        if (ApplicationData.Mode() == "server")
-        {
-            Debug.Log("Dedicated server mode detected in MainMenu. Disabling UI elements.");
-            joinCodeField?.gameObject.SetActive(false);
-            characterSelectionPanel?.SetActive(false);
-            findMatchButtonText?.gameObject.SetActive(false);
-            queueTimerText?.gameObject.SetActive(false);
-            queueStatusText?.gameObject.SetActive(false);
-            gameObject.SetActive(false); // Disable the entire MainMenu GameObject
-        }
-    }
-
-    private void Start()
-    {
-        if (ClientSingleton.Instance == null) { return; }
-
-        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-
-        characterSelectionPanel.SetActive(false);
-        findMatchButtonText.text = "Find Match";
-        queueTimerText.text = string.Empty;
-        queueStatusText.text = string.Empty;
-    }
-
-    public void StartHost()
-    {
-        isHosting = true;
-        characterSelectionPanel.SetActive(true);
-    }
-
-    public void StartClient()
-    {
-        isHosting = false;
-        pendingJoinCode = joinCodeField.text;
-        characterSelectionPanel.SetActive(true);
-    }
-
-    public void FindMatch()
-    {
-        isFindingLocalMatch = true;
-        characterSelectionPanel.SetActive(true);
-    }
-
-    public void SelectCharacter(int characterId)
-    {
-        selectedCharacterId = characterId;
-        characterSelectionPanel.SetActive(false);
-
-        if (selectedCharacterId < 0)
-        {
-            Debug.LogError("Invalid character ID selected.");
-            return;
-        }
-
-        if (isHosting)
-        {
-            StartHostWithCharacter();
-        }
-        else
-        {
-            if (isJoiningLobby)
-            {
-                StartLobbyJoinWithCharacter();
-                isJoiningLobby = false;
-            }
-            else if (isFindingLocalMatch)
-            {
-                StartLocalMatchWithCharacter();
-                isFindingLocalMatch = false;
-            }
-            else
-            {
-                StartClientWithCharacter();
-            }
-        }
-    }
-
-    private async void StartHostWithCharacter()
-    {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
-        await HostSingleton.Instance.GameManager.StartHostAsync();
-    }
-
-    private async void StartClientWithCharacter()
-    {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
-        await ClientSingleton.Instance.GameManager.StartClientAsync(pendingJoinCode);
-    }
-
-    private async void StartLobbyJoinWithCharacter()
-    {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
-        await LobbiesList.Instance.JoinLobbyWithCharacter(pendingLobby);
-        pendingLobby = null;
-    }
-
-    private async void StartLocalMatchWithCharacter()
-    {
-        PlayerPrefs.SetInt("SelectedCharacterId", selectedCharacterId);
-        await ClientSingleton.Instance.GameManager.StartClientLocalAsync("172.27.205.68", 7777);
-    }
-
-    public void InitiateLobbyJoin(Lobby lobby)
-    {
-        isJoiningLobby = true;
-        pendingLobby = lobby;
-        characterSelectionPanel.SetActive(true);
-    }
-}
-*/

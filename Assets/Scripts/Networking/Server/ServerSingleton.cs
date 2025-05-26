@@ -17,7 +17,11 @@ public class ServerSingleton : MonoBehaviour
                 instance = FindFirstObjectByType<ServerSingleton>();
                 if (instance == null)
                 {
-                    Debug.LogError("ServerSingleton instance not found in the scene.");
+                    Debug.LogError("ServerSingleton: Instance not found in the scene.");
+                }
+                else
+                {
+                    Debug.Log("ServerSingleton: Found existing instance in scene.");
                 }
             }
             return instance;
@@ -27,23 +31,25 @@ public class ServerSingleton : MonoBehaviour
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
+        Debug.Log("ServerSingleton: Marked as DontDestroyOnLoad.");
     }
 
     public async Task CreateServer()
     {
-        // Remove UnityServices.InitializeAsync() since ApplicationController handles it
+        Debug.Log("ServerSingleton: Creating ServerGameManager...");
         GameManager = new ServerGameManager(
             ApplicationData.IP(),
             ApplicationData.Port(),
             ApplicationData.QPort(),
             NetworkManager.Singleton
         );
-        Debug.Log("ServerSingleton: Server created.");
+        Debug.Log("ServerSingleton: ServerGameManager created.");
         await Task.CompletedTask;
     }
 
     private void OnDestroy()
     {
+        Debug.Log("ServerSingleton: OnDestroy called, disposing ServerGameManager.");
         GameManager?.Dispose();
     }
 }

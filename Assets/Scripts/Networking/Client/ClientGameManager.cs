@@ -1,9 +1,3 @@
-// --------------------------------------------
-// --------------------------------------------
-// Trying to add dedicated server mode online 
-// --------------------------------------------
-// --------------------------------------------
-
 using System;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -28,33 +22,17 @@ public class ClientGameManager : IDisposable
 
     public async Task<bool> InitAsync()
     {
-        Debug.Log("ClientGameManager: Client Game Manager Initialized");
         networkClient = new NetworkClient(NetworkManager.Singleton);
         AuthState authState = await AuthenticationHandler.AuthenticateAsync(5);
         if (authState == AuthState.Authenticated)
         {
-            Debug.Log("ClientGameManager: Client authenticated successfully.");
             userData = new UserData
             {
                 userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
                 userAuthId = AuthenticationService.Instance.PlayerId,
                 characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
             };
-/*
-            var config = NetworkManager.Singleton.NetworkConfig;
-
-            string protocolVersion = config.ProtocolVersion.ToString();
-            ushort tickRate = (ushort)config.TickRate;
-            string networkTransport = config.NetworkTransport?.GetType().Name ?? "None";
-
-            var prefabNames = new System.Text.StringBuilder();
-            foreach (var prefab in config.Prefabs.Prefabs)
-            {
-                prefabNames.AppendLine(prefab.Prefab.name);
-            }
-
-            Debug.Log($"NetworkConfig Client: ProtocolVersion={protocolVersion}, TickRate={tickRate}, NetworkTransport={networkTransport}, Prefabs=[{prefabNames}]");
-*/
+            Debug.Log("ClientGameManager: Authentication succeeded.");
             return true;
         }
         else
@@ -66,7 +44,6 @@ public class ClientGameManager : IDisposable
 
     public void GoToMenu()
     {
-        Debug.Log("ClientGameManager: Transitioning to the main menu...");
         SceneManager.LoadScene(MenuSceneName);
     }
 
@@ -117,17 +94,16 @@ public class ClientGameManager : IDisposable
             connectionTask.SetResult(false);
             return;
         }
-        Debug.Log("ClientGameManager: Client started successfully.");
+        Debug.Log("ClientGameManager: Client started, awaiting connection...");
     }
 
     private void OnClientConnected(ulong clientId)
     {
-        Debug.Log($"ClientGameManager: Client connected with ID: {clientId}");
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
 
         if (NetworkManager.Singleton.IsClient && SceneManager.GetActiveScene().name != GameSceneName)
         {
-            Debug.Log("ClientGameManager: Loading Game scene...");
+            Debug.Log("ClientGameManager: Connected, loading Game scene...");
             SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
         }
         connectionTask?.TrySetResult(true);
@@ -135,8 +111,8 @@ public class ClientGameManager : IDisposable
 
     private void OnClientDisconnected(ulong clientId)
     {
-        Debug.Log($"ClientGameManager: Client disconnected with ID: {clientId}");
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        Debug.Log($"ClientGameManager: Client disconnected with ID: {clientId}");
         connectionTask?.TrySetResult(false);
     }
 
@@ -159,13 +135,13 @@ public class ClientGameManager : IDisposable
 
     public async void MatchmakeAsync(Action<MatchmakerPollingResult> onMatchmakeResponse)
     {
-        Debug.Log("ClientGameManager: Starting matchmake...");
         if (MatchplayMatchmaker.Instance.IsMatchmaking)
         {
-            Debug.Log("ClientGameManager: Already matchmaking, skipping...");
+            Debug.Log("ClientGameManager: Already matchmaking, skipping request.");
             return;
         }
 
+        Debug.Log("ClientGameManager: Starting matchmaking...");
         MatchmakerPollingResult matchResult = await GetMatchAsync();
         onMatchmakeResponse?.Invoke(matchResult);
     }
@@ -192,17 +168,27 @@ public class ClientGameManager : IDisposable
             }
         }
 
+        Debug.LogError($"ClientGameManager: Matchmaking failed with result: {matchmakingResult.resultMessage}");
         return matchmakingResult.result;
     }
 
     public async Task CancelMatchmakingAsync()
     {
+        Debug.Log("ClientGameManager: Cancelling matchmaking...");
         await MatchplayMatchmaker.Instance.CancelMatchmaking();
     }
 
     public void SetCharacterId(int characterId)
     {
-        userData.characterId = characterId;
+        if (userData != null)
+        {
+            userData.characterId = characterId;
+            Debug.Log($"ClientGameManager: Character ID set to {characterId}");
+        }
+        else
+        {
+            Debug.LogError("ClientGameManager: UserData is null, cannot set character ID.");
+        }
     }
 
     public void Disconnect()
@@ -212,11 +198,11 @@ public class ClientGameManager : IDisposable
 
     public void Dispose()
     {
-        Debug.Log("ClientGameManager: Disposing resources.");
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
         connectionTask?.TrySetCanceled();
         networkClient?.Dispose();
+        Debug.Log("ClientGameManager: Disposed.");
     }
 }
 
@@ -229,127 +215,3 @@ public static class TaskExtensions
         return completedTask == task;
     }
 }
-
-/*
-using System;
-using System.Threading.Tasks;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
-using Unity.Networking.Transport.Relay;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
-using Unity.Services.Relay;
-using Unity.Services.Relay.Models;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
-public class ClientGameManager : IDisposable
-{
-    private JoinAllocation allocation;
-
-    private NetworkClient networkClient;
-    private const string MenuSceneName = "MainMenu";
-
-    public async Task<bool> InitAsync()
-    {
-        Debug.Log("ClientGameManager: Client Game Manager Initialized");
-
-        networkClient = new NetworkClient(NetworkManager.Singleton);
-
-        AuthState authState = await AuthenticationHandler.AuthenticateAsync(5);
-
-        if (authState == AuthState.Authenticated)
-        {
-            Debug.Log("ClientGameManager: Client authenticated successfully.");
-            return true;
-        }
-        else
-        {
-            Debug.LogError("ClientGameManager: Client authentication failed.");
-            return false;
-        }
-    }
-
-    public void GoToMenu()
-    {
-        Debug.Log("ClientGameManager: Transitioning to the main menu...");
-        SceneManager.LoadScene(MenuSceneName);
-    }
-
-    public async Task StartClientAsync(string joinCode)
-    {
-        try
-        {
-            allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-            Debug.Log($"ClientGameManager: Successfully joined relay with join code: {joinCode}");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"ClientGameManager: Failed to join relay. Exception: {ex.Message}");
-            return;
-        }
-
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-
-        RelayServerData relayServerData = allocation.ToRelayServerData("dtls");
-        transport.SetRelayServerData(relayServerData);
-
-        UserData userData = new UserData
-        {
-            userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
-            userAuthId = AuthenticationService.Instance.PlayerId,
-            characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
-        };
-
-        string payload = JsonUtility.ToJson(userData);
-        byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
-
-        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
-
-        NetworkManager.Singleton.StartClient();
-        Debug.Log("ClientGameManager: Client started successfully.");
-    }
-
-    public async Task StartClientLocalAsync(string ip, int port)
-    {
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        transport.SetConnectionData(ip, (ushort)port);
-
-        UserData userData = new UserData
-        {
-            userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
-            userAuthId = AuthenticationService.Instance.PlayerId,
-            characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
-        };
-
-        string payload = JsonUtility.ToJson(userData);
-        byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
-
-        NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
-
-        bool success = NetworkManager.Singleton.StartClient();
-        if (success)
-        {
-            Debug.Log($"ClientGameManager: Client started successfully, connecting to {ip}:{port}");
-        }
-        else
-        {
-            Debug.LogError($"ClientGameManager: Failed to start client, connecting to {ip}:{port}");
-        }
-
-        await Task.CompletedTask;
-    }
-
-    public void Disconnect()
-    {
-        networkClient.Disconnect();
-    }
-
-    public void Dispose()
-    {
-        Debug.Log("ClientGameManager: Disposing resources.");
-        networkClient?.Dispose();
-    }
-}
-
-*/

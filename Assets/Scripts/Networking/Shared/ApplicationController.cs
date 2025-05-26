@@ -15,7 +15,6 @@ public class ApplicationController : MonoBehaviour
     private ApplicationData appData;
 #endif
 
-
     private const string GameSceneName = "Game";
 
     private void Awake()
@@ -25,7 +24,6 @@ public class ApplicationController : MonoBehaviour
 
     private async void Start()
     {
-
 #if UNITY_SERVER
         appData = new ApplicationData();
 #endif
@@ -33,11 +31,11 @@ public class ApplicationController : MonoBehaviour
         try
         {
             await UnityServices.InitializeAsync();
-            Debug.Log("Unity Services initialized successfully.");
+            Debug.Log("ApplicationController: Unity Services initialized.");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Failed to initialize Unity Services: {e.Message}");
+            Debug.LogError($"ApplicationController: Failed to initialize Unity Services: {e.Message}");
             return;
         }
 
@@ -46,7 +44,6 @@ public class ApplicationController : MonoBehaviour
 
     private async Task Launch()
     {
-
 #if UNITY_SERVER
         StartCoroutine(LoadGameSceneAsync());
         return;
@@ -56,29 +53,13 @@ public class ApplicationController : MonoBehaviour
         bool authenticated = await clientSingleton.CreateClient();
         if (authenticated)
         {
-            Debug.Log("Client authenticated successfully.");
-            Debug.Log($"ClientSingleton: {clientSingleton}");
+            Debug.Log("ApplicationController: Client authenticated, loading main menu.");
             clientSingleton.GameManager.GoToMenu();
         }
         else
         {
             Debug.LogError("ApplicationController: Client authentication failed.");
         }
-        /*
-        else
-        {
-            ClientSingleton clientSingleton = Instantiate(clientPrefab);
-            bool authenticated = await clientSingleton.CreateClient();
-            if (authenticated)
-            {
-                clientSingleton.GameManager.GoToMenu();
-            }
-            else
-            {
-                Debug.LogError("ApplicationController: Client authentication failed.");
-            }
-        }
-        */
     }
 
 #if UNITY_SERVER
@@ -99,6 +80,8 @@ public class ApplicationController : MonoBehaviour
 
         Task startServerTask = serverSingleton.GameManager.StartGameServerAsync();
         yield return new WaitUntil(() => startServerTask.IsCompleted);
+
+        Debug.Log("ApplicationController: Server started and game scene loaded.");
     }
 #endif
 

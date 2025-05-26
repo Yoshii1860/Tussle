@@ -38,18 +38,18 @@ public class MatchplayBackfiller : IDisposable
     {
         if (IsBackfilling)
         {
-            Debug.LogWarning("Already backfilling, no need to start another.");
+            Debug.LogWarning("MatchplayBackfiller: Already backfilling, skipping duplicate start.");
             return;
         }
 
-        Debug.Log($"Starting backfill Server: {MatchPlayerCount}/{maxPlayers}");
+        Debug.Log($"MatchplayBackfiller: Starting backfill. Players: {MatchPlayerCount}/{maxPlayers}");
 
         try
         {
             if (string.IsNullOrEmpty(localBackfillTicket.Id))
             {
                 localBackfillTicket.Id = await MatchmakerService.Instance.CreateBackfillTicketAsync(createBackfillOptions);
-                Debug.Log($"Backfill ticket created with ID: {localBackfillTicket.Id}");
+                Debug.Log($"MatchplayBackfiller: Backfill ticket created with ID: {localBackfillTicket.Id}");
             }
 
             IsBackfilling = true;
@@ -57,7 +57,7 @@ public class MatchplayBackfiller : IDisposable
         }
         catch (MatchmakerServiceException e)
         {
-            Debug.LogError($"Failed to start backfilling: {e.Message}");
+            Debug.LogError($"MatchplayBackfiller: Failed to start backfilling: {e.Message}");
             IsBackfilling = false;
         }
     }
@@ -66,13 +66,13 @@ public class MatchplayBackfiller : IDisposable
     {
         if (!IsBackfilling)
         {
-            Debug.LogWarning("Can't add users to the backfill ticket before it's been created");
+            Debug.LogWarning("MatchplayBackfiller: Can't add player before backfill has started.");
             return;
         }
 
         if (GetPlayerById(userData.userAuthId) != null)
         {
-            Debug.LogWarning($"User: {userData.userName} - {userData.userAuthId} already in Match. Ignoring add.");
+            Debug.LogWarning($"MatchplayBackfiller: Player {userData.userName} ({userData.userAuthId}) already in match.");
             return;
         }
 
@@ -84,7 +84,7 @@ public class MatchplayBackfiller : IDisposable
         {
             await UpdateBackfillTicket();
         }
-        Debug.Log($"Added player {userData.userAuthId} to backfill ticket. Current players: {MatchPlayerCount}/{maxPlayers}");
+        Debug.Log($"MatchplayBackfiller: Added player {userData.userAuthId}. Players: {MatchPlayerCount}/{maxPlayers}");
     }
 
     private async Task UpdateBackfillTicket()
@@ -92,12 +92,12 @@ public class MatchplayBackfiller : IDisposable
         try
         {
             await MatchmakerService.Instance.UpdateBackfillTicketAsync(localBackfillTicket.Id, localBackfillTicket);
-            Debug.Log($"Backfill ticket {localBackfillTicket.Id} updated. Players: {MatchPlayerCount}/{maxPlayers}");
+            Debug.Log($"MatchplayBackfiller: Backfill ticket {localBackfillTicket.Id} updated. Players: {MatchPlayerCount}/{maxPlayers}");
             localDataDirty = false;
         }
         catch (MatchmakerServiceException e)
         {
-            Debug.LogError($"Failed to update backfill ticket: {e.Message}");
+            Debug.LogError($"MatchplayBackfiller: Failed to update backfill ticket: {e.Message}");
         }
     }
 
@@ -106,14 +106,14 @@ public class MatchplayBackfiller : IDisposable
         Unity.Services.Matchmaker.Models.Player playerToRemove = GetPlayerById(userId);
         if (playerToRemove == null)
         {
-            Debug.LogWarning($"No user by the ID: {userId} in local backfill Data.");
+            Debug.LogWarning($"MatchplayBackfiller: No player with ID {userId} found in match.");
             return MatchPlayerCount;
         }
 
         MatchProperties.Players.Remove(playerToRemove);
         MatchProperties.Teams[0].PlayerIds.Remove(userId);
         localDataDirty = true;
-        Debug.Log($"Removed player {userId} from backfill ticket. Current players: {MatchPlayerCount}/{maxPlayers}");
+        Debug.Log($"MatchplayBackfiller: Removed player {userId}. Players: {MatchPlayerCount}/{maxPlayers}");
 
         if (IsBackfilling)
         {
@@ -137,18 +137,18 @@ public class MatchplayBackfiller : IDisposable
     {
         if (!IsBackfilling)
         {
-            Debug.LogWarning("Can't stop backfilling before we start.");
+            Debug.LogWarning("MatchplayBackfiller: Can't stop backfilling before it has started.");
             return;
         }
 
         try
         {
             await MatchmakerService.Instance.DeleteBackfillTicketAsync(localBackfillTicket.Id);
-            Debug.Log($"Backfill ticket {localBackfillTicket.Id} deleted.");
+            Debug.Log($"MatchplayBackfiller: Backfill ticket {localBackfillTicket.Id} deleted.");
         }
         catch (MatchmakerServiceException e)
         {
-            Debug.LogError($"Failed to stop backfilling: {e.Message}");
+            Debug.LogError($"MatchplayBackfiller: Failed to stop backfilling: {e.Message}");
         }
 
         IsBackfilling = false;
@@ -164,25 +164,28 @@ public class MatchplayBackfiller : IDisposable
                 if (localDataDirty)
                 {
                     await MatchmakerService.Instance.UpdateBackfillTicketAsync(localBackfillTicket.Id, localBackfillTicket);
-                    Debug.Log($"Backfill ticket {localBackfillTicket.Id} updated. Players: {MatchPlayerCount}/{maxPlayers}");
+                    Debug.Log($"MatchplayBackfiller: Backfill ticket {localBackfillTicket.Id} updated. Players: {MatchPlayerCount}/{maxPlayers}");
                     localDataDirty = false;
                 }
                 else
                 {
                     localBackfillTicket = await MatchmakerService.Instance.ApproveBackfillTicketAsync(localBackfillTicket.Id);
-                    Debug.Log($"Backfill ticket {localBackfillTicket.Id} approved. Players: {MatchPlayerCount}/{maxPlayers}");
+                    if (UnityEngine.Time.frameCount % 5 == 0)
+                    {
+                        Debug.Log($"MatchplayBackfiller: Backfill ticket {localBackfillTicket.Id} approved. Players: {MatchPlayerCount}/{maxPlayers}");
+                    }
                 }
 
                 if (!NeedsPlayers())
                 {
-                    Debug.Log($"Backfill ticket {localBackfillTicket.Id} is full. Stopping backfill.");
+                    Debug.Log($"MatchplayBackfiller: Match is full. Stopping backfill.");
                     await StopBackfill();
                     break;
                 }
             }
             catch (MatchmakerServiceException e)
             {
-                Debug.LogError($"Backfill loop error: {e.Message}. Stopping backfill.");
+                Debug.LogError($"MatchplayBackfiller: Backfill loop error: {e.Message}. Stopping backfill.");
                 await StopBackfill();
                 break;
             }
