@@ -5,6 +5,7 @@ using Unity.Netcode;
 using Unity.Services.Multiplay;
 using UnityEngine.SceneManagement;
 using System;
+using System.Collections.Generic;
 using Unity.Services.Matchmaker.Models;
 using Newtonsoft.Json;
 
@@ -17,6 +18,8 @@ public class ServerGameManager : IDisposable
     private MatchplayBackfiller matchplayBackfiller;
     private const string GameSceneName = "Game";
     private bool isLocalTest = true;
+
+    private Dictionary<string, int> teamIdToTeamIndex = new Dictionary<string, int>();
 
     public NetworkServer NetworkServer { get; private set; }
 
@@ -105,7 +108,14 @@ public class ServerGameManager : IDisposable
 
     private void UserJoined(UserData user)
     {
-        matchplayBackfiller.AddPlayerToMatch(user);
+        Team team = matchplayBackfiller.GetTeamByUserId(user.userAuthId);
+        if (!teamIdToTeamIndex.TryGetValue(team.TeamId, out int teamIndex))
+        {
+            teamIndex = teamIdToTeamIndex.Count;
+            teamIdToTeamIndex.Add(team.TeamId, teamIndex);
+        }
+        user.teamIndex = teamIndex;
+
         multiplayAllocationService?.AddPlayer();
 
         if (!matchplayBackfiller.NeedsPlayers() && matchplayBackfiller.IsBackfilling)

@@ -1,11 +1,13 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.EventSystems;
+using Unity.Services.Matchmaker.Models;
 
 
 
 public class Knight : Character
 {
+    [Header("References")]
     [SerializeField] private Collider2D swordCollider;
 
     public override void OnNetworkSpawn()

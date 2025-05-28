@@ -61,31 +61,33 @@ public class MatchplayBackfiller : IDisposable
             IsBackfilling = false;
         }
     }
-
-    public async Task AddPlayerToMatch(UserData userData)
-    {
-        if (!IsBackfilling)
+    /*
+        public async Task AddPlayerToMatch(UserData userData)
         {
-            Debug.LogWarning("MatchplayBackfiller: Can't add player before backfill has started.");
-            return;
-        }
+            if (!IsBackfilling)
+            {
+                Debug.LogWarning("MatchplayBackfiller: Can't add player before backfill has started.");
+                return;
+            }
 
-        if (GetPlayerById(userData.userAuthId) != null)
-        {
-            Debug.LogWarning($"MatchplayBackfiller: Player {userData.userName} ({userData.userAuthId}) already in match.");
-            return;
-        }
+            if (GetPlayerById(userData.userAuthId) != null)
+            {
+                Debug.LogWarning($"MatchplayBackfiller: Player {userData.userName} ({userData.userAuthId}) already in match.");
+                return;
+            }
 
-        Unity.Services.Matchmaker.Models.Player matchmakerPlayer = new Unity.Services.Matchmaker.Models.Player(userData.userAuthId, userData.userGamePreferences);
-        MatchProperties.Players.Add(matchmakerPlayer);
-        MatchProperties.Teams[0].PlayerIds.Add(matchmakerPlayer.Id);
-        localDataDirty = true;
-        if (IsBackfilling)
-        {
-            await UpdateBackfillTicket();
+            Unity.Services.Matchmaker.Models.Player matchmakerPlayer = new Unity.Services.Matchmaker.Models.Player(userData.userAuthId, userData.userGamePreferences);
+            MatchProperties.Players.Add(matchmakerPlayer);
+            GetTeamByUserId(userData.userAuthId)?.PlayerIds.Add(matchmakerPlayer.Id);
+            MatchProperties.Teams[0].PlayerIds.Add(matchmakerPlayer.Id);
+            localDataDirty = true;
+            if (IsBackfilling)
+            {
+                await UpdateBackfillTicket();
+            }
+            Debug.Log($"MatchplayBackfiller: Added player {userData.userAuthId}. Players: {MatchPlayerCount}/{maxPlayers}");
         }
-        Debug.Log($"MatchplayBackfiller: Added player {userData.userAuthId}. Players: {MatchPlayerCount}/{maxPlayers}");
-    }
+    */
 
     private async Task UpdateBackfillTicket()
     {
@@ -111,8 +113,9 @@ public class MatchplayBackfiller : IDisposable
         }
 
         MatchProperties.Players.Remove(playerToRemove);
-        MatchProperties.Teams[0].PlayerIds.Remove(userId);
+        GetTeamByUserId(userId)?.PlayerIds.Remove(userId);
         localDataDirty = true;
+        
         Debug.Log($"MatchplayBackfiller: Removed player {userId}. Players: {MatchPlayerCount}/{maxPlayers}");
 
         if (IsBackfilling)
@@ -131,6 +134,11 @@ public class MatchplayBackfiller : IDisposable
     private Unity.Services.Matchmaker.Models.Player GetPlayerById(string userId)
     {
         return MatchProperties.Players.FirstOrDefault(p => p.Id == userId);
+    }
+
+    public Team GetTeamByUserId(string userId)
+    {
+        return MatchProperties.Teams.FirstOrDefault(t => t.PlayerIds.Contains(userId));
     }
 
     public async Task StopBackfill()

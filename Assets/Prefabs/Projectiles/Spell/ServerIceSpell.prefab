@@ -77,4 +77,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8348760a509f07b4381f61ca13fab431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamIndexStorage: {fileID: 8895618261086822915}
   DamageAmount: 15
+--- !u!114 &8895618261086822915 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4988728157717249114, guid: 3f2f8dab7bae7554997cd19fd1ec64d0, type: 3}
+  m_PrefabInstance: {fileID: 4487855164513279577}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2712701700556377562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67857b6435c1c184a873b82d553b0127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

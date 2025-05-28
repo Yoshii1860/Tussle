@@ -19,8 +19,12 @@ public class MinimapFogOfWar : MonoBehaviour
 
     private void Awake()
     {
+
+#if UNITY_SERVER
+        return;
+#endif
+
         if (fogTexture != null) { return; }
-        if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsHost) { return; }
 
         closeButton.SetActive(false);
 

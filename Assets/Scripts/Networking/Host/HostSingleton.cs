@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 public class HostSingleton : MonoBehaviour
 {
     public HostGameManager GameManager { get; private set; }
+    public bool IsPrivateServer => GameManager?.IsPrivateServer ?? false;
     
     private static HostSingleton instance;
     public static HostSingleton Instance

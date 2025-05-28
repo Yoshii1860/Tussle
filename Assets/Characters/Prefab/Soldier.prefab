@@ -197,6 +197,7 @@ GameObject:
   - component: {fileID: 8683981576003365490}
   - component: {fileID: -7813223771516880732}
   - component: {fileID: 2128758605507291033}
+  - component: {fileID: 5036225379138341409}
   m_Layer: 7
   m_Name: Soldier
   m_TagString: Untagged
@@ -524,6 +525,8 @@ MonoBehaviour:
         byte0027: 0
         byte0028: 0
         byte0029: 0
+  TeamIndex:
+    m_InternalValue: 0
 --- !u!114 &2693875559944994851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -578,6 +581,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1079095720474880309}
+--- !u!114 &5036225379138341409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011742669328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b29a1ee8a5151e478af369cdcd09d64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamColorLookup: {fileID: 11400000, guid: 849195e9385d38140ac09f8b58180b9d, type: 2}
+  player: {fileID: 1079095720474880309}
+  flag: {fileID: 8690169432977099759}
 --- !u!1 &1000011811995576
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,6 +901,7 @@ GameObject:
   - component: {fileID: 4000010002636958}
   - component: {fileID: 212000010385311698}
   - component: {fileID: 4855173283273120288}
+  - component: {fileID: 4493615235073148515}
   - component: {fileID: 2129638736805074007}
   m_Layer: 9
   m_Name: Weapon
@@ -1007,6 +1026,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.38, y: 1.08}
   m_EdgeRadius: 0
+--- !u!114 &4493615235073148515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013493548132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67857b6435c1c184a873b82d553b0127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2129638736805074007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1019,6 +1050,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd3c29db2a4ad540a101138a26fe830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1079095720474880309}
+  teamIndexStorage: {fileID: 4493615235073148515}
   damageAmount: 14
   damageCooldown: 0.2
 --- !u!1 &1000013921729792
@@ -1821,6 +1854,81 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &8690169432977099759
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6024983735888102532}
+  - component: {fileID: 1029632400120123043}
+  - component: {fileID: 5301872989048462646}
+  m_Layer: 0
+  m_Name: TeamFlag
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6024983735888102532
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8690169432977099759}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 635845542283180369}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.75, y: 0}
+  m_SizeDelta: {x: 0.4, y: 0.4}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1029632400120123043
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8690169432977099759}
+  m_CullTransparentMesh: 1
+--- !u!114 &5301872989048462646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8690169432977099759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 50fa052892579f04fa644752a0835d4a, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: fba593518304b2a408ad1ac9ee2fb15b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &9008956664844659938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1941,6 +2049,7 @@ RectTransform:
   - {fileID: 3477953713687085888}
   - {fileID: 2124468282471780564}
   - {fileID: 5281483013800891636}
+  - {fileID: 6024983735888102532}
   m_Father: {fileID: 4000013857073264}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

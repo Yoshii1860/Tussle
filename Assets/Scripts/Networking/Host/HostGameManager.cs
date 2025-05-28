@@ -21,6 +21,7 @@ public class HostGameManager : IDisposable
     private string joinCode;
     private string lobbyId;
     public NetworkServer NetworkServer { get; private set; }
+    public bool IsPrivateServer { get; private set; }
 
     private CancellationTokenSource heartbeatCancellationTokenSource;
 
@@ -28,8 +29,10 @@ public class HostGameManager : IDisposable
     private const string GameSceneName = "Game";
     private const string MenuSceneName = "MainMenu";
 
-    public async Task StartHostAsync()
+    public async Task StartHostAsync(bool isPrivateServer)
     {
+        IsPrivateServer = isPrivateServer;
+        
         try
         {
             allocation = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
@@ -59,7 +62,7 @@ public class HostGameManager : IDisposable
         {
             CreateLobbyOptions lobbyOptions = new CreateLobbyOptions
             {
-                IsPrivate = false,
+                IsPrivate = isPrivateServer,
                 Data = new Dictionary<string, DataObject>
                 {
                     { "JoinCode", new DataObject(DataObject.VisibilityOptions.Public, joinCode) }
@@ -99,6 +102,16 @@ public class HostGameManager : IDisposable
         NetworkServer.OnClientLeft += HandleClientLeft;
 
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+    }
+
+    public string GetJoinCode()
+    {
+        if (string.IsNullOrEmpty(joinCode))
+        {
+            Debug.LogWarning("HostGameManager: Join code is not available.");
+            return string.Empty;
+        }
+        return joinCode;
     }
 
     private async Task HeartbeatLobbyAsync(float waitTimeSeconds, CancellationToken cancellationToken)

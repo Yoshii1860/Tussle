@@ -7,11 +7,17 @@ public class GameHUD : MonoBehaviour
 {
     [SerializeField] private GameObject blackscreen;
     [SerializeField] private GameObject minimap;
+    [SerializeField] private TMP_Text joinCodeText;
+
+    private const string JoinCodePrefix = "Code: ";
 
     private void Awake()
     {
-        if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsHost) { return; }
-        
+
+#if UNITY_SERVER
+        return;
+#endif
+
         blackscreen.SetActive(true);
 
         if (minimap != null)
@@ -19,7 +25,18 @@ public class GameHUD : MonoBehaviour
             minimap = Instantiate(minimap, transform.GetChild(0));
             Debug.Log("Minimap instantiated");
         }
-        
+
+        var hostSingleton = FindFirstObjectByType<HostSingleton>();
+        if (hostSingleton != null && joinCodeText != null)
+        {
+            if (hostSingleton.IsPrivateServer)
+            {
+                string joinCode = hostSingleton.GameManager.GetJoinCode();
+                joinCodeText.text = JoinCodePrefix + joinCode;
+                Debug.Log($"Join code set: {joinCodeText.text}");
+            }
+        }
+
         StartCoroutine(HideBlackscreen(1f));
     }
 

@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 637394058874717889}
   - component: {fileID: 2706338575927254966}
   - component: {fileID: 77289972735502502}
+  - component: {fileID: 6840524330837880523}
   m_Layer: 7
   m_Name: Knight
   m_TagString: Untagged
@@ -350,6 +351,8 @@ MonoBehaviour:
         byte0027: 0
         byte0028: 0
         byte0029: 0
+  TeamIndex:
+    m_InternalValue: 0
 --- !u!114 &4199916956153579189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,6 +407,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1634913196936000}
+--- !u!114 &6840524330837880523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010755293042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b29a1ee8a5151e478af369cdcd09d64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamColorLookup: {fileID: 11400000, guid: 849195e9385d38140ac09f8b58180b9d, type: 2}
+  player: {fileID: 1634913196936000}
+  flag: {fileID: 5065414870905491004}
 --- !u!1 &1000011164445256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1058,6 +1076,7 @@ GameObject:
   - component: {fileID: 4000010764503930}
   - component: {fileID: 212000010006319442}
   - component: {fileID: 7073256852361891533}
+  - component: {fileID: 2535737938866354302}
   - component: {fileID: 4377455349065618666}
   m_Layer: 9
   m_Name: sword
@@ -1182,6 +1201,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.38, y: 1.08}
   m_EdgeRadius: 0
+--- !u!114 &2535737938866354302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013729023846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67857b6435c1c184a873b82d553b0127, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4377455349065618666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1194,6 +1225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd3c29db2a4ad540a101138a26fe830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1634913196936000}
+  teamIndexStorage: {fileID: 2535737938866354302}
   damageAmount: 12
   damageCooldown: 0.3
 --- !u!1 &388040998049709129
@@ -1229,6 +1262,7 @@ RectTransform:
   - {fileID: 5454771742352695852}
   - {fileID: 9098646563233456584}
   - {fileID: 8051808884934390969}
+  - {fileID: 8331257133026894449}
   m_Father: {fileID: 4000011028196368}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1788,6 +1822,81 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1.8}
   m_EdgeRadius: 0
+--- !u!1 &5065414870905491004
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8331257133026894449}
+  - component: {fileID: 2552440145852256501}
+  - component: {fileID: 932259282195838309}
+  m_Layer: 0
+  m_Name: TeamFlag
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8331257133026894449
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5065414870905491004}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4556458079687472687}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.75, y: 0}
+  m_SizeDelta: {x: 0.4, y: 0.4}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2552440145852256501
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5065414870905491004}
+  m_CullTransparentMesh: 1
+--- !u!114 &932259282195838309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5065414870905491004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 50fa052892579f04fa644752a0835d4a, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: fba593518304b2a408ad1ac9ee2fb15b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7937252646329091184
 GameObject:
   m_ObjectHideFlags: 0

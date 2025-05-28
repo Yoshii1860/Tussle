@@ -60,8 +60,8 @@ public class RespawnHandler : NetworkBehaviour
     {
         yield return new WaitForSeconds(respawnTime);
 
-        ulong clientId = player.OwnerClientId;
         if (player == null) { Debug.LogError("RespawnHandler: player is null!"); yield break; }
+        ulong clientId = player.OwnerClientId;
         if (player.NetworkObject == null) { Debug.LogError("RespawnHandler: player.NetworkObject is null!"); yield break; }
         player.NetworkObject.Despawn();
 
@@ -80,7 +80,7 @@ public class RespawnHandler : NetworkBehaviour
                 charId = 0; // Default to Knight
             }
 
-            
+
             GameObject prefabToSpawn = PrefabManager.Instance.GetPrefabByCharacterId(charId);
             if (prefabToSpawn == null)
             {
@@ -100,7 +100,15 @@ public class RespawnHandler : NetworkBehaviour
             playerInstance.Wallet.CoinCount.Value += coinsKept;
 
             if (Leaderboard.Instance == null) { Debug.LogError("RespawnHandler: Leaderboard.Instance is null!"); }
-            Leaderboard.Instance.GetEntityDisplay(playerInstance.OwnerClientId).UpdateDisplayText();
+            var entityDisplay = Leaderboard.Instance?.GetEntityDisplay(playerInstance.OwnerClientId);
+            if (entityDisplay != null)
+            {
+                entityDisplay.UpdateDisplayText();
+            }
+            else
+            {
+                Debug.LogWarning($"RespawnHandler: No LeaderboardEntityDisplay found for client {clientId}. Cannot update display text.");
+            }
         }
     }
 }

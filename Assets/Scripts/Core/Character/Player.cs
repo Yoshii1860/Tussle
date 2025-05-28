@@ -28,7 +28,7 @@ public class Player : NetworkBehaviour
     [SerializeField] private Color playerIconColor = Color.orange;
 
     public NetworkVariable<FixedString32Bytes> PlayerName = new NetworkVariable<FixedString32Bytes>(new FixedString32Bytes("Player"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
+    public NetworkVariable<int> TeamIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
 
@@ -37,19 +37,22 @@ public class Player : NetworkBehaviour
 
     if (IsServer)
         {
-            Debug.Log($"Player: OnNetworkSpawn [IsServer] - true - [IsHost] - {IsHost}");
-            UserData userData = null;
             if (IsHost)
             {
+                UserData userData = null;
                 userData = HostSingleton.Instance.GameManager.NetworkServer.TryGetUserData(OwnerClientId);
                 PlayerName.Value = userData.userName;
+                TeamIndex.Value = userData.teamIndex;
                 OnPlayerSpawned?.Invoke(this);
             }
+
 #if UNITY_SERVER
             else
             {
+                UserData userData = null;
                 userData = ServerSingleton.Instance.GameManager.NetworkServer.TryGetUserData(OwnerClientId);
                 PlayerName.Value = userData.userName;
+                TeamIndex.Value = userData.teamIndex;
                 OnPlayerSpawned?.Invoke(this);
             }
             return;

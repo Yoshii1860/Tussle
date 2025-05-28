@@ -170,6 +170,8 @@ public class Leaderboard : NetworkBehaviour
     {
         Debug.Log($"Leaderboard: HandleLeaderboardEntitiesChanged called. Type={changeEvent.Type}, ClientId={changeEvent.Value.ClientId}");
 
+        if (!gameObject.scene.isLoaded) { return; }
+
         switch (changeEvent.Type)
         {
             case NetworkListEvent<LeaderboardEntityState>.EventType.Add:

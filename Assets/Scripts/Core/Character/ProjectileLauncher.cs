@@ -2,11 +2,13 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 
 public class ProjectileLauncher : NetworkBehaviour
 {
     [Header("References")]
+    [SerializeField] private Player player;
     [SerializeField] private Transform projectileSpawnPoint;
     [SerializeField] private GameObject serverProjectilePrefab;
     [SerializeField] private GameObject clientProjectilePrefab;
@@ -18,6 +20,7 @@ public class ProjectileLauncher : NetworkBehaviour
 
     private bool shouldFire = false;
     private Character character;
+    private bool isPointerOverUI = false;
 
     private int damageOnStart;
 
@@ -38,6 +41,8 @@ public class ProjectileLauncher : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner) { return; }
+
+        isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
 
         if (!shouldFire) { return; }
 
@@ -100,6 +105,8 @@ public class ProjectileLauncher : NetworkBehaviour
 
     public void HandleSecondaryAttack(bool shouldFire)
     {
+        if (isPointerOverUI) { return; }
+
         this.shouldFire = shouldFire;
     }
 
@@ -114,6 +121,11 @@ public class ProjectileLauncher : NetworkBehaviour
         projectileInstance.transform.up = direction;
         Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
 
+        if (projectileInstance.TryGetComponent<TeamIndexStorage>(out TeamIndexStorage teamIndexStorage))
+        {
+            teamIndexStorage.Initialize(player.TeamIndex.Value);
+        }
+
         if (projectileInstance.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact damageComponent))
         {
             damageComponent.SetOwner(OwnerClientId);
@@ -124,16 +136,16 @@ public class ProjectileLauncher : NetworkBehaviour
             rb.linearVelocity = rb.transform.up * projectileSpeed;
         }
 
-        SecondaryFireClientRPC(spawnPos, direction);
+        SecondaryFireClientRPC(spawnPos, direction, player.TeamIndex.Value);
     }
 
     [ClientRpc]
-    private void SecondaryFireClientRPC(Vector2 spawnPos, Vector2 direction)
+    private void SecondaryFireClientRPC(Vector2 spawnPos, Vector2 direction, int teamIndex)
     {
-        SpawnDummyProjectile(spawnPos, direction);
+        SpawnDummyProjectile(spawnPos, direction, teamIndex);
     }
 
-    private void SpawnDummyProjectile(Vector2 spawnPos, Vector2 direction)
+    private void SpawnDummyProjectile(Vector2 spawnPos, Vector2 direction, int teamIndex)
     {
         GameObject projectileInstance = Instantiate(
             clientProjectilePrefab, 
@@ -143,7 +155,12 @@ public class ProjectileLauncher : NetworkBehaviour
         projectileInstance.transform.up = direction;
         Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
 
-        if(projectileInstance.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
+        if (projectileInstance.TryGetComponent<TeamIndexStorage>(out TeamIndexStorage teamIndexStorage))
+        {
+            teamIndexStorage.Initialize(teamIndex);
+        }
+
+        if (projectileInstance.TryGetComponent<Rigidbody2D>(out Rigidbody2D rb))
         {
             rb.linearVelocity = rb.transform.up * projectileSpeed;
         }

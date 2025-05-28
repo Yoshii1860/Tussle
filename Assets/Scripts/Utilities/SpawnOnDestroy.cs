@@ -6,13 +6,9 @@ public class SpawnOnDestroy : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (prefab != null)
+        if (prefab != null && gameObject.scene.isLoaded)
         {
             Instantiate(prefab, transform.position, Quaternion.identity);
-        }
-        else
-        {
-            Debug.LogWarning("Prefab to spawn is not assigned!", this);
         }
     }
 }

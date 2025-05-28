@@ -133,7 +133,7 @@ public class ClientGameManager : IDisposable
         await Task.CompletedTask;
     }
 
-    public async void MatchmakeAsync(Action<MatchmakerPollingResult> onMatchmakeResponse)
+    public async void MatchmakeAsync(bool isTeamQueue, Action<MatchmakerPollingResult> onMatchmakeResponse)
     {
         if (MatchplayMatchmaker.Instance.IsMatchmaking)
         {
@@ -141,6 +141,7 @@ public class ClientGameManager : IDisposable
             return;
         }
 
+        userData.userGamePreferences.gameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
         Debug.Log("ClientGameManager: Starting matchmaking...");
         MatchmakerPollingResult matchResult = await GetMatchAsync();
         onMatchmakeResponse?.Invoke(matchResult);

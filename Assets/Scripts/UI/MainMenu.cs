@@ -12,6 +12,8 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] private TMP_InputField joinCodeField;
     [SerializeField] private GameObject characterSelectionPanel;
+    [SerializeField] private GameObject modeSelectionPanel;
+    [SerializeField] private GameObject localHostSettingsSelectionPanel;
     [SerializeField] private TMP_Text findMatchButtonText;
     [SerializeField] private TMP_Text queueTimerText;
     [SerializeField] private TMP_Text queueStatusText;
@@ -19,6 +21,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private ClientSingleton clientPrefab;
     [SerializeField] private GameObject playerSpawnerPrefab;
 
+    private int selectedCharacterId = -1;
     private bool isHosting = false;
     private bool isJoiningLobby = false;
     private bool isFindingMatchViaMatchmaking = false;
@@ -29,6 +32,8 @@ public class MainMenu : MonoBehaviour
     private Lobby pendingLobby = null;
     private float queueTimer = 0f;
     private PlayerSpawner playerSpawner;
+    private bool isTeamMatch = false;
+    private bool isPrivateLocalServer = false;
 
     private async void Awake()
     {
@@ -95,7 +100,14 @@ public class MainMenu : MonoBehaviour
 
     public void StartHost()
     {
+        localHostSettingsSelectionPanel.SetActive(true);
+    }
+
+    public void SetLocalHostSettings(bool isPrivate)
+    {
         isHosting = true;
+        isPrivateLocalServer = isPrivate;
+        localHostSettingsSelectionPanel.SetActive(false);
         characterSelectionPanel.SetActive(true);
     }
 
@@ -114,9 +126,16 @@ public class MainMenu : MonoBehaviour
         }
         else if (!isBusy)
         {
-            isFindingMatchViaMatchmaking = true;
-            characterSelectionPanel.SetActive(true);
+            modeSelectionPanel.SetActive(true);
         }
+    }
+
+    public void SetMode(bool isTeam)
+    {
+        isTeamMatch = isTeam;
+        isFindingMatchViaMatchmaking = true;
+        modeSelectionPanel.SetActive(false);
+        characterSelectionPanel.SetActive(true);
     }
 
     public async Task LaunchGameMode()
@@ -196,7 +215,7 @@ public class MainMenu : MonoBehaviour
 
     private async void StartHostWithCharacter()
     {
-        await HostSingleton.Instance.GameManager.StartHostAsync();
+        await HostSingleton.Instance.GameManager.StartHostAsync(isPrivateLocalServer);
     }
 
     private async void StartClientWithCharacter()
@@ -244,7 +263,7 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        ClientSingleton.Instance.GameManager.MatchmakeAsync(OnMatchMade);
+        ClientSingleton.Instance.GameManager.MatchmakeAsync(isTeamMatch, OnMatchMade);
         findMatchButtonText.text = "Cancel";
         queueStatusText.text = "Searching...";
         queueTimer = 0f;
@@ -254,6 +273,21 @@ public class MainMenu : MonoBehaviour
     public void CloseCharacterSelectionPanel()
     {
         characterSelectionPanel.SetActive(false);
+        isBusy = false;
+        isFindingMatchViaMatchmaking = false;
+        isHosting = false;
+        isJoiningLobby = false;
+    }
+
+    public void CloseModeSelectionPanel()
+    {
+        modeSelectionPanel.SetActive(false);
+        isBusy = false;
+    }
+
+    public void CloseLocalHostSettingsSelectionPanel()
+    {
+        localHostSettingsSelectionPanel.SetActive(false);
         isBusy = false;
     }
 
