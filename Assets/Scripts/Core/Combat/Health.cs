@@ -68,6 +68,12 @@ public class Health : NetworkBehaviour
     {
         if (isDead) { return; }
 
+        if (!IsServer)
+        {
+            Debug.LogWarning("Health: ModifyHealth called on client, but should only be called on server.");
+            return;
+        }
+
         Debug.Log($"Health: Modifying health by {value}. Current health: {CurrentHealth.Value}, Max health: {MaxHealth}");
         int newHealth = CurrentHealth.Value + (int)(value * protectionPercentage);
         CurrentHealth.Value = Mathf.Clamp(newHealth, 0, MaxHealth);
@@ -84,6 +90,12 @@ public class Health : NetworkBehaviour
 
     private void UpdateKillsOnCounter(ulong lastAttackerClientId)
     {
+        if (!IsServer)
+        {
+            Debug.LogWarning("Health: UpdateKillsOnCounter called on client, but should only be called on server.");
+            return;
+        }
+
         Debug.Log($"Health: Updating kills on counter for attacker: {lastAttackerClientId}");
         if (lastAttackerClientId != default &&
             NetworkManager.Singleton.ConnectedClients.TryGetValue(lastAttackerClientId, out Unity.Netcode.NetworkClient client))
@@ -96,7 +108,16 @@ public class Health : NetworkBehaviour
                 Debug.Log($"Health: Incrementing kill counter for attacker: {attackerNetworkObject.name}");
                 attackerKillCounter.AddKill();
             }
-
+        }
+        else if (lastAttackerClientId == NetworkManager.Singleton.LocalClientId)
+        {
+            NetworkObject attackerNetworkObject = NetworkManager.Singleton.LocalClient.PlayerObject;
+            if (attackerNetworkObject != null &&
+                attackerNetworkObject.TryGetComponent<KillCounter>(out KillCounter attackerKillCounter))
+            {
+                Debug.Log($"Health: Incrementing kill counter for local player: {attackerNetworkObject.name}");
+                attackerKillCounter.AddKill();
+            }
         }
     }
 

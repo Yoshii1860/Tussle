@@ -35,9 +35,9 @@ public class Player : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
 
-#if UNITY_SERVER
-        if (IsServer)
+    if (IsServer)
         {
+            Debug.Log($"Player: OnNetworkSpawn [IsServer] - true - [IsHost] - {IsHost}");
             UserData userData = null;
             if (IsHost)
             {
@@ -45,16 +45,16 @@ public class Player : NetworkBehaviour
                 PlayerName.Value = userData.userName;
                 OnPlayerSpawned?.Invoke(this);
             }
+#if UNITY_SERVER
             else
             {
                 userData = ServerSingleton.Instance.GameManager.NetworkServer.TryGetUserData(OwnerClientId);
                 PlayerName.Value = userData.userName;
                 OnPlayerSpawned?.Invoke(this);
             }
-        }
-
-        return;
+            return;
 #endif
+        }
 
         if (IsOwner)
         {
@@ -103,36 +103,28 @@ public class Player : NetworkBehaviour
     {
         if (IsServer)
         {
-            SetInvisibilityClientRpc(duration);
+            SetInvisibilityClientRpc();
+            StartCoroutine(ResetInvisibilityAfterDelay(duration));
         }
     }
 
-    [ClientRpc]
-    private void SetInvisibilityClientRpc(float duration)
+    private IEnumerator ResetInvisibilityAfterDelay(float duration)
     {
-        if (IsOwner)
+        yield return new WaitForSeconds(duration);
+        ResetInvisibilityClientRpc();
+    }
+
+    [ClientRpc]
+    private void SetInvisibilityClientRpc()
+    {
+        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
         {
-            foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
-            {
-                sr.enabled = false;
-            }
-            Invoke(nameof(ResetInvisibility), duration);
-        }
-        else
-        {
-            foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
-            {
-                sr.enabled = false;
-            }
-            if (playerUICanvas != null)
-            {
-                playerUICanvas.SetActive(false);
-            }
+            sr.enabled = false;
         }
 
-        if (IsServer)
+        if (!IsOwner && playerUICanvas != null)
         {
-            Invoke(nameof(ResetInvisibilityClientRpc), duration);
+            playerUICanvas.SetActive(false);
         }
     }
 
@@ -149,13 +141,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    private void ResetInvisibility()
-    {
-        foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
-        {
-            sr.enabled = true;
-        }
-    }
 
     private IEnumerator FadeOutblackscreen()
     {

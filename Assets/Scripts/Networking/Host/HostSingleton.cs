@@ -43,6 +43,11 @@ public class HostSingleton : MonoBehaviour
     private void OnDestroy()
     {
         Debug.Log("HostSingleton: OnDestroy called, disposing GameManager.");
+        if (Instance == this)
+        {
+            instance = null; // Clear the instance reference
+            Debug.Log("HostSingleton: Instance cleared on destroy.");
+        }
         GameManager?.Dispose();
     }
 }

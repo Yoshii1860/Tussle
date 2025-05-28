@@ -4672,6 +4672,8 @@ MonoBehaviour:
   queueTimerText: {fileID: 936554010}
   queueStatusText: {fileID: 839419221}
   hostPrefab: {fileID: 4260812050479699189, guid: 1aa8792b6b2640042892a1fc4a0ed267, type: 3}
+  clientPrefab: {fileID: 4073163793395593093, guid: 2f0ce1918f929e14fbcc73f8142099de, type: 3}
+  playerSpawnerPrefab: {fileID: 1590144062217832550, guid: 3dc5fa27ec3e21d44ab5f590768d3348, type: 3}
 --- !u!1 &2145342512
 GameObject:
   m_ObjectHideFlags: 0

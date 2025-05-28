@@ -168,7 +168,7 @@ public class ClientGameManager : IDisposable
             }
         }
 
-        Debug.LogError($"ClientGameManager: Matchmaking failed with result: {matchmakingResult.resultMessage}");
+        Debug.LogWarning($"ClientGameManager: Matchmaking failed with result: {matchmakingResult.resultMessage}");
         return matchmakingResult.result;
     }
 

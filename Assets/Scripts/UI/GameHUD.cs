@@ -10,7 +10,7 @@ public class GameHUD : MonoBehaviour
 
     private void Awake()
     {
-        if (NetworkManager.Singleton.IsServer) { return; }
+        if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsHost) { return; }
         
         blackscreen.SetActive(true);
 
@@ -34,7 +34,9 @@ public class GameHUD : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsHost)
         {
+            Debug.Log("GameHUD: Leaving game as Host. Shutting down the server.");
             HostSingleton.Instance.GameManager.Shutdown();
+            return;
         }
 
         ClientSingleton.Instance.GameManager.Disconnect();

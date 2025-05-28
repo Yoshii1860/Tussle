@@ -11,15 +11,15 @@ public class KillCounter : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-
-#if UNITY_SERVER
-        if (killsCache.TryGetValue(NetworkObject.OwnerClientId, out int cachedKills))
+        if (IsServer)
         {
-            kills.Value = cachedKills;
-            Debug.Log($"KillCounter: Loaded cached kills for client {NetworkObject.OwnerClientId}: {cachedKills}");
-            Leaderboard.Instance.UpdateKills(NetworkObject.OwnerClientId, kills.Value);
+            if (killsCache.TryGetValue(NetworkObject.OwnerClientId, out int cachedKills))
+            {
+                kills.Value = cachedKills;
+                Debug.Log($"KillCounter: Loaded cached kills for client {NetworkObject.OwnerClientId}: {cachedKills}");
+                Leaderboard.Instance.UpdateKills(NetworkObject.OwnerClientId, kills.Value);
+            }
         }
-#endif
 
         if (IsClient && !IsOwner) return;
         // Only the owner initializes or updates locally, server syncs
@@ -27,12 +27,11 @@ public class KillCounter : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
-
-#if UNITY_SERVER
+        if (IsServer)
+        {
             killsCache[NetworkObject.OwnerClientId] = kills.Value;
             Debug.Log($"KillCounter: Saved kills for client {NetworkObject.OwnerClientId}: {kills.Value}");
-#endif
-
+        }
     }
 
     public void AddKill()

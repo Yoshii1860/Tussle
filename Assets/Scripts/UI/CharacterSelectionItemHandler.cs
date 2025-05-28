@@ -53,6 +53,7 @@ public class CharacterSelectionItemHandler : MonoBehaviour
     {
         int characterId = (int)characterType;
         ClientSingleton.Instance.GameManager.SetCharacterId(characterId);
+        PlayerPrefs.SetInt("SelectedCharacterId", characterId);
         Debug.Log($"Character selected: {characterType} with ID: {characterId}");
 
         // mainMenu.SelectCharacter(characterId);

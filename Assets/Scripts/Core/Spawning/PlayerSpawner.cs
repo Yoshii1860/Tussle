@@ -18,10 +18,6 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void Awake()
     {
-#if !UNITY_SERVER
-        Destroy(gameObject);
-#endif
-
         if (Instance == null)
         {
             Instance = this;
@@ -38,11 +34,12 @@ public class PlayerSpawner : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-
+/*
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             StartCoroutine(SpawnPlayer(clientId));
         }
+*/
     }
 
     private void OnClientConnected(ulong clientId)
@@ -121,5 +118,13 @@ public class PlayerSpawner : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

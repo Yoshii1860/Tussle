@@ -58,6 +58,11 @@ public class ClientSingleton : MonoBehaviour
     private void OnDestroy()
     {
         Debug.Log("ClientSingleton: OnDestroy called, disposing GameManager.");
+        if (instance == this)
+        {
+            instance = null;
+            Debug.Log("ClientSingleton: Instance set to null on destroy.");
+        }
         GameManager?.Dispose();
     }
 }

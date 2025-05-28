@@ -20,7 +20,7 @@ public class Leaderboard : NetworkBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this && IsServer)
+        if (Instance != null && Instance != this && IsServer && !IsHost)
         {
             Debug.LogWarning("Leaderboard: Duplicate instance detected, destroying self.");
             Destroy(gameObject);
@@ -50,19 +50,20 @@ public class Leaderboard : NetworkBehaviour
             }
         }
 
-#if UNITY_SERVER
-        Player[] players = FindObjectsByType<Player>(FindObjectsSortMode.None);
-        Debug.Log($"Leaderboard: Found {players.Length} players on server spawn.");
-        foreach (Player player in players)
+        if (IsServer)
         {
-            Debug.Log($"Leaderboard: Adding player {player.PlayerName.Value} ({player.OwnerClientId}) to leaderboard.");
-            HandlePlayerSpawned(player);
-        }
+            Player[] players = FindObjectsByType<Player>(FindObjectsSortMode.None);
+            Debug.Log($"Leaderboard: Found {players.Length} players on server spawn.");
+            foreach (Player player in players)
+            {
+                Debug.Log($"Leaderboard: Adding player {player.PlayerName.Value} ({player.OwnerClientId}) to leaderboard.");
+                HandlePlayerSpawned(player);
+            }
 
-        Player.OnPlayerSpawned += HandlePlayerSpawned;
-        Player.OnPlayerDespawned += HandlePlayerDespawned;
-        Debug.Log("Leaderboard: Subscribed to Player.OnPlayerSpawned and OnPlayerDespawned.");
-#endif
+            Player.OnPlayerSpawned += HandlePlayerSpawned;
+            Player.OnPlayerDespawned += HandlePlayerDespawned;
+            Debug.Log("Leaderboard: Subscribed to Player.OnPlayerSpawned and OnPlayerDespawned.");
+        }
     }
 
     public override void OnNetworkDespawn()
@@ -73,11 +74,12 @@ public class Leaderboard : NetworkBehaviour
             Debug.Log("Leaderboard: Unsubscribed from OnListChanged.");
         }
 
-#if UNITY_SERVER
-        Player.OnPlayerSpawned -= HandlePlayerSpawned;
-        Player.OnPlayerDespawned -= HandlePlayerDespawned;
-        Debug.Log("Leaderboard: Unsubscribed from Player.OnPlayerSpawned and OnPlayerDespawned.");
-#endif
+        if (IsServer)
+        {
+            Player.OnPlayerSpawned -= HandlePlayerSpawned;
+            Player.OnPlayerDespawned -= HandlePlayerDespawned;
+            Debug.Log("Leaderboard: Unsubscribed from Player.OnPlayerSpawned and OnPlayerDespawned.");
+        }
 
     }
 

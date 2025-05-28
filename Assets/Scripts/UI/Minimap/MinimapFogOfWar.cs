@@ -20,7 +20,7 @@ public class MinimapFogOfWar : MonoBehaviour
     private void Awake()
     {
         if (fogTexture != null) { return; }
-        if (NetworkManager.Singleton.IsServer) { return; }
+        if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsHost) { return; }
 
         closeButton.SetActive(false);
 
@@ -44,7 +44,7 @@ public class MinimapFogOfWar : MonoBehaviour
 
     private void Start()
     {
-        if (NetworkManager.Singleton.IsServer) { return; }
+        if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsHost) { return; }
         
         StartCoroutine(UpdateFogOfWar());
     }

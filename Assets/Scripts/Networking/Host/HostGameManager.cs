@@ -26,6 +26,7 @@ public class HostGameManager : IDisposable
 
     private const int MaxConnections = 20;
     private const string GameSceneName = "Game";
+    private const string MenuSceneName = "MainMenu";
 
     public async Task StartHostAsync()
     {
@@ -147,6 +148,9 @@ public class HostGameManager : IDisposable
 
         NetworkServer.OnClientLeft -= HandleClientLeft;
         NetworkServer?.Dispose();
+
+        SceneManager.LoadScene(MenuSceneName, LoadSceneMode.Single);
+        Debug.Log("HostGameManager: Returned to Main Menu scene.");
     }
 
     private async void HandleClientLeft(string authId)

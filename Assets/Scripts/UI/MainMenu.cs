@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using System;
+using Unity.Jobs;
 
 public class MainMenu : MonoBehaviour
 {
@@ -15,8 +16,9 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private TMP_Text queueTimerText;
     [SerializeField] private TMP_Text queueStatusText;
     [SerializeField] private HostSingleton hostPrefab;
+    [SerializeField] private ClientSingleton clientPrefab;
+    [SerializeField] private GameObject playerSpawnerPrefab;
 
-    private int selectedCharacterId = -1;
     private bool isHosting = false;
     private bool isJoiningLobby = false;
     private bool isFindingMatchViaMatchmaking = false;
@@ -26,9 +28,45 @@ public class MainMenu : MonoBehaviour
     private string pendingJoinCode = "";
     private Lobby pendingLobby = null;
     private float queueTimer = 0f;
+    private PlayerSpawner playerSpawner;
 
-    private void Awake()
+    private async void Awake()
     {
+        var playerSpawnerRef = FindFirstObjectByType<PlayerSpawner>();
+        if (playerSpawnerRef == null)
+        {
+            Debug.Log("MainMenu: PlayerSpawner.Instance is null! Creating a new instance.");
+            GameObject playerSpawnerGO = Instantiate(playerSpawnerPrefab);
+            playerSpawner = playerSpawnerGO.GetComponent<PlayerSpawner>();
+        }
+
+        var hostSingleton = FindFirstObjectByType<HostSingleton>();
+        if (hostSingleton != null)
+        {
+            Debug.Log("MainMenu: HostSingleton instance already exists. Destroying it.");
+            Destroy(HostSingleton.Instance.gameObject);
+        }
+
+        var clientSingleton = FindFirstObjectByType<ClientSingleton>();
+        if (clientSingleton == null)
+        {
+            ClientSingleton newClientSingleton = Instantiate(clientPrefab);
+            Debug.Log("MainMenu: ClientSingleton instance created.");
+            bool authenticated = await newClientSingleton.CreateClient();
+            if (authenticated)
+            {
+                Debug.Log("MainMenu: Client authenticated successfully.");
+            }
+            else
+            {
+                Debug.LogError("MainMenu: Client authentication failed.");
+            }
+        }
+        else
+        {
+            Debug.Log("MainMenu: ClientSingleton instance already exists: " + clientSingleton.gameObject.name);
+        }
+
         if (ApplicationData.Mode() == "server")
         {
             Debug.Log("MainMenu: Dedicated server mode detected. Disabling UI.");
@@ -37,8 +75,7 @@ public class MainMenu : MonoBehaviour
     }
 
     private void Start()
-    {
-        if (ClientSingleton.Instance == null) { return; }
+    {    
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         characterSelectionPanel.SetActive(false);
         findMatchButtonText.text = "Find Match";
@@ -89,10 +126,22 @@ public class MainMenu : MonoBehaviour
 
         characterSelectionPanel.SetActive(false);
 
+        if (playerSpawner == null)
+        {
+            playerSpawner = FindFirstObjectByType<PlayerSpawner>();
+        }
+
         try
         {
             if (isHosting)
             {
+                var clientSingleton = FindFirstObjectByType<ClientSingleton>();
+                if (clientSingleton != null)
+                {
+                    Debug.Log("MainMenu: Destroying existing ClientSingleton instance because [IsHosting].");
+                    Destroy(clientSingleton.gameObject);
+                }
+
                 HostSingleton hostSingleton = Instantiate(hostPrefab);
                 hostSingleton.CreateHost();
 
@@ -105,6 +154,7 @@ public class MainMenu : MonoBehaviour
             }
             else if (isJoiningLobby)
             {
+                if (playerSpawner != null) Destroy(playerSpawner.gameObject);
                 await JoinLobbyWithCharacter(pendingLobby);
                 isJoiningLobby = false;
                 pendingLobby = null;
@@ -117,6 +167,7 @@ public class MainMenu : MonoBehaviour
             }
             else
             {
+                if (playerSpawner != null) Destroy(playerSpawner.gameObject);
                 StartClientWithCharacter();
             }
         }
@@ -212,6 +263,7 @@ public class MainMenu : MonoBehaviour
         {
             case MatchmakerPollingResult.Success:
                 queueStatusText.text = "Connecting...";
+                if (playerSpawner != null) Destroy(playerSpawner.gameObject);
                 break;
             case MatchmakerPollingResult.TicketCreationError:
                 queueStatusText.text = "Ticket Creation Error";
