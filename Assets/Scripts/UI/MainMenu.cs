@@ -154,6 +154,7 @@ public class MainMenu : MonoBehaviour
         {
             if (isHosting)
             {
+                isTeamMatch = false;
                 var clientSingleton = FindFirstObjectByType<ClientSingleton>();
                 if (clientSingleton != null)
                 {
@@ -173,6 +174,7 @@ public class MainMenu : MonoBehaviour
             }
             else if (isJoiningLobby)
             {
+                isTeamMatch = false;
                 if (playerSpawner != null) Destroy(playerSpawner.gameObject);
                 await JoinLobbyWithCharacter(pendingLobby);
                 isJoiningLobby = false;
@@ -186,6 +188,7 @@ public class MainMenu : MonoBehaviour
             }
             else
             {
+                isTeamMatch = false;
                 if (playerSpawner != null) Destroy(playerSpawner.gameObject);
                 StartClientWithCharacter();
             }
@@ -210,6 +213,7 @@ public class MainMenu : MonoBehaviour
         queueStatusText.text = string.Empty;
         queueTimerText.text = string.Empty;
         characterSelectionPanel.SetActive(false);
+        isTeamMatch = false;
         isBusy = false;
     }
 

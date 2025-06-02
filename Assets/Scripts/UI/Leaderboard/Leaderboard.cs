@@ -7,14 +7,24 @@ public class Leaderboard : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform leaderboardEntityHolder;
+    [SerializeField] private Transform teamLeaderboardEntityHolder;
+    [SerializeField] private GameObject leaderboardBackground;
+    [SerializeField] private GameObject teamLeaderboardBackground;
     [SerializeField] private LeaderboardEntityDisplay leaderboardEntityPrefab;
+    [SerializeField] private TeamColorLookup teamColorLookup;
+    [SerializeField] private GameObject leaderboardButton;
 
     [Header("Settings")]
+    [SerializeField] private Color ownerColor;
+    [SerializeField] private string[] teamNames;
     [SerializeField] private const int MaxEntitiesToDisplay = 10;
 
     private NetworkList<LeaderboardEntityState> leaderboardEntities = new NetworkList<LeaderboardEntityState>();
 
     private List<LeaderboardEntityDisplay> entityDisplays = new List<LeaderboardEntityDisplay>();
+    private List<LeaderboardEntityDisplay> teamEntityDisplays = new List<LeaderboardEntityDisplay>();
+
+    private bool isTeamMatch;
 
     public static Leaderboard Instance { get; private set; }
 
@@ -37,6 +47,23 @@ public class Leaderboard : NetworkBehaviour
 
         if (IsClient)
         {
+            if (IsServer)
+            {
+                isTeamMatch = false;
+            }
+            else if (ClientSingleton.Instance.GameManager.UserData.userGamePreferences.gameQueue == GameQueue.Team)
+            {
+                isTeamMatch = true;
+                for (int i = 0; i < teamNames.Length; i++)
+                {
+                    LeaderboardEntityDisplay teamDisplay = Instantiate(leaderboardEntityPrefab, teamLeaderboardEntityHolder);
+                    teamDisplay.Initialise(i, teamNames[i], 0, 0);
+                    Color teamColor = teamColorLookup.GetTeamColor(i);
+                    teamDisplay.SetColor(teamColor);
+                    teamEntityDisplays.Add(teamDisplay);
+                }
+            }
+
             leaderboardEntities.OnListChanged += HandleLeaderboardEntitiesChanged;
             Debug.Log($"Leaderboard: Subscribed to OnListChanged. Current count: {leaderboardEntities.Count}");
             foreach (LeaderboardEntityState entity in leaderboardEntities)
@@ -94,6 +121,7 @@ public class Leaderboard : NetworkBehaviour
                 {
                     ClientId = clientId,
                     PlayerName = leaderboardEntities[i].PlayerName,
+                    TeamIndex = leaderboardEntities[i].TeamIndex,
                     Kills = kills,
                     Coins = leaderboardEntities[i].Coins
                 };
@@ -117,6 +145,7 @@ public class Leaderboard : NetworkBehaviour
         {
             ClientId = player.OwnerClientId,
             PlayerName = player.PlayerName.Value,
+            TeamIndex = player.TeamIndex.Value,
             Kills = kills,
             Coins = 0
         });
@@ -152,6 +181,7 @@ public class Leaderboard : NetworkBehaviour
             {
                 ClientId = leaderboardEntities[i].ClientId,
                 PlayerName = leaderboardEntities[i].PlayerName,
+                TeamIndex = leaderboardEntities[i].TeamIndex,
                 Kills = leaderboardEntities[i].Kills,
                 Coins = newCoins
             };
@@ -184,6 +214,10 @@ public class Leaderboard : NetworkBehaviour
                         changeEvent.Value.PlayerName,
                         changeEvent.Value.Kills,
                         changeEvent.Value.Coins);
+                    if (NetworkManager.Singleton.LocalClientId == changeEvent.Value.ClientId)
+                    {
+                        leaderboardEntity.SetColor(ownerColor);
+                    }
                     entityDisplays.Add(leaderboardEntity);
                 }
                 break;
@@ -230,6 +264,107 @@ public class Leaderboard : NetworkBehaviour
                 leaderboardEntityHolder.GetChild(MaxEntitiesToDisplay - 1).gameObject.SetActive(false);
                 myDisplay.gameObject.SetActive(true);
             }
+        }
+
+        if (!teamLeaderboardBackground.activeSelf) { return; }
+        /*
+                LeaderboardEntityDisplay teamDisplay =
+                    teamEntityDisplays.FirstOrDefault(x => x.TeamIndex == changeEvent.Value.TeamIndex);
+
+                if (teamDisplay != null)
+                {
+                    if (changeEvent.Type == NetworkListEvent<LeaderboardEntityState>.EventType.Remove)
+                    {
+                        teamDisplay.UpdateValues(teamDisplay.Coins - changeEvent.Value.Coins,
+                                                teamDisplay.Kills - changeEvent.Value.Kills);
+                    }
+                    else
+                    {
+                        teamDisplay.UpdateValues(teamDisplay.Coins + (changeEvent.Value.Coins - changeEvent.PreviousValue.Coins),
+                                                teamDisplay.Kills + (changeEvent.Value.Kills - changeEvent.PreviousValue.Kills));
+                    }
+
+                    teamEntityDisplays.Sort((x, y) =>
+                        (y.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + y.Coins).CompareTo
+                        (x.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + x.Coins));
+
+                    for (int i = 0; i < teamEntityDisplays.Count; i++)
+                    {
+                        teamEntityDisplays[i].transform.SetSiblingIndex(i);
+                        teamEntityDisplays[i].UpdateDisplayText();
+                    }
+                }
+        */
+        UpdateAllTeamDisplays();
+    }
+
+    private void UpdateAllTeamDisplays()
+    {
+        foreach (var teamDisplay in teamEntityDisplays)
+        {
+            int teamIndex = teamDisplay.TeamIndex;
+            int totalCoins = 0;
+            int totalKills = 0;
+            int playerCount = 0;
+
+            // Manually sum coins and kills for this team
+            for (int i = 0; i < leaderboardEntities.Count; i++)
+            {
+                if (leaderboardEntities[i].TeamIndex == teamIndex)
+                {
+                    totalCoins += leaderboardEntities[i].Coins;
+                    totalKills += leaderboardEntities[i].Kills;
+                    playerCount++;
+                }
+            }
+
+            teamDisplay.gameObject.SetActive(playerCount > 0);
+            teamDisplay.UpdateValues(totalCoins, totalKills);
+        }
+
+        var visibleTeams = teamEntityDisplays.Where(td => td.gameObject.activeSelf).ToList();
+
+        visibleTeams.Sort((x, y) =>
+            (y.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + y.Coins).CompareTo
+            (x.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + x.Coins));
+
+        for (int i = 0; i < teamEntityDisplays.Count; i++)
+        {
+            teamEntityDisplays[i].transform.SetSiblingIndex(i);
+            teamEntityDisplays[i].UpdateDisplayText();
+        }
+    }
+
+    public void ToggleLeaderboard()
+    {
+        if (leaderboardButton.activeSelf)
+        {
+            leaderboardButton.SetActive(false);
+            leaderboardBackground.SetActive(!leaderboardBackground.activeSelf);
+            teamLeaderboardBackground.SetActive(isTeamMatch);
+        }
+        else
+        {
+            UpdateAllEntityDisplays();
+            if (teamLeaderboardBackground.activeSelf) UpdateAllTeamDisplays();
+            leaderboardButton.SetActive(true);
+            leaderboardBackground.SetActive(false);
+            teamLeaderboardBackground.SetActive(false);
+        }
+    }
+
+    private void UpdateAllEntityDisplays()
+    {
+        // Optionally sort and update all player displays
+        entityDisplays.Sort((x, y) =>
+            (y.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + y.Coins).CompareTo
+            (x.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + x.Coins));
+
+        for (int i = 0; i < entityDisplays.Count; i++)
+        {
+            entityDisplays[i].transform.SetSiblingIndex(i);
+            entityDisplays[i].UpdateDisplayText();
+            entityDisplays[i].gameObject.SetActive(i < MaxEntitiesToDisplay);
         }
     }
 }

@@ -55,14 +55,16 @@ public class DealMeleeDamageOnContact : MonoBehaviour
         Debug.Log($"DealMeleeDamageOnContact: OnTriggerEnter2D with {other.name}");
         if (Time.time - lastDamageTime < damageCooldown || hasDealtDamageThisFrame) return;
         if (other.attachedRigidbody == null) return;
-        if (teamIndexStorage.TeamIndex == -1) return;
         if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {
             if (networkObject.OwnerClientId == ownerClientId) return;
         }
-        if (other.attachedRigidbody.TryGetComponent<Player>(out Player player))
+        if (teamIndexStorage.TeamIndex != -1)
         {
-            if (player.TeamIndex.Value == teamIndexStorage.TeamIndex) return; // Ignore teammates
+            if (other.attachedRigidbody.TryGetComponent<Player>(out Player player))
+            {
+                if (player.TeamIndex.Value == teamIndexStorage.TeamIndex) return; // Ignore teammates
+            }
         }
 
         if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))

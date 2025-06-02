@@ -108,13 +108,23 @@ public class ServerGameManager : IDisposable
 
     private void UserJoined(UserData user)
     {
-        Team team = matchplayBackfiller.GetTeamByUserId(user.userAuthId);
-        if (!teamIdToTeamIndex.TryGetValue(team.TeamId, out int teamIndex))
+        if (user.userGamePreferences.gameQueue == GameQueue.Team)
         {
-            teamIndex = teamIdToTeamIndex.Count;
-            teamIdToTeamIndex.Add(team.TeamId, teamIndex);
+            Debug.Log($"ServerGameManager: User {user.userAuthId} joined with team index {user.teamIndex}.");
+            Team team = matchplayBackfiller.GetTeamByUserId(user.userAuthId);
+            if (!teamIdToTeamIndex.TryGetValue(team.TeamId, out int teamIndex))
+            {
+                teamIndex = teamIdToTeamIndex.Count;
+                teamIdToTeamIndex.Add(team.TeamId, teamIndex);
+                Debug.Log($"ServerGameManager: Assigned new team index {teamIndex} to team {team.TeamId} for user {user.userAuthId}.");
+            }
+            user.teamIndex = teamIndex;
         }
-        user.teamIndex = teamIndex;
+        else
+        {
+            Debug.Log($"ServerGameManager: User {user.userAuthId} joined solo.");
+            user.teamIndex = -1;
+        }
 
         multiplayAllocationService?.AddPlayer();
 
@@ -152,6 +162,7 @@ public class ServerGameManager : IDisposable
             await matchplayBackfiller.StopBackfill();
         }
         Debug.Log("ServerGameManager: Disposing and shutting down application.");
+        teamIdToTeamIndex.Clear();
         Dispose();
         Application.Quit();
     }

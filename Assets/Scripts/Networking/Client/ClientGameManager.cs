@@ -15,7 +15,7 @@ public class ClientGameManager : IDisposable
 {
     private JoinAllocation allocation;
     private NetworkClient networkClient;
-    private UserData userData;
+    public UserData UserData { get; private set; }
     private const string MenuSceneName = "MainMenu";
     private const string GameSceneName = "Game";
     private TaskCompletionSource<bool> connectionTask;
@@ -26,10 +26,11 @@ public class ClientGameManager : IDisposable
         AuthState authState = await AuthenticationHandler.AuthenticateAsync(5);
         if (authState == AuthState.Authenticated)
         {
-            userData = new UserData
+            UserData = new UserData
             {
                 userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
                 userAuthId = AuthenticationService.Instance.PlayerId,
+                teamIndex = -1,
                 characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
             };
             Debug.Log("ClientGameManager: Authentication succeeded.");
@@ -79,7 +80,7 @@ public class ClientGameManager : IDisposable
     private void ConnectClient()
     {
         connectionTask = new TaskCompletionSource<bool>();
-        string payload = JsonConvert.SerializeObject(userData);
+        string payload = JsonConvert.SerializeObject(UserData);
         byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
@@ -125,6 +126,7 @@ public class ClientGameManager : IDisposable
         {
             userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
             userAuthId = AuthenticationService.Instance.PlayerId,
+            teamIndex = -1,
             characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
         };
 
@@ -141,15 +143,16 @@ public class ClientGameManager : IDisposable
             return;
         }
 
-        userData.userGamePreferences.gameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
-        Debug.Log("ClientGameManager: Starting matchmaking...");
+        UserData.userGamePreferences.gameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
+        UserData.teamIndex = -1;
+        Debug.Log($"ClientGameManager: Starting matchmaking in mode: {UserData.userGamePreferences.gameQueue}");
         MatchmakerPollingResult matchResult = await GetMatchAsync();
         onMatchmakeResponse?.Invoke(matchResult);
     }
 
     private async Task<MatchmakerPollingResult> GetMatchAsync()
     {
-        MatchmakingResult matchmakingResult = await MatchplayMatchmaker.Instance.Matchmake(userData);
+        MatchmakingResult matchmakingResult = await MatchplayMatchmaker.Instance.Matchmake(UserData);
 
         if (matchmakingResult.result == MatchmakerPollingResult.Success)
         {
@@ -181,9 +184,9 @@ public class ClientGameManager : IDisposable
 
     public void SetCharacterId(int characterId)
     {
-        if (userData != null)
+        if (UserData != null)
         {
-            userData.characterId = characterId;
+            UserData.characterId = characterId;
             Debug.Log($"ClientGameManager: Character ID set to {characterId}");
         }
         else

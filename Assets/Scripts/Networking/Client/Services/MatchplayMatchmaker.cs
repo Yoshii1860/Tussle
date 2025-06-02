@@ -28,7 +28,7 @@ public class MatchplayMatchmaker : IDisposable
     private string lastUsedTicket;
     private CancellationTokenSource cancelToken;
     private const int TicketCooldown = 1000;
-    private const int MaxPollingAttempts = 30;
+    private const int MaxPollingAttempts = 60;
     public bool IsMatchmaking { get; private set; }
 
     private static MatchplayMatchmaker instance;
@@ -49,6 +49,8 @@ public class MatchplayMatchmaker : IDisposable
     public async Task<MatchmakingResult> Matchmake(UserData data)
     {
         cancelToken = new CancellationTokenSource();
+        data.teamIndex = -1;
+        
         string queueName = data.userGamePreferences.ToMultiplayQueue();
         CreateTicketOptions createTicketOptions = new CreateTicketOptions(queueName);
         Debug.Log($"MatchplayMatchmaker: Using matchmaking queue '{createTicketOptions.QueueName}'.");

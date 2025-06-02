@@ -5,6 +5,7 @@ using Unity.Netcode;
 public struct LeaderboardEntityState : INetworkSerializable, IEquatable<LeaderboardEntityState>
 {
     public ulong ClientId;
+    public int TeamIndex;
     public FixedString32Bytes PlayerName;
     public int Kills;
     public int Coins;
@@ -12,6 +13,7 @@ public struct LeaderboardEntityState : INetworkSerializable, IEquatable<Leaderbo
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref ClientId);
+        serializer.SerializeValue(ref TeamIndex);
         serializer.SerializeValue(ref PlayerName);
         serializer.SerializeValue(ref Kills);
         serializer.SerializeValue(ref Coins);
@@ -20,8 +22,9 @@ public struct LeaderboardEntityState : INetworkSerializable, IEquatable<Leaderbo
     public bool Equals(LeaderboardEntityState other)
     {
         return ClientId == other.ClientId &&
-               PlayerName.Equals(other.PlayerName) &&
-               Kills == other.Kills &&
-               Coins == other.Coins;
+                TeamIndex == other.TeamIndex &&
+                PlayerName.Equals(other.PlayerName) &&
+                Kills == other.Kills &&
+                Coins == other.Coins;
     }
 }

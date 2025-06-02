@@ -89,6 +89,7 @@ public class HostGameManager : IDisposable
         {
             userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "MissingName"),
             userAuthId = AuthenticationService.Instance.PlayerId,
+            teamIndex = -1,
             characterId = PlayerPrefs.GetInt("SelectedCharacterId", 0)
         };
 

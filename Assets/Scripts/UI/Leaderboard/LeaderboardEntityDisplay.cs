@@ -6,25 +6,39 @@ using Unity.Netcode;
 public class LeaderboardEntityDisplay : MonoBehaviour
 {
     [SerializeField] private TMP_Text displayText;
-    [SerializeField] private Color selfColor = Color.red;
+    //[SerializeField] private Color selfColor = Color.red;
     [SerializeField] public const int KillScoreMultiplier = 50;
 
-    private FixedString32Bytes playerName;
+    private FixedString32Bytes displayName;
+    public int TeamIndex { get; private set; }
     public ulong ClientId { get; private set; }
     public int Kills { get; private set; }
     public int Coins { get; private set; }
 
-    public void Initialise(ulong clientId, FixedString32Bytes playerName, int kills, int coins)
+    public void Initialise(ulong clientId, FixedString32Bytes displayName, int kills, int coins)
     {
         ClientId = clientId;
-        this.playerName = playerName;
-
+        this.displayName = displayName;
+/*
         if (clientId == NetworkManager.Singleton.LocalClientId)
         {
             displayText.color = selfColor;
         }
-        
+*/        
         UpdateValues(coins, kills);
+    }
+
+    public void Initialise(int teamIndex, FixedString32Bytes displayName, int kills, int coins)
+    {
+        TeamIndex = teamIndex;
+        this.displayName = displayName;
+
+        UpdateValues(coins, kills);
+    }
+
+    public void SetColor(Color color)
+    {
+        displayText.color = color;
     }
 
     public void UpdateValues(int coins, int kills)
@@ -37,7 +51,7 @@ public class LeaderboardEntityDisplay : MonoBehaviour
 
     public void UpdateDisplayText()
     {
-        displayText.text = $"{transform.GetSiblingIndex()+1}. {playerName} - {CalculateScore()}";
+        displayText.text = $"{transform.GetSiblingIndex()+1}. {displayName} - {CalculateScore()}";
     }
 
     public int CalculateScore()
