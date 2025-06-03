@@ -6,8 +6,9 @@ using static Controls;
 [CreateAssetMenu(fileName = "InputReader", menuName = "ScriptableObjects/InputReader", order = 1)]
 public class InputReader : ScriptableObject, IPlayerActions
 {
-    public event Action PrimaryAttackEvent;
+    public event Action<bool> PrimaryAttackEvent;
     public event Action InteractEvent;
+    public event Action<int> ChangeAttackEvent;
     public event Action<Vector2> MoveEvent;
     public event Action<bool> SprintEvent;
     public event Action<bool> SecondaryAttackEvent;
@@ -34,7 +35,11 @@ public class InputReader : ScriptableObject, IPlayerActions
     {
         if (context.performed)
         {
-            PrimaryAttackEvent?.Invoke();
+            PrimaryAttackEvent?.Invoke(true);
+        }
+        else if (context.canceled)
+        {
+            PrimaryAttackEvent?.Invoke(false);
         }
     }
 
@@ -83,6 +88,23 @@ public class InputReader : ScriptableObject, IPlayerActions
         if (context.performed || context.canceled)
         {
             ZoomEvent?.Invoke(context.ReadValue<Vector2>());
+        }
+    }
+
+    public void OnChangeAttack(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            var control = context.control;
+            if (control != null)
+            {
+                Debug.Log($"ChangeAttack pressed: {control.name}");
+                int attackIndex = -1;
+                if (int.TryParse(control.name, out attackIndex))
+                {
+                    ChangeAttackEvent?.Invoke(attackIndex-1);
+                }
+            }
         }
     }
 }

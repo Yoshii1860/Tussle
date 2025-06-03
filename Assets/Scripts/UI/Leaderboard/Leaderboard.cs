@@ -266,7 +266,7 @@ public class Leaderboard : NetworkBehaviour
             }
         }
 
-        if (!teamLeaderboardBackground.activeSelf) { return; }
+        if (!isTeamMatch) { return; }
         /*
                 LeaderboardEntityDisplay teamDisplay =
                     teamEntityDisplays.FirstOrDefault(x => x.TeamIndex == changeEvent.Value.TeamIndex);
@@ -296,6 +296,24 @@ public class Leaderboard : NetworkBehaviour
                 }
         */
         UpdateAllTeamDisplays();
+    }
+
+    public void ToggleLeaderboard()
+    {
+        if (leaderboardButton.activeSelf)
+        {
+            leaderboardButton.SetActive(false);
+            leaderboardBackground.SetActive(!leaderboardBackground.activeSelf);
+            teamLeaderboardBackground.SetActive(isTeamMatch);
+        }
+        else
+        {
+            UpdateAllEntityDisplays();
+            if (isTeamMatch) UpdateAllTeamDisplays();
+            leaderboardButton.SetActive(true);
+            leaderboardBackground.SetActive(false);
+            teamLeaderboardBackground.SetActive(false);
+        }
     }
 
     private void UpdateAllTeamDisplays()
@@ -335,27 +353,8 @@ public class Leaderboard : NetworkBehaviour
         }
     }
 
-    public void ToggleLeaderboard()
-    {
-        if (leaderboardButton.activeSelf)
-        {
-            leaderboardButton.SetActive(false);
-            leaderboardBackground.SetActive(!leaderboardBackground.activeSelf);
-            teamLeaderboardBackground.SetActive(isTeamMatch);
-        }
-        else
-        {
-            UpdateAllEntityDisplays();
-            if (teamLeaderboardBackground.activeSelf) UpdateAllTeamDisplays();
-            leaderboardButton.SetActive(true);
-            leaderboardBackground.SetActive(false);
-            teamLeaderboardBackground.SetActive(false);
-        }
-    }
-
     private void UpdateAllEntityDisplays()
     {
-        // Optionally sort and update all player displays
         entityDisplays.Sort((x, y) =>
             (y.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + y.Coins).CompareTo
             (x.Kills * LeaderboardEntityDisplay.KillScoreMultiplier + x.Coins));

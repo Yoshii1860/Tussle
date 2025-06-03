@@ -13,6 +13,9 @@ public class Thief : Character
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent += OnPrimaryAttack;
+            inputReader.ChangeAttackEvent += OnAttackChange;
+
+            OnAttackChange(0); // Set initial attack
         }
 
         DealMeleeDamageOnContact dealMeleeDamageOnContact = swordCollider.GetComponent<DealMeleeDamageOnContact>();
@@ -37,16 +40,22 @@ public class Thief : Character
         }
     }
 
-    private void OnPrimaryAttack()
+    private void OnAttackChange(int index)
+    {
+        currentAttack = attacks[index];
+        CurrentAttack = currentAttack;
+    }
+
+    private void OnPrimaryAttack(bool isPressed)
     {
         if (!IsOwner) return;
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
+        if (!isPressed) return;
         isAttacking.Value = true;
-        animator.SetTrigger("Attack");
-        Invoke(nameof(ResetAttack), 0.4f);
+        Invoke(nameof(ResetAttack), currentAttack.cooldown);
         Debug.Log("Thief: Sword Attack");
     }
 

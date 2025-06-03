@@ -574,6 +574,11 @@ MonoBehaviour:
   moveSpeed: 5
   sprintSpeed: 10
   characterType: 2
+  attacks:
+  - {fileID: 11400000, guid: 6b25a00ee44c24d4fa41f31c719ff638, type: 2}
+  - {fileID: 11400000, guid: 502ab36f4d267d843aa957742ced8a02, type: 2}
+  - {fileID: 11400000, guid: e1e8d83a59a256d4abd7222f99ef53cd, type: 2}
+  secondaryAttack: {fileID: 11400000, guid: 968d856f32a3a8b4eac3c01fd4b4b50c, type: 2}
   zoomSpeed: 0.5
   minFOV: 5
   maxFOV: 10

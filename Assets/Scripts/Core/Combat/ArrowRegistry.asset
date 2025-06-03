@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50eff7c26b07e5f4f80ada97da0fef20, type: 3}
+  m_Name: ArrowRegistry
+  m_EditorClassIdentifier: 
+  projectiles:
+  - key: Arrow
+    serverPrefab: {fileID: 2712701700556377562, guid: 901031d0bc6a31141a593de8415541d1, type: 3}
+    clientPrefab: {fileID: 8007173203346397459, guid: 2295afcfde980274d876632007cd6064, type: 3}
+  - key: FireArrow
+    serverPrefab: {fileID: 2712701700556377562, guid: d716be517002b8d49bf67a6bf70e61c2, type: 3}
+    clientPrefab: {fileID: 8007173203346397459, guid: e7ddf4e75a4f30d4691cd8861ad2e45a, type: 3}

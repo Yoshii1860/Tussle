@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9db92a59480bd2a42bcbe07d416d673a, type: 3}
+  m_Name: Archer_FireShot
+  m_EditorClassIdentifier: 
+  attackName: Fire Shot
+  damage: 0
+  cooldown: 0
+  range: 0
+  animationTrigger: SecondaryRelease3
+  isTriggerBool: 0
+  icon: {fileID: 21300000, guid: 006a992109a8ced4d9c595471f5d28e8, type: 3}
+  projectileBehavior: {fileID: 11400000, guid: 79ed698dd70b913428ac865266f9571b, type: 2}

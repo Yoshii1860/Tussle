@@ -11,6 +11,7 @@ public class Archer : Character
         {
             inputReader.PrimaryAttackEvent += OnPrimaryAttack;
             inputReader.SecondaryAttackEvent += OnSecondaryAttack;
+            inputReader.ChangeAttackEvent += OnAttackChange;
             if (projectileLauncher == null)
             {
                 projectileLauncher = GetComponentInChildren<ProjectileLauncher>();
@@ -19,6 +20,8 @@ public class Archer : Character
                     Debug.LogWarning("ProjectileLauncher not found on Archer!");
                 }
             }
+
+            OnAttackChange(0);
         }
     }
 
@@ -32,34 +35,41 @@ public class Archer : Character
         }
     }
 
-    private void OnPrimaryAttack()
+    private void OnAttackChange(int index)
+    {
+        currentAttack = attacks[index];
+        CurrentAttack = currentAttack;
+    }
+
+    private void OnPrimaryAttack(bool isPressed)
     {
         if (!IsOwner) return;
+        if (isPressed)
+        {
+            isAttacking.Value = true;
+        }
     }
 
     private void OnSecondaryAttack(bool isPressed)
     {
         if (!IsOwner) return;
-        if (isPressed)
-        {
-            isSecondaryTrigger.Value = true;
-        }
     }
 
-    protected override void OnIsSecondaryTriggerChanged(bool previousValue, bool newValue)
+    protected override void OnIsAttackingChanged(bool previousValue, bool newValue)
     {
+        Debug.Log($"OnIsAttackingChanged: previousValue={previousValue}, newValue={newValue}");
         if (newValue && !previousValue)
         {
-            animator.SetTrigger("SecondaryRelease");
+            animator.SetTrigger(currentAttack.animationTrigger);
         }
     }
 
-    public void ShootArrow()
+    public void Shoot()
     {
         if (projectileLauncher != null)
         {
-            projectileLauncher.HandleSecondaryAttack(true);
-            Invoke(nameof(ResetSecondaryAttack), 0.2f);
+            projectileLauncher.HandleShot(true, currentAttack);
+            Invoke(nameof(ResetAttack), currentAttack.cooldown);
         }
     }
 
@@ -68,14 +78,6 @@ public class Archer : Character
         if (IsOwner)
         {
             isAttacking.Value = false;
-        }
-    }
-
-    private void ResetSecondaryAttack()
-    {
-        if (IsOwner)
-        {
-            isSecondaryTrigger.Value = false;
         }
     }
 }

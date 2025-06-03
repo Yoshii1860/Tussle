@@ -11,6 +11,7 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected Rigidbody2D rb;
     [SerializeField] protected Animator animator;
     [SerializeField] protected CinemachineCamera cmCamera;
+    protected GameHUD gameHUD;
 
     [Header("Movement Settings")]
     [SerializeField] protected float moveSpeed = 5f;
@@ -18,6 +19,10 @@ public abstract class Character : NetworkBehaviour
 
     [Header("Character Settings")]
     [SerializeField] protected CharacterType characterType;
+    [SerializeField] protected Attack[] attacks;
+    [SerializeField] protected Attack secondaryAttack;
+    protected Attack currentAttack;
+    public Attack CurrentAttack { get; protected set; }
 
     [Header("Zoom Settings")]
     [SerializeField] protected float zoomSpeed = 0.5f;
@@ -28,8 +33,7 @@ public abstract class Character : NetworkBehaviour
     protected NetworkVariable<bool> isFacingLeft = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isAttacking = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryAction = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    protected NetworkVariable<bool> isSecondaryTrigger = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-   
+ 
     protected Vector2 previousMovementInput;
 
     public bool IsFacingLeft => isFacingLeft.Value;
@@ -45,14 +49,12 @@ public abstract class Character : NetworkBehaviour
             isFacingLeft.OnValueChanged += OnFacingLeftChanged;
             isAttacking.OnValueChanged += OnIsAttackingChanged;
             isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
-            isSecondaryTrigger.OnValueChanged += OnIsSecondaryTriggerChanged;
 
             // Apply initial states
             OnIsMovingChanged(false, isMoving.Value);
             OnFacingLeftChanged(false, isFacingLeft.Value);
             OnIsAttackingChanged(false, isAttacking.Value);
             OnIsSecondaryActionChanged(false, isSecondaryAction.Value);
-            OnIsSecondaryTriggerChanged(false, isSecondaryTrigger.Value);
             return;
         }
 
@@ -68,9 +70,11 @@ public abstract class Character : NetworkBehaviour
         isFacingLeft.OnValueChanged += OnFacingLeftChanged;
         isAttacking.OnValueChanged += OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
-        isSecondaryTrigger.OnValueChanged += OnIsSecondaryTriggerChanged;
 
         startMoveSpeed = moveSpeed;
+
+        gameHUD = FindFirstObjectByType<GameHUD>();
+        gameHUD.SetIcons(attacks, secondaryAttack);
     }
 
     public override void OnNetworkDespawn()
@@ -85,7 +89,6 @@ public abstract class Character : NetworkBehaviour
         isFacingLeft.OnValueChanged -= OnFacingLeftChanged;
         isAttacking.OnValueChanged -= OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged -= OnIsSecondaryActionChanged;
-        isSecondaryTrigger.OnValueChanged -= OnIsSecondaryTriggerChanged;
     }
 
     private void Update()
@@ -163,7 +166,14 @@ public abstract class Character : NetworkBehaviour
     {
         if (newValue)
         {
-            animator.SetTrigger("Attack");
+            if (currentAttack.isTriggerBool)
+            {
+                animator.SetBool(currentAttack.animationTrigger, newValue);
+            }
+            else
+            {
+                animator.SetTrigger(currentAttack.animationTrigger);
+            }
         }
     }
 
@@ -171,13 +181,15 @@ public abstract class Character : NetworkBehaviour
     {
         if (newValue)
         {
-            animator.SetTrigger("SecondaryAction");
+            if (secondaryAttack.isTriggerBool)
+            {
+                animator.SetBool(secondaryAttack.animationTrigger, newValue);
+            }
+            else
+            {
+                animator.SetTrigger(secondaryAttack.animationTrigger);
+            }
         }
-    }
-
-    protected virtual void OnIsSecondaryTriggerChanged(bool previousValue, bool newValue)
-    {
-
     }
 
     private void HandleZoom(Vector2 vector)

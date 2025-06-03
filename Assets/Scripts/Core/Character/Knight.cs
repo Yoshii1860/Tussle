@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.EventSystems;
 using Unity.Services.Matchmaker.Models;
+using System;
 
 
 
@@ -17,6 +18,9 @@ public class Knight : Character
         {
             inputReader.PrimaryAttackEvent += OnPrimaryAttack;
             inputReader.SecondaryAttackEvent += OnSecondaryAttack;
+            inputReader.ChangeAttackEvent += OnAttackChange;
+
+            OnAttackChange(0); // Set initial attack
         }
 
         DealMeleeDamageOnContact dealMeleeDamageOnContact = swordCollider.GetComponent<DealMeleeDamageOnContact>();
@@ -42,16 +46,23 @@ public class Knight : Character
         }
     }
 
-    private void OnPrimaryAttack()
+    private void OnAttackChange(int index)
+    {
+        currentAttack = attacks[index];
+        CurrentAttack = currentAttack;
+    }
+
+    private void OnPrimaryAttack(bool isPressed)
     {
         if (!IsOwner) return;
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
         }
+        if (!isPressed) return;
         isAttacking.Value = true;
-        Invoke(nameof(ResetAttack), 0.4f);
-        Debug.Log("Knight: Sword Attack");
+        Invoke(nameof(ResetAttack), currentAttack.cooldown);
+        Debug.Log($"Knight: Attack Started - {currentAttack.name}");
     }
 
     private void OnSecondaryAttack(bool isPressed)
@@ -70,7 +81,7 @@ public class Knight : Character
 
     protected override void OnIsSecondaryActionChanged(bool previousValue, bool newValue)
     {
-        animator.SetBool("Secondary", newValue);
+        animator.SetBool(secondaryAttack.animationTrigger, newValue);
     }
 
     public void EnableSwordCollider()
@@ -81,6 +92,11 @@ public class Knight : Character
     public void DisableSwordCollider()
     {
         swordCollider.enabled = false;
+    }
+
+    public void AOEAttack()
+    {
+        Debug.Log("Knight: AOE Attack Started");
     }
 
     private void ResetAttack()

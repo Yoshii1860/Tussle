@@ -28,6 +28,26 @@ public class Health : NetworkBehaviour
         ModifyHealth(-damageAmount, attackerClientId);
     }
 
+    public void TakeDamageOverTime(int damageAmount, float duration, float interval, ulong attackerClientId)
+    {
+        if (isDead) { return; }
+
+        StartCoroutine(DamageOverTime(damageAmount, duration, interval, attackerClientId));
+    }
+
+    private IEnumerator DamageOverTime(int damageAmount, float duration, float interval, ulong attackerClientId)
+    {
+        if (isDead) { yield break; }
+
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            ModifyHealth(-damageAmount, attackerClientId);
+            yield return new WaitForSeconds(interval);
+            elapsedTime += interval;
+        }
+    }
+
     public void Heal(int healAmount)
     {
         ModifyHealth(healAmount);
@@ -58,9 +78,9 @@ public class Health : NetworkBehaviour
         float elapsedTime = 0f;
         while (elapsedTime < duration + 0.5f) // Adding 0.5f to ensure the last regeneration is applied
         {
-            elapsedTime += Time.deltaTime;
             ModifyHealth(regenerationAmount);
             yield return new WaitForSeconds(1f);
+            elapsedTime += 1f;
         }
     }
 

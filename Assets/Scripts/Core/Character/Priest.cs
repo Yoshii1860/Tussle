@@ -40,7 +40,7 @@ public class Priest : Character
         }
     }
 
-    private void OnPrimaryAttack()
+    private void OnPrimaryAttack(bool isPressed)
     {
         if (!IsOwner) return;
         if (EventSystem.current.IsPointerOverGameObject())
@@ -58,16 +58,8 @@ public class Priest : Character
         if (!IsOwner) return;
         if (isPressed)
         {
-            isSecondaryTrigger.Value = true;
+            isAttacking.Value = true;
             Debug.Log("Archer: Shoot Arrow");
-        }
-    }
-
-    protected override void OnIsSecondaryTriggerChanged(bool previousValue, bool newValue)
-    {
-        if (newValue && !previousValue)
-        {
-            animator.SetTrigger("SecondaryRelease");
         }
     }
 
@@ -75,8 +67,8 @@ public class Priest : Character
     {
         if (projectileLauncher != null)
         {
-            projectileLauncher.HandleSecondaryAttack(true);
-            Invoke(nameof(ResetSecondaryAttack), 0.2f);
+            projectileLauncher.HandleShot(true, currentAttack);
+            Invoke(nameof(ResetAttack), 0.2f);
         }
     }
 
@@ -95,14 +87,6 @@ public class Priest : Character
         if (IsOwner)
         {
             isAttacking.Value = false;
-        }
-    }
-
-    private void ResetSecondaryAttack()
-    {
-        if (IsOwner)
-        {
-            isSecondaryTrigger.Value = false;
         }
     }
 }

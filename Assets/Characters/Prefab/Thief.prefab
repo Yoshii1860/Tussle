@@ -510,6 +510,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 196955224818357308}
+  knight: {fileID: 0}
   teamIndexStorage: {fileID: 2092506624581878898}
   damageAmount: 7
   damageCooldown: 0.2
@@ -912,6 +913,11 @@ MonoBehaviour:
   moveSpeed: 7
   sprintSpeed: 10
   characterType: 4
+  attacks:
+  - {fileID: 11400000, guid: 7fffc0eeeaa38ab479116b5e8813f7c4, type: 2}
+  - {fileID: 11400000, guid: 345c5b5df94de5943a963519df5a96ac, type: 2}
+  - {fileID: 11400000, guid: e2fb96ef37c1a944fb75c60d19d5d578, type: 2}
+  secondaryAttack: {fileID: 0}
   zoomSpeed: 0.5
   minFOV: 5
   maxFOV: 10

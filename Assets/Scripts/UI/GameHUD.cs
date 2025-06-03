@@ -2,12 +2,15 @@ using Unity.Netcode;
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GameHUD : MonoBehaviour
 {
     [SerializeField] private GameObject blackscreen;
     [SerializeField] private GameObject minimap;
     [SerializeField] private TMP_Text joinCodeText;
+
+    [SerializeField] private Transform attackIconsContainer;
 
     private const string JoinCodePrefix = "Code: ";
 
@@ -40,10 +43,36 @@ public class GameHUD : MonoBehaviour
         StartCoroutine(HideBlackscreen(1f));
     }
 
+    public void SetIcons(Attack[] attacks, Attack secondaryAttack)
+    {
+        for (int i = 0; i < attacks.Length; i++)
+        {
+            if (i < attackIconsContainer.childCount)
+            {
+                Image icon = attackIconsContainer.GetChild(i).GetComponentInChildren<Image>();
+                if (icon != null)
+                {
+                    icon.sprite = attacks[i].icon;
+                }
+            }
+        }
+
+        attackIconsContainer.GetChild(attacks.Length).GetComponentInChildren<Image>().color = new Color(0f, 0f, 0f, 0f);
+
+        if (secondaryAttack != null)
+        {
+            attackIconsContainer.GetChild(attacks.Length + 1).GetComponentInChildren<Image>().sprite = secondaryAttack.icon;
+        }
+        else
+        {
+            attackIconsContainer.GetChild(attacks.Length + 1).GetComponentInChildren<Image>().color = new Color(0f, 0f, 0f, 0f);
+        }
+    }
+
     private IEnumerator HideBlackscreen(float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         blackscreen.SetActive(false);
     }
 
