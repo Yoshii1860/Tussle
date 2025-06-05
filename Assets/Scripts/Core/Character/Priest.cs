@@ -66,14 +66,18 @@ public class Priest : Character
 
     private void OnPrimaryAttack(bool isPressed)
     {
-        if (!IsOwner) return;
-        if (isPressed)
+        if (!IsOwner ||
+            EventSystem.current.IsPointerOverGameObject() ||
+            !isPressed ||
+            !CanPerformAttack())
         {
-            isAttacking.Value = true;
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            lastClickPosition = worldPosition;
+            return;
         }
+
+        isAttacking.Value = true;
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        lastClickPosition = worldPosition;
     }
 
     private void OnSecondaryAttack(bool isPressed)
@@ -84,15 +88,6 @@ public class Priest : Character
 
         isSecondaryAction.Value = true;
         Invoke(nameof(ResetSecondaryAttack), secondaryAttack.cooldown);
-    }
-
-    protected override void OnIsAttackingChanged(bool previousValue, bool newValue)
-    {
-        Debug.Log($"OnIsAttackingChanged: previousValue={previousValue}, newValue={newValue}");
-        if (newValue && !previousValue)
-        {
-            animator.SetTrigger(currentAttack.animationTrigger);
-        }
     }
 
     public void CastSpell()

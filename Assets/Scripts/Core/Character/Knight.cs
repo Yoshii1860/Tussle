@@ -59,12 +59,14 @@ public class Knight : Character
 
     private void OnPrimaryAttack(bool isPressed)
     {
-        if (!IsOwner) return;
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (!IsOwner ||
+            EventSystem.current.IsPointerOverGameObject() ||
+            !isPressed ||
+            !CanPerformAttack())
         {
             return;
         }
-        if (!isPressed) return;
+        
         isAttacking.Value = true;
         Invoke(nameof(ResetAttack), currentAttack.cooldown);
         Debug.Log($"Knight: Attack Started - {currentAttack.name}");

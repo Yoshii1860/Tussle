@@ -3,6 +3,8 @@ using Unity.Netcode;
 using UnityEngine;
 using Unity.Cinemachine;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
+using System.Linq;
 
 public abstract class Character : NetworkBehaviour
 {
@@ -29,6 +31,11 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected float zoomSpeed = 0.5f;
     [SerializeField] protected float minFOV = 5f;
     [SerializeField] protected float maxFOV = 10f;
+
+    [Header("Cooldown Settings")]
+    private Dictionary<int, float> attackCooldowns = new Dictionary<int, float>();
+    private const float GlobalCooldown = 0.3f;
+    private float lastAttackTime = -Mathf.Infinity;
 
     protected NetworkVariable<bool> isMoving = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isFacingLeft = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -69,7 +76,6 @@ public abstract class Character : NetworkBehaviour
         inputReader.MoveEvent += HandleMove;
         inputReader.ZoomEvent += HandleZoom;
         inputReader.ChangeAttackEvent += OnAttackChange;
-        OnAttackChange(0);
 
         isMoving.OnValueChanged += OnIsMovingChanged;
         isFacingLeft.OnValueChanged += OnFacingLeftChanged;
@@ -78,9 +84,20 @@ public abstract class Character : NetworkBehaviour
 
         startMoveSpeed = moveSpeed;
 
+        for (int i = 0; i < attacks.Length; i++)
+        {
+            attackCooldowns[i] = 0f;
+        }
+        if (secondaryAttack != null)
+        {
+            attackCooldowns[-1] = 0f;
+        }
+
         gameHUD = FindFirstObjectByType<GameHUD>();
         gameHUD.SetIcons(attacks, secondaryAttack);
         gameHUD.SetLocalCharacter(gameObject);
+
+        OnAttackChange(0);
     }
 
     public override void OnNetworkDespawn()
@@ -102,6 +119,17 @@ public abstract class Character : NetworkBehaviour
     {
         if (!IsOwner) return;
         currentAttackIndex.Value = index;
+
+        if (attackCooldowns[index] > 0f)
+        {
+            Debug.LogWarning($"Attack {attacks[index].attackName} is still on cooldown: {attackCooldowns[index]} seconds remaining.");
+        }
+    }
+
+    protected virtual bool CanPerformAttack()
+    {
+        if (Time.time - lastAttackTime < GlobalCooldown) return false;
+        return attackCooldowns[currentAttackIndex.Value] <= 0f;
     }
 
     private void Update()
@@ -111,6 +139,26 @@ public abstract class Character : NetworkBehaviour
         UpdateMovement();
         UpdateAnimations();
         UpdateScale();
+        UpdateCooldowns();
+    }
+
+    private void UpdateCooldowns()
+    {
+        foreach (var cd in attackCooldowns.ToList())
+        {
+            if (cd.Value > 0f)
+            {
+                attackCooldowns[cd.Key] = Mathf.Max(0f, cd.Value - Time.deltaTime);
+
+                float maxCooldown = cd.Key == -1 ? secondaryAttack.cooldown : attacks[cd.Key].cooldown;
+                gameHUD.UpdateCooldown(cd.Key, attackCooldowns[cd.Key] / maxCooldown);
+            }
+        }
+
+        if (Time.time - lastAttackTime > GlobalCooldown)
+        {
+            isAttacking.Value = false;
+        }
     }
 
     private void FixedUpdate()
@@ -177,7 +225,7 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void OnIsAttackingChanged(bool previousValue, bool newValue)
     {
-        if (newValue)
+        if (newValue && !previousValue)
         {
             if (currentAttack.isTriggerBool)
             {
@@ -187,6 +235,10 @@ public abstract class Character : NetworkBehaviour
             {
                 animator.SetTrigger(currentAttack.animationTrigger);
             }
+
+            attackCooldowns[currentAttackIndex.Value] = currentAttack.cooldown;
+            Debug.Log($"OnIsAttackingChanged: Attack={currentAttack.attackName} with cooldown={currentAttack.cooldown}");
+            lastAttackTime = Time.time;
         }
     }
 
@@ -201,6 +253,7 @@ public abstract class Character : NetworkBehaviour
             else
             {
                 animator.SetTrigger(secondaryAttack.animationTrigger);
+                attackCooldowns[-1] = secondaryAttack.cooldown;
             }
         }
     }

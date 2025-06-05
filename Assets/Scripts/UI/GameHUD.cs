@@ -61,11 +61,11 @@ public class GameHUD : MonoBehaviour
         {
             if (child == attackIconsContainer.GetChild(index))
             {
-                child.GetChild(0).gameObject.SetActive(true);
+                child.GetChild(1).gameObject.SetActive(true);
             }
             else
             {
-                child.GetChild(0).gameObject.SetActive(false);
+                child.GetChild(1).gameObject.SetActive(false);
             }
         }
     }
@@ -74,6 +74,26 @@ public class GameHUD : MonoBehaviour
     {
         localCharacter = character;
         healthDisplay.InitializeGameHUDHealthBar(character);
+    }
+
+    public void UpdateCooldown(int attackIndex, float cooldownRatio)
+    {
+        int iconIndex = attackIndex;
+
+        if (attackIndex == -1)
+        {
+            iconIndex = attackIconsContainer.childCount - 1; // Secondary attack
+        }
+
+        Transform icon = attackIconsContainer.GetChild(iconIndex);
+        if (icon != null)
+        {
+            Image cooldownImage = icon.GetChild(0).GetComponentInChildren<Image>();
+            if (cooldownImage != null)
+            {
+                cooldownImage.fillAmount = cooldownRatio; // 0 = ready, 1 = full cooldown
+            }
+        }
     }
 
     public void SetIcons(Attack[] attacks, Attack secondaryAttack)
