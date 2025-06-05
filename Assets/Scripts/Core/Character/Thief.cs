@@ -10,12 +10,13 @@ public class Thief : Character
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        currentAttackIndex.OnValueChanged += OnAttackIndexChanged;
+        OnAttackIndexChanged(0, currentAttackIndex.Value);
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent += OnPrimaryAttack;
-            inputReader.ChangeAttackEvent += OnAttackChange;
-
-            OnAttackChange(0); // Set initial attack
         }
 
         DealMeleeDamageOnContact dealMeleeDamageOnContact = swordCollider.GetComponent<DealMeleeDamageOnContact>();
@@ -34,15 +35,18 @@ public class Thief : Character
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+
+        currentAttackIndex.OnValueChanged -= OnAttackIndexChanged;
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent -= OnPrimaryAttack;
         }
     }
 
-    private void OnAttackChange(int index)
+    private void OnAttackIndexChanged(int previous, int current)
     {
-        currentAttack = attacks[index];
+        currentAttack = attacks[current];
         CurrentAttack = currentAttack;
     }
 

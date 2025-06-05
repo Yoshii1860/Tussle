@@ -631,10 +631,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   player: {fileID: 8712038044248872339}
-  projectileSpawnPoint: {fileID: 6661193829982904831}
-  serverProjectilePrefab: {fileID: 2712701700556377562, guid: fcd528bd3429c4944b10093fe9ccf607, type: 3}
-  clientProjectilePrefab: {fileID: 8007173203346397459, guid: 3edd3e7c03ede3942845cb05f0fa632f, type: 3}
+  ProjectileSpawnPoint: {fileID: 6661193829982904831}
   playerCollider: {fileID: 6661433289275572655}
+  projectileRegistry: {fileID: 11400000, guid: bdfa2d512ac7f4346b227cee718657d8, type: 2}
   projectileSpeed: 20
   directionLock: 0
 --- !u!114 &9128414420166295979
@@ -991,6 +990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 8712038044248872339}
+  knight: {fileID: 0}
   teamIndexStorage: {fileID: 2087913081718111734}
   damageAmount: 8
   damageCooldown: 0.2

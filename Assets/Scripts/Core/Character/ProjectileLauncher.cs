@@ -42,15 +42,11 @@ public class ProjectileLauncher : NetworkBehaviour
         if (!IsOwner) { return; }
 
         isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
-/*
-        if (!shouldFire) { return; }
+    }
 
-        Vector2 direction = CalculateDirection();
-
-        SecondaryFireServerRPC(projectileSpawnPoint.position, direction);
-
-        shouldFire = false;
-*/
+    public GameObject GetPrefab(string projectileKey, bool isServer)
+    {
+        return projectileRegistry.GetPrefab(projectileKey, isServer);
     }
 
     public void ApplyDamageBoost(float damageMultiplier, float duration)
@@ -99,13 +95,12 @@ public class ProjectileLauncher : NetworkBehaviour
         }
     }
 
-    public void HandleShot(bool shouldFire, Attack attack)
+    public void HandleShot(Attack attack)
     {
         if (isPointerOverUI) { return; }
+        if (!IsOwner) { return; }
 
-        this.shouldFire = shouldFire;
-
-        if (shouldFire && attack.projectileBehavior != null)
+        if (attack.projectileBehavior != null)
         {
             ArrowDirection = CalculateDirection();
             attack.projectileBehavior.Launch(this, attack);

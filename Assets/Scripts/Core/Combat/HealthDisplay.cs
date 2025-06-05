@@ -14,8 +14,26 @@ public class HealthDisplay : NetworkBehaviour
     {
         if (!IsClient) { return; }
 
-        health.CurrentHealth.OnValueChanged += OnHealthChanged;
-        OnHealthChanged(0, health.CurrentHealth.Value);
+        if (health != null)
+        {
+            health.CurrentHealth.OnValueChanged += OnHealthChanged;
+            OnHealthChanged(0, health.CurrentHealth.Value);
+        }
+    }
+
+    public void InitializeGameHUDHealthBar(GameObject character)
+    {
+        health = character.GetComponent<Health>();
+        
+        if (IsClient && health != null)
+        {
+            health.CurrentHealth.OnValueChanged += OnHealthChanged;
+            OnHealthChanged(0, health.CurrentHealth.Value);
+        }
+        else
+        {
+            Debug.LogWarning("Health component not found on LocalPlayerObject. HealthDisplay will not function correctly.");
+        }
     }
 
     public override void OnNetworkDespawn()

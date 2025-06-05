@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Priest_Hit
   m_EditorClassIdentifier: 
   attackName: Hit
-  damage: 0
-  cooldown: 0
+  damage: 5
+  cooldown: 0.5
   range: 0
   animationTrigger: Attack
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: 63b0076cf0282f34ebec730db5ae3fbf, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 0}
+  projectileBehavior: {fileID: 0}

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9db92a59480bd2a42bcbe07d416d673a, type: 3}
+  m_Name: Priest_IceBomb
+  m_EditorClassIdentifier: 
+  attackName: IceBomb
+  damage: 10
+  cooldown: 3
+  range: 5
+  animationTrigger: SecondaryRelease2
+  isTriggerBool: 0
+  icon: {fileID: 21300000, guid: 947d76962bd6bc44cb092d430b381a6c, type: 3}
+  serverPrefab: {fileID: 2950917393671396115, guid: 6a45ea9c12dd0c54eb83f820ae02a426, type: 3}
+  clientPrefab: {fileID: 5609657006416030712, guid: 4fc12ed5e8a6eda498cd85287d17aa5a, type: 3}
+  projectileBehavior: {fileID: 0}

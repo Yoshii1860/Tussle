@@ -7,11 +7,14 @@ public class Archer : Character
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        currentAttackIndex.OnValueChanged += OnAttackIndexChanged;
+        OnAttackIndexChanged(0, currentAttackIndex.Value);
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent += OnPrimaryAttack;
             inputReader.SecondaryAttackEvent += OnSecondaryAttack;
-            inputReader.ChangeAttackEvent += OnAttackChange;
             if (projectileLauncher == null)
             {
                 projectileLauncher = GetComponentInChildren<ProjectileLauncher>();
@@ -20,14 +23,15 @@ public class Archer : Character
                     Debug.LogWarning("ProjectileLauncher not found on Archer!");
                 }
             }
-
-            OnAttackChange(0);
         }
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+
+        currentAttackIndex.OnValueChanged -= OnAttackIndexChanged;
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent -= OnPrimaryAttack;
@@ -35,9 +39,9 @@ public class Archer : Character
         }
     }
 
-    private void OnAttackChange(int index)
+    private void OnAttackIndexChanged(int previous, int current)
     {
-        currentAttack = attacks[index];
+        currentAttack = attacks[current];
         CurrentAttack = currentAttack;
     }
 
@@ -68,7 +72,7 @@ public class Archer : Character
     {
         if (projectileLauncher != null)
         {
-            projectileLauncher.HandleShot(true, currentAttack);
+            projectileLauncher.HandleShot(currentAttack);
             Invoke(nameof(ResetAttack), currentAttack.cooldown);
         }
     }

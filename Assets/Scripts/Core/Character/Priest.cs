@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 
 public class Priest : Character
@@ -8,13 +9,27 @@ public class Priest : Character
     [SerializeField] private Collider2D staffCollider;
     [SerializeField] private ProjectileLauncher projectileLauncher;
 
+    private Vector2 lastClickPosition;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        currentAttackIndex.OnValueChanged += OnAttackIndexChanged;
+        OnAttackIndexChanged(0, currentAttackIndex.Value);
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent += OnPrimaryAttack;
             inputReader.SecondaryAttackEvent += OnSecondaryAttack;
+            if (projectileLauncher == null)
+            {
+                projectileLauncher = GetComponentInChildren<ProjectileLauncher>();
+                if (projectileLauncher == null)
+                {
+                    Debug.LogWarning("ProjectileLauncher not found on Archer!");
+                }
+            }
         }
 
         DealMeleeDamageOnContact dealMeleeDamageOnContact = staffCollider.GetComponent<DealMeleeDamageOnContact>();
@@ -33,6 +48,9 @@ public class Priest : Character
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+
+        currentAttackIndex.OnValueChanged -= OnAttackIndexChanged;
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent -= OnPrimaryAttack;
@@ -40,26 +58,40 @@ public class Priest : Character
         }
     }
 
-    private void OnPrimaryAttack(bool isPressed)
+    private void OnAttackIndexChanged(int previous, int current)
     {
-        if (!IsOwner) return;
-        if (EventSystem.current.IsPointerOverGameObject())
-        {
-            return;
-        }
-        isAttacking.Value = true;
-        animator.SetTrigger("Attack");
-        Invoke(nameof(ResetAttack), 0.4f);
-        Debug.Log("Priest: Staff Attack");
+        currentAttack = attacks[current];
+        CurrentAttack = currentAttack;
     }
 
-    private void OnSecondaryAttack(bool isPressed)
+    private void OnPrimaryAttack(bool isPressed)
     {
         if (!IsOwner) return;
         if (isPressed)
         {
             isAttacking.Value = true;
-            Debug.Log("Archer: Shoot Arrow");
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            lastClickPosition = worldPosition;
+        }
+    }
+
+    private void OnSecondaryAttack(bool isPressed)
+    {
+        if (!IsOwner) return;
+        if (EventSystem.current.IsPointerOverGameObject()) { return; }
+        if(isSecondaryAction.Value) { return; }
+
+        isSecondaryAction.Value = true;
+        Invoke(nameof(ResetSecondaryAttack), secondaryAttack.cooldown);
+    }
+
+    protected override void OnIsAttackingChanged(bool previousValue, bool newValue)
+    {
+        Debug.Log($"OnIsAttackingChanged: previousValue={previousValue}, newValue={newValue}");
+        if (newValue && !previousValue)
+        {
+            animator.SetTrigger(currentAttack.animationTrigger);
         }
     }
 
@@ -67,8 +99,90 @@ public class Priest : Character
     {
         if (projectileLauncher != null)
         {
-            projectileLauncher.HandleShot(true, currentAttack);
-            Invoke(nameof(ResetAttack), 0.2f);
+            Debug.Log($"Priest: Casting Spell - {currentAttack.name}");
+            projectileLauncher.HandleShot(currentAttack);
+            Invoke(nameof(ResetAttack), currentAttack.cooldown);
+        }
+    }
+
+    public void AOEAttack()
+    {
+        if (!IsOwner) { return; }
+        AOEAttackServerRpc(transform.position);
+        Invoke(nameof(ResetAttack), currentAttack.cooldown);
+    }
+
+    public void AOEDistantAttack()
+    {
+        if (!IsOwner) { return; }
+        AOEAttackServerRpc(lastClickPosition, true);
+        Invoke(nameof(ResetAttack), currentAttack.cooldown);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AOEAttackServerRpc(Vector2 position, bool isDistant = false)
+    {
+        SpawnAOEEffect(position);
+
+        if (!isDistant)
+        {
+            DealAOEDamage();
+        }
+    }
+
+    private void SpawnAOEEffect(Vector2 position)
+    {
+        GameObject aoeObject = Instantiate(currentAttack.serverPrefab, position, Quaternion.identity);
+        if (aoeObject.TryGetComponent<TeamIndexStorage>(out TeamIndexStorage teamIndexStorage))
+        {
+            teamIndexStorage.Initialize(GetComponent<Player>().TeamIndex.Value);
+        }
+
+        if (aoeObject.TryGetComponent<DealDamageOnContact>(out DealDamageOnContact dealDamageOnContact))
+        {
+            dealDamageOnContact.SetOwner(OwnerClientId);
+        }
+
+        SpawnAOEEffectClientRpc(position);
+    }
+
+    [ClientRpc]
+    private void SpawnAOEEffectClientRpc(Vector2 position)
+    {
+        GameObject aoeObject = Instantiate(currentAttack.clientPrefab, position, Quaternion.identity);
+        if (aoeObject.TryGetComponent<TeamIndexStorage>(out TeamIndexStorage teamIndexStorage))
+        {
+            teamIndexStorage.Initialize(GetComponent<Player>().TeamIndex.Value);
+        }
+    }
+
+    private void DealAOEDamage()
+    {
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, currentAttack.range, LayerMask.GetMask(PlayerLayerMask));
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.attachedRigidbody == null) continue;
+
+            if (hitCollider.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+            {
+                if (networkObject.OwnerClientId == OwnerClientId) continue; // Ignore self
+            }
+
+            int myTeam = GetComponent<Player>().TeamIndex.Value;
+            if (myTeam != -1)
+            {
+                if (hitCollider.attachedRigidbody.TryGetComponent<Player>(out Player player))
+                {
+                    if (player.TeamIndex.Value == myTeam) continue; // Ignore teammates
+                }
+            }
+
+            if (hitCollider.attachedRigidbody.TryGetComponent<Health>(out Health health))
+            {
+                Debug.Log($"Knight: AOE Attack - Dealing {currentAttack.damage} damage to {hitCollider.name}");
+                health.TakeDamage(currentAttack.damage, OwnerClientId);
+                // Optionally, you can add knockback or other effects here
+            }
         }
     }
 
@@ -87,6 +201,14 @@ public class Priest : Character
         if (IsOwner)
         {
             isAttacking.Value = false;
+        }
+    }
+
+    private void ResetSecondaryAttack()
+    {
+        if (IsOwner)
+        {
+            isSecondaryAction.Value = false;
         }
     }
 }

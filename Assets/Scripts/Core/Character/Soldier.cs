@@ -10,12 +10,13 @@ public class Soldier : Character
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        currentAttackIndex.OnValueChanged += OnAttackIndexChanged;
+        OnAttackIndexChanged(0, currentAttackIndex.Value);
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent += OnPrimaryAttack;
-            inputReader.ChangeAttackEvent += OnAttackChange;
-
-            OnAttackChange(0);
         }
 
         DealMeleeDamageOnContact dealMeleeDamageOnContact = swordCollider.GetComponent<DealMeleeDamageOnContact>();
@@ -34,15 +35,18 @@ public class Soldier : Character
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+
+        currentAttackIndex.OnValueChanged -= OnAttackIndexChanged;
+
         if (IsOwner && inputReader != null)
         {
             inputReader.PrimaryAttackEvent -= OnPrimaryAttack;
         }
     }
 
-    private void OnAttackChange(int index)
+    private void OnAttackIndexChanged(int previous, int current)
     {
-        currentAttack = attacks[index];
+        currentAttack = attacks[current];
         CurrentAttack = currentAttack;
     }
 
@@ -71,7 +75,58 @@ public class Soldier : Character
 
     public void AOEAttack()
     {
-        Debug.Log("Knight: AOE Attack Started");
+        if (IsOwner)
+        {
+            AOEAttackServerRpc();
+        }
+    }
+
+    [ServerRpc]
+    private void AOEAttackServerRpc()
+    {
+        SpawnAOEEffect();
+        DealAOEDamage();
+    }
+
+    private void SpawnAOEEffect()
+    {
+        GameObject effectInstance = Instantiate(currentAttack.clientPrefab, transform.position, Quaternion.identity);
+        effectInstance.transform.localRotation = Quaternion.Euler(0, IsFacingLeft ? 0 : -180, effectInstance.transform.localRotation.z);
+        var netObj = effectInstance.GetComponent<NetworkObject>();
+        if (netObj != null)
+        {
+            netObj.Spawn();
+        }
+    }
+
+    private void DealAOEDamage()
+    {
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, currentAttack.range, LayerMask.GetMask(PlayerLayerMask));
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.attachedRigidbody == null) continue;
+
+            if (hitCollider.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+            {
+                if (networkObject.OwnerClientId == OwnerClientId) continue; // Ignore self
+            }
+
+            int myTeam = GetComponent<Player>().TeamIndex.Value;
+            if (myTeam != -1)
+            {
+                if (hitCollider.attachedRigidbody.TryGetComponent<Player>(out Player player))
+                {
+                    if (player.TeamIndex.Value == myTeam) continue; // Ignore teammates
+                }
+            }
+
+            if (hitCollider.attachedRigidbody.TryGetComponent<Health>(out Health health))
+            {
+                Debug.Log($"Knight: AOE Attack - Dealing {currentAttack.damage} damage to {hitCollider.name}");
+                health.TakeDamage(currentAttack.damage, OwnerClientId);
+                // Optionally, you can add knockback or other effects here
+            }
+        }
     }
 
     private void ResetAttack()

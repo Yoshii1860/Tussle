@@ -11,5 +11,7 @@ public class Attack : ScriptableObject
     public string animationTrigger;
     public bool isTriggerBool;
     public Sprite icon;
+    public GameObject serverPrefab;
+    public GameObject clientPrefab;
     public ProjectileBehavior projectileBehavior;
 }

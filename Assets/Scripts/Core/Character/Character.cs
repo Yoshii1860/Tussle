@@ -12,6 +12,7 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected Animator animator;
     [SerializeField] protected CinemachineCamera cmCamera;
     protected GameHUD gameHUD;
+    protected const string PlayerLayerMask = "Walk";
 
     [Header("Movement Settings")]
     [SerializeField] protected float moveSpeed = 5f;
@@ -33,7 +34,8 @@ public abstract class Character : NetworkBehaviour
     protected NetworkVariable<bool> isFacingLeft = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isAttacking = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryAction = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
- 
+    protected NetworkVariable<int> currentAttackIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     protected Vector2 previousMovementInput;
 
     public bool IsFacingLeft => isFacingLeft.Value;
@@ -43,6 +45,7 @@ public abstract class Character : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         Debug.Log($"OnNetworkSpawn: CharacterType={characterType}, IsOwner={IsOwner}, OwnerClientId={OwnerClientId}, NetworkObjectId={NetworkObjectId}");
+
         if (!IsOwner)
         {
             isMoving.OnValueChanged += OnIsMovingChanged;
@@ -65,6 +68,8 @@ public abstract class Character : NetworkBehaviour
         }
         inputReader.MoveEvent += HandleMove;
         inputReader.ZoomEvent += HandleZoom;
+        inputReader.ChangeAttackEvent += OnAttackChange;
+        OnAttackChange(0);
 
         isMoving.OnValueChanged += OnIsMovingChanged;
         isFacingLeft.OnValueChanged += OnFacingLeftChanged;
@@ -75,6 +80,7 @@ public abstract class Character : NetworkBehaviour
 
         gameHUD = FindFirstObjectByType<GameHUD>();
         gameHUD.SetIcons(attacks, secondaryAttack);
+        gameHUD.SetLocalCharacter(gameObject);
     }
 
     public override void OnNetworkDespawn()
@@ -83,12 +89,19 @@ public abstract class Character : NetworkBehaviour
         {
             inputReader.MoveEvent -= HandleMove;
             inputReader.ZoomEvent -= HandleZoom;
+            inputReader.ChangeAttackEvent -= OnAttackChange;
         }
 
         isMoving.OnValueChanged -= OnIsMovingChanged;
         isFacingLeft.OnValueChanged -= OnFacingLeftChanged;
         isAttacking.OnValueChanged -= OnIsAttackingChanged;
         isSecondaryAction.OnValueChanged -= OnIsSecondaryActionChanged;
+    }
+
+    private void OnAttackChange(int index)
+    {
+        if (!IsOwner) return;
+        currentAttackIndex.Value = index;
     }
 
     private void Update()

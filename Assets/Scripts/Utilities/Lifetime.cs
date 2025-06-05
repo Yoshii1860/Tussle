@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class Lifetime : MonoBehaviour
@@ -6,6 +7,22 @@ public class Lifetime : MonoBehaviour
 
     private void Start()
     {
-        Destroy(gameObject, lifetime);
+        if (TryGetComponent<NetworkObject>(out var netObj) && netObj.IsSpawned)
+        {
+            if (NetworkManager.Singleton.IsServer)
+            {
+                StartCoroutine(DespawnAfterDelay(netObj));
+            }
+        }
+        else
+        {
+            Destroy(gameObject, lifetime);
+        }
+    }
+
+    private System.Collections.IEnumerator DespawnAfterDelay(NetworkObject netObj)
+    {
+        yield return new WaitForSeconds(lifetime);
+        netObj.Despawn();
     }
 }

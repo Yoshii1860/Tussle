@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Knight_Deathblow
   m_EditorClassIdentifier: 
   attackName: Deathblow
-  damage: 15
+  damage: 10
   cooldown: 3
-  range: 10
+  range: 5
   animationTrigger: Attack3
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: 48b2650477f24a44aa2ea4ff97548cf5, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 6964990435660818215, guid: 78c13c192aaa3704dab720b80ebfb76e, type: 3}
+  projectileBehavior: {fileID: 0}

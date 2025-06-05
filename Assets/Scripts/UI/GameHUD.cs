@@ -3,14 +3,19 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class GameHUD : MonoBehaviour
 {
     [SerializeField] private GameObject blackscreen;
     [SerializeField] private GameObject minimap;
     [SerializeField] private TMP_Text joinCodeText;
+    [SerializeField] private HealthDisplay healthDisplay;
+    [SerializeField] private InputReader inputReader;
 
     [SerializeField] private Transform attackIconsContainer;
+
+    private GameObject localCharacter;
 
     private const string JoinCodePrefix = "Code: ";
 
@@ -40,7 +45,35 @@ public class GameHUD : MonoBehaviour
             }
         }
 
+        if (inputReader != null)
+        {
+            inputReader.ChangeAttackEvent += OnChangeAttack;
+            OnChangeAttack(0);
+        }
+
         StartCoroutine(HideBlackscreen(1f));
+    }
+
+    private void OnChangeAttack(int index)
+    {
+        Debug.Log($"GameHUD: OnChangeAttack called with index {index}");
+        foreach (Transform child in attackIconsContainer)
+        {
+            if (child == attackIconsContainer.GetChild(index))
+            {
+                child.GetChild(0).gameObject.SetActive(true);
+            }
+            else
+            {
+                child.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void SetLocalCharacter(GameObject character)
+    {
+        localCharacter = character;
+        healthDisplay.InitializeGameHUDHealthBar(character);
     }
 
     public void SetIcons(Attack[] attacks, Attack secondaryAttack)
@@ -78,6 +111,8 @@ public class GameHUD : MonoBehaviour
 
     public void LeaveGame()
     {
+        inputReader.ChangeAttackEvent -= OnChangeAttack;
+
         if (NetworkManager.Singleton.IsHost)
         {
             Debug.Log("GameHUD: Leaving game as Host. Shutting down the server.");
@@ -85,6 +120,7 @@ public class GameHUD : MonoBehaviour
             return;
         }
 
+        
         ClientSingleton.Instance.GameManager.Disconnect();
     }
 }
