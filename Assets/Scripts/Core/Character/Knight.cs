@@ -11,6 +11,8 @@ public class Knight : Character
 {
     [Header("References")]
     [SerializeField] private Collider2D swordCollider;
+    [SerializeField] private Health health;
+    [SerializeField] private float protectionPercentage = 0.5f;
 
     public override void OnNetworkSpawn()
     {
@@ -67,9 +69,10 @@ public class Knight : Character
             return;
         }
         
+        if (!secondStat.TryCast(currentAttack.secondStatCost)) { return; }
+        
         isAttacking.Value = true;
         Invoke(nameof(ResetAttack), currentAttack.cooldown);
-        Debug.Log($"Knight: Attack Started - {currentAttack.name}");
     }
 
     private void OnSecondaryAttack(bool isPressed)
@@ -78,17 +81,14 @@ public class Knight : Character
         isSecondaryAction.Value = isPressed;
         if (!isPressed)
         {
-            Debug.Log("Knight: Block Released");
+            Debug.LogWarning("Knight: Set back to default protection percentage.");
+            health.SetProtectionPercentage(1f);
         }
         else
         {
-            Debug.Log("Knight: Block Started");
+            Debug.Log($"Knight: Set protection percentage to {protectionPercentage * 100}%");
+            health.SetProtectionPercentage(protectionPercentage);
         }
-    }
-
-    protected override void OnIsSecondaryActionChanged(bool previousValue, bool newValue)
-    {
-        animator.SetBool(secondaryAttack.animationTrigger, newValue);
     }
 
     public void EnableSwordCollider()
@@ -106,6 +106,7 @@ public class Knight : Character
         if (IsOwner)
         {
             AOEAttackServerRpc();
+            Invoke(nameof(ResetAttack), currentAttack.cooldown);
         }
     }
 

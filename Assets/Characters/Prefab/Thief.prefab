@@ -740,6 +740,7 @@ GameObject:
   - component: {fileID: -8559943583536023289}
   - component: {fileID: 1392918696308543886}
   - component: {fileID: 196955224818357308}
+  - component: {fileID: -907849244894140635}
   - component: {fileID: 5798548255112604681}
   - component: {fileID: 5318358927666914060}
   - component: {fileID: -3847537369332240150}
@@ -913,6 +914,8 @@ MonoBehaviour:
   moveSpeed: 7
   sprintSpeed: 10
   characterType: 4
+  usesMana: 0
+  secondStat: {fileID: -907849244894140635}
   attacks:
   - {fileID: 11400000, guid: 7fffc0eeeaa38ab479116b5e8813f7c4, type: 2}
   - {fileID: 11400000, guid: 345c5b5df94de5943a963519df5a96ac, type: 2}
@@ -953,8 +956,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   health: {fileID: 9019381624953230461}
   healthBarImage: {fileID: 5401821745978186322}
-  fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
-  lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &-8559943583536023289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1078,6 +1079,24 @@ MonoBehaviour:
         byte0028: 0
         byte0029: 0
   TeamIndex:
+    m_InternalValue: 0
+--- !u!114 &-907849244894140635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000012663239756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4962a8385ec5774e8336e8c58194c40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  secondStatRegAmount: 1
+  secondStatRegInterval: 0.2
+  <MaxSecondStat>k__BackingField: 100
+  CurrentSecondStat:
     m_InternalValue: 0
 --- !u!114 &5798548255112604681
 MonoBehaviour:

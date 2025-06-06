@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 5415553922407859957}
   - component: {fileID: 775172902176669546}
   - component: {fileID: 1634913196936000}
+  - component: {fileID: -1820472702509176213}
   - component: {fileID: 4199916956153579189}
   - component: {fileID: 637394058874717889}
   - component: {fileID: 2706338575927254966}
@@ -192,6 +193,8 @@ MonoBehaviour:
   moveSpeed: 5
   sprintSpeed: 10
   characterType: 0
+  usesMana: 0
+  secondStat: {fileID: -1820472702509176213}
   attacks:
   - {fileID: 11400000, guid: c47e390be41b8e34ba08685846b9bafc, type: 2}
   - {fileID: 11400000, guid: 47a085d15637ef3489d97404781e61aa, type: 2}
@@ -201,6 +204,8 @@ MonoBehaviour:
   minFOV: 5
   maxFOV: 10
   swordCollider: {fileID: 7073256852361891533}
+  health: {fileID: 5255985582554131398}
+  protectionPercentage: 0.5
 --- !u!114 &5255985582554131398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,8 +237,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   health: {fileID: 5255985582554131398}
   healthBarImage: {fileID: 1246404261604153877}
-  fullHealthColor: {r: 0, g: 1, b: 0, a: 1}
-  lowHealthColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &5415553922407859957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -357,6 +360,24 @@ MonoBehaviour:
         byte0028: 0
         byte0029: 0
   TeamIndex:
+    m_InternalValue: 0
+--- !u!114 &-1820472702509176213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000010755293042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4962a8385ec5774e8336e8c58194c40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  secondStatRegAmount: 1
+  secondStatRegInterval: 0.2
+  <MaxSecondStat>k__BackingField: 100
+  CurrentSecondStat:
     m_InternalValue: 0
 --- !u!114 &4199916956153579189
 MonoBehaviour:

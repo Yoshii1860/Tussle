@@ -22,6 +22,8 @@ public abstract class Character : NetworkBehaviour
 
     [Header("Character Settings")]
     [SerializeField] protected CharacterType characterType;
+    [SerializeField] protected bool usesMana;
+    [SerializeField] protected SecondStat secondStat;
     [SerializeField] protected Attack[] attacks;
     [SerializeField] protected Attack secondaryAttack;
     protected Attack currentAttack;
@@ -46,6 +48,8 @@ public abstract class Character : NetworkBehaviour
     protected Vector2 previousMovementInput;
 
     public bool IsFacingLeft => isFacingLeft.Value;
+    public int CharacterTypeIndex => (int)characterType;
+    public bool UsesMana => usesMana;
 
     private float startMoveSpeed;
 
@@ -244,17 +248,17 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void OnIsSecondaryActionChanged(bool previousValue, bool newValue)
     {
-        if (newValue)
+        if (secondaryAttack.isTriggerBool)
         {
-            if (secondaryAttack.isTriggerBool)
+            if (newValue != previousValue)
             {
                 animator.SetBool(secondaryAttack.animationTrigger, newValue);
             }
-            else
-            {
-                animator.SetTrigger(secondaryAttack.animationTrigger);
-                attackCooldowns[-1] = secondaryAttack.cooldown;
-            }
+        }
+        else if (newValue)
+        {
+            animator.SetTrigger(secondaryAttack.animationTrigger);
+            attackCooldowns[-1] = secondaryAttack.cooldown;
         }
     }
 

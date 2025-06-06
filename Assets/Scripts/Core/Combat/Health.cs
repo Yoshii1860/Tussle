@@ -66,6 +66,13 @@ public class Health : NetworkBehaviour
         protectionPercentage = 1;
     }
 
+    public void SetProtectionPercentage(float newProtectionPercentage)
+    {
+        if (isDead) { return; }
+
+        protectionPercentage = newProtectionPercentage;
+    }
+
     public void ApplyRegeneration(int regenerationAmount, float duration)
     {
         if (isDead) { return; }

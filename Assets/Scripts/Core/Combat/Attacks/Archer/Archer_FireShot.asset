@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Archer_FireShot
   m_EditorClassIdentifier: 
   attackName: Fire Shot
-  damage: 0
-  cooldown: 0
-  range: 0
+  damage: 10
+  cooldown: 2
+  range: 15
+  secondStatCost: 20
+  staminaCost: 0
   animationTrigger: SecondaryRelease3
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: 006a992109a8ced4d9c595471f5d28e8, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 0}
   projectileBehavior: {fileID: 11400000, guid: 79ed698dd70b913428ac865266f9571b, type: 2}

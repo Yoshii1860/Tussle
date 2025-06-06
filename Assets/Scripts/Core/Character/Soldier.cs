@@ -60,9 +60,10 @@ public class Soldier : Character
             return;
         }
         
+        if (!secondStat.TryCast(currentAttack.secondStatCost)) { return; }
+        
         isAttacking.Value = true;
         Invoke(nameof(ResetAttack), currentAttack.cooldown);
-        Debug.Log("Soldier: Sword Attack");
     }
 
     public void EnableSwordCollider()
@@ -80,6 +81,7 @@ public class Soldier : Character
         if (IsOwner)
         {
             AOEAttackServerRpc();
+            Invoke(nameof(ResetAttack), currentAttack.cooldown);
         }
     }
 

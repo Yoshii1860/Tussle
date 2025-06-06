@@ -14,8 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackName: Impale
   damage: 20
-  cooldown: 1
+  cooldown: 2
   range: 0
+  secondStatCost: 20
+  staminaCost: 0
   animationTrigger: Attack2
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: f47696873a380dd4f8f642bb60936cc7, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 0}
+  projectileBehavior: {fileID: 0}

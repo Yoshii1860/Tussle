@@ -14,8 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackName: Hit
   damage: 10
-  cooldown: 0.4
+  cooldown: 0.5
   range: 0
+  secondStatCost: 10
+  staminaCost: 0
   animationTrigger: Attack
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: ba0f514ff177c364e80cade4c3cd3670, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 0}
+  projectileBehavior: {fileID: 0}

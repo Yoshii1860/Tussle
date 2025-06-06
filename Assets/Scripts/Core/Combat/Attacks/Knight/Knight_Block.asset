@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackName: Block
   damage: 0
-  cooldown: 0
+  cooldown: 0.1
   range: 0
   animationTrigger: Secondary
   isTriggerBool: 1
   icon: {fileID: 21300000, guid: 18fd605aaaf15ea41abfeb55005bb418, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 0}
+  projectileBehavior: {fileID: 0}

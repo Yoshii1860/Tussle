@@ -74,6 +74,9 @@ public class Priest : Character
             return;
         }
 
+        if (!secondStat.TryCast(currentAttack.secondStatCost)) { return; }
+        else {Debug.Log($"Priest: OnPrimaryAttack Passes TryCast");}
+
         isAttacking.Value = true;
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -82,9 +85,13 @@ public class Priest : Character
 
     private void OnSecondaryAttack(bool isPressed)
     {
-        if (!IsOwner) return;
-        if (EventSystem.current.IsPointerOverGameObject()) { return; }
-        if(isSecondaryAction.Value) { return; }
+        if (!IsOwner ||
+            EventSystem.current.IsPointerOverGameObject() ||
+            !isPressed ||
+            !CanPerformAttack())
+        {
+            return;
+        }
 
         isSecondaryAction.Value = true;
         Invoke(nameof(ResetSecondaryAttack), secondaryAttack.cooldown);

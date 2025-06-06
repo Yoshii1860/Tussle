@@ -16,6 +16,8 @@ MonoBehaviour:
   damage: 10
   cooldown: 3
   range: 5
+  secondStatCost: 30
+  staminaCost: 0
   animationTrigger: Attack3
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: 48b2650477f24a44aa2ea4ff97548cf5, type: 3}

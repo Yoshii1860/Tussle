@@ -59,10 +59,11 @@ public class Thief : Character
         {
             return;
         }
+
+        if (!secondStat.TryCast(currentAttack.secondStatCost)) { return; }
         
         isAttacking.Value = true;
         Invoke(nameof(ResetAttack), currentAttack.cooldown);
-        Debug.Log("Thief: Sword Attack");
     }
 
     public void EnableSwordCollider()

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Archer : Character
 {
@@ -47,24 +48,28 @@ public class Archer : Character
 
     private void OnPrimaryAttack(bool isPressed)
     {
-        if (!IsOwner) return;
-        if (isPressed)
+        if (!IsOwner ||
+            EventSystem.current.IsPointerOverGameObject() ||
+            !isPressed ||
+            !CanPerformAttack())
         {
-            isAttacking.Value = true;
+            return;
         }
+
+        if (!secondStat.TryCast(currentAttack.secondStatCost)) { return; }
+
+        isAttacking.Value = true;
+        Invoke(nameof(ResetAttack), currentAttack.cooldown);
     }
 
     private void OnSecondaryAttack(bool isPressed)
     {
-        if (!IsOwner) return;
-    }
-
-    protected override void OnIsAttackingChanged(bool previousValue, bool newValue)
-    {
-        Debug.Log($"OnIsAttackingChanged: previousValue={previousValue}, newValue={newValue}");
-        if (newValue && !previousValue)
+        if (!IsOwner ||
+            EventSystem.current.IsPointerOverGameObject() ||
+            !isPressed ||
+            !CanPerformAttack())
         {
-            animator.SetTrigger(currentAttack.animationTrigger);
+            return;
         }
     }
 

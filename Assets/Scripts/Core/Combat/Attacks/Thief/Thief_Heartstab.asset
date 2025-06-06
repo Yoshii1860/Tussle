@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: Thief_Heartstab
   m_EditorClassIdentifier: 
   attackName: Heartstab
-  damage: 0
-  cooldown: 0
+  damage: 15
+  cooldown: 2
   range: 0
+  secondStatCost: 20
+  staminaCost: 0
   animationTrigger: Attack3
-  isPrimaryAttack: 1
+  isTriggerBool: 0
   icon: {fileID: 21300000, guid: 58ddaef8884fec544b5a8a10336344ec, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 0}
+  projectileBehavior: {fileID: 0}

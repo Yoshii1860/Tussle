@@ -8,6 +8,8 @@ public class Attack : ScriptableObject
     public int damage;
     public float cooldown;
     public float range;
+    public int secondStatCost;
+    public int staminaCost;
     public string animationTrigger;
     public bool isTriggerBool;
     public Sprite icon;

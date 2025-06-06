@@ -11,7 +11,12 @@ public class GameHUD : MonoBehaviour
     [SerializeField] private GameObject minimap;
     [SerializeField] private TMP_Text joinCodeText;
     [SerializeField] private HealthDisplay healthDisplay;
+    [SerializeField] private SecondStatDisplay secondStatDisplay;
     [SerializeField] private InputReader inputReader;
+    [SerializeField] private Image characterTypeImage;
+    [SerializeField] private TMP_Text characterNameText;
+    [SerializeField] private Sprite[] characterTypeSprites;
+    [SerializeField] private Sprite[] secondaryBarSprites; // 0 mana - 1 stamina
 
     [SerializeField] private Transform attackIconsContainer;
 
@@ -74,6 +79,31 @@ public class GameHUD : MonoBehaviour
     {
         localCharacter = character;
         healthDisplay.InitializeGameHUDHealthBar(character);
+
+        var characterComponent = character.GetComponent<Character>();
+        if (characterComponent != null)
+        {
+            int typeIndex = characterComponent.CharacterTypeIndex;
+            if (typeIndex >= 0 && typeIndex < characterTypeSprites.Length)
+            {
+                characterTypeImage.sprite = characterTypeSprites[typeIndex];
+            }
+
+            secondStatDisplay.InitializeGameHUDSecondStatBar(character, secondaryBarSprites[characterComponent.UsesMana ? 0 : 1]);
+        }
+
+        var player = character.GetComponent<Player>();
+        if (player != null)
+        {
+            characterNameText.text = player.PlayerName.Value.ToString();
+
+            player.PlayerName.OnValueChanged += (oldValue, newValue) =>
+            {
+                characterNameText.text = newValue.ToString();
+            };
+        }
+
+
     }
 
     public void UpdateCooldown(int attackIndex, float cooldownRatio)

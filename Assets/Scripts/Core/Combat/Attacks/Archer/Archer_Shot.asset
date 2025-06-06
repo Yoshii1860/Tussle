@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: Archer_Shot
   m_EditorClassIdentifier: 
   attackName: Shot
-  damage: 0
-  cooldown: 0
-  range: 0
+  damage: 10
+  cooldown: 1
+  range: 15
+  secondStatCost: 10
+  staminaCost: 0
   animationTrigger: SecondaryRelease
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: e2f7cf4dcbe48ed43a010d3cf95019c5, type: 3}
+  serverPrefab: {fileID: 0}
+  clientPrefab: {fileID: 0}
   projectileBehavior: {fileID: 11400000, guid: 2707b28e67f0aab488ea0a208605d11f, type: 2}

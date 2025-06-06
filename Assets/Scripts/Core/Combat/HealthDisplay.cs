@@ -7,8 +7,8 @@ public class HealthDisplay : NetworkBehaviour
     [Header("References")]
     [SerializeField] private Health health;
     [SerializeField] private Image healthBarImage;
-    [SerializeField] private Color fullHealthColor = Color.green;
-    [SerializeField] private Color lowHealthColor = Color.red;
+    //[SerializeField] private Color fullHealthColor = Color.green;
+    //[SerializeField] private Color lowHealthColor = Color.red;
 
     public override void OnNetworkSpawn()
     {
@@ -47,6 +47,6 @@ public class HealthDisplay : NetworkBehaviour
     {
         float healthPercentage = (float)newHealth / health.MaxHealth;
         healthBarImage.fillAmount = healthPercentage;
-        healthBarImage.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercentage);
+        //healthBarImage.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercentage);
     }
 }
