@@ -576,6 +576,7 @@ MonoBehaviour:
   sprintSpeed: 10
   characterType: 2
   usesMana: 1
+  secondStat: {fileID: 4428842531568857718}
   attacks:
   - {fileID: 11400000, guid: 6b25a00ee44c24d4fa41f31c719ff638, type: 2}
   - {fileID: 11400000, guid: 502ab36f4d267d843aa957742ced8a02, type: 2}
@@ -586,7 +587,6 @@ MonoBehaviour:
   maxFOV: 10
   staffCollider: {fileID: 3498707649867236748}
   projectileLauncher: {fileID: 569726499168229938}
-  secondStat: {fileID: 4428842531568857718}
 --- !u!114 &7931177626035245099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1009,7 +1009,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 8712038044248872339}
-  knight: {fileID: 0}
+  character: {fileID: 2277287093713288670}
   teamIndexStorage: {fileID: 2087913081718111734}
   damageAmount: 8
   damageCooldown: 0.2

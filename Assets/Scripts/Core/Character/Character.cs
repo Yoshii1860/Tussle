@@ -5,6 +5,7 @@ using Unity.Cinemachine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 
 public abstract class Character : NetworkBehaviour
 {
@@ -208,7 +209,7 @@ public abstract class Character : NetworkBehaviour
         if (!IsOwner) return;
 
         bool facingLeft = isFacingLeft.Value;
-        transform.localScale = new Vector3(facingLeft ? -1 : 1, 1, 1);
+        transform.GetChild(0).localScale = new Vector3(facingLeft ? -1 : 1, 1, 1);
     }
 
     private void OnFacingLeftChanged(bool previousValue, bool newValue)
@@ -248,6 +249,8 @@ public abstract class Character : NetworkBehaviour
 
     protected virtual void OnIsSecondaryActionChanged(bool previousValue, bool newValue)
     {
+        if (secondaryAttack == null) { return; }
+
         if (secondaryAttack.isTriggerBool)
         {
             if (newValue != previousValue)

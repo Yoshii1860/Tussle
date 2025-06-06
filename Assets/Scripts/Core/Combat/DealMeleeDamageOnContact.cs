@@ -5,7 +5,7 @@ using System;
 public class DealMeleeDamageOnContact : MonoBehaviour
 {
     [SerializeField] private Player player;
-    [SerializeField] private Knight knight;
+    [SerializeField] private Character character;
     [SerializeField] private TeamIndexStorage teamIndexStorage;
     [SerializeField] private int damageAmount = 10;
     [SerializeField] private float damageCooldown = 0.2f;
@@ -57,7 +57,7 @@ public class DealMeleeDamageOnContact : MonoBehaviour
         if (Time.time - lastDamageTime < damageCooldown || hasDealtDamageThisFrame) return;
         if (other.attachedRigidbody == null) return;
 
-        damageAmount = knight.CurrentAttack.damage;
+        damageAmount = character.CurrentAttack.damage;
 
         if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {

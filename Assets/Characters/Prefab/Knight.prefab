@@ -1252,7 +1252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1634913196936000}
-  knight: {fileID: 3850975424279790614}
+  character: {fileID: 3850975424279790614}
   teamIndexStorage: {fileID: 2535737938866354302}
   damageAmount: 12
   damageCooldown: 0.3
