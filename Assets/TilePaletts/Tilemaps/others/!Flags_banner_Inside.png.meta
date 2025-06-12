@@ -1,0 +1,642 @@
+fileFormatVersion: 2
+guid: 5704539ab36d4ec45a476b132736bfdb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3299058344112598750
+    second: '!Flags_banner_Inside_0'
+  - first:
+      213: 8928966632022171110
+    second: '!Flags_banner_Inside_1'
+  - first:
+      213: 2427265858715865236
+    second: '!Flags_banner_Inside_2'
+  - first:
+      213: -7141853831673383488
+    second: '!Flags_banner_Inside_3'
+  - first:
+      213: 7664518266545993894
+    second: '!Flags_banner_Inside_4'
+  - first:
+      213: -8533325214255246779
+    second: '!Flags_banner_Inside_5'
+  - first:
+      213: -419580062776368444
+    second: '!Flags_banner_Inside_6'
+  - first:
+      213: -7685859535005011408
+    second: '!Flags_banner_Inside_7'
+  - first:
+      213: -3237779121427616922
+    second: '!Flags_banner_Inside_8'
+  - first:
+      213: 641324841257833205
+    second: '!Flags_banner_Inside_9'
+  - first:
+      213: 2789013440897232161
+    second: '!Flags_banner_Inside_10'
+  - first:
+      213: 4987157981905887980
+    second: '!Flags_banner_Inside_11'
+  - first:
+      213: 5876025280725037547
+    second: '!Flags_banner_Inside_12'
+  - first:
+      213: 7317325023893095707
+    second: '!Flags_banner_Inside_13'
+  - first:
+      213: -4955722081044392498
+    second: '!Flags_banner_Inside_14'
+  - first:
+      213: -4326025256073722967
+    second: '!Flags_banner_Inside_15'
+  - first:
+      213: -1446618532359296835
+    second: '!Flags_banner_Inside_16'
+  - first:
+      213: 681403905489567651
+    second: '!Flags_banner_Inside_17'
+  - first:
+      213: -8027283010724214143
+    second: '!Flags_banner_Inside_18'
+  - first:
+      213: 7511533013552282138
+    second: '!Flags_banner_Inside_19'
+  - first:
+      213: 7851688868558599336
+    second: '!Flags_banner_Inside_20'
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_0'
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 687
+        width: 48
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22151e94ae36732d0800000000000000
+      internalID: -3299058344112598750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_1'
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 677
+        width: 48
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ed5ff818df0aeb70800000000000000
+      internalID: 8928966632022171110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_2'
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 675
+        width: 48
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 490513430716fa120800000000000000
+      internalID: 2427265858715865236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_3'
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 679
+        width: 48
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c5785d77c903ec90800000000000000
+      internalID: -7141853831673383488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_4'
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 677
+        width: 48
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a877fb41c6dd5a60800000000000000
+      internalID: 7664518266545993894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_5'
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 675
+        width: 36
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5429e6bdde9839980800000000000000
+      internalID: -8533325214255246779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_6'
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 675
+        width: 36
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c2e06be72a5d2af0800000000000000
+      internalID: -419580062776368444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_7'
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 675
+        width: 36
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0323a7e6977565590800000000000000
+      internalID: -7685859535005011408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_8'
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 675
+        width: 36
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66b61262b091113d0800000000000000
+      internalID: -3237779121427616922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_9'
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 675
+        width: 36
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f29ec49b8176e800800000000000000
+      internalID: 641324841257833205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_10'
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 675
+        width: 36
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12d287a92f094b620800000000000000
+      internalID: 2789013440897232161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_11'
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 675
+        width: 36
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce2214ee2c1f53540800000000000000
+      internalID: 4987157981905887980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_12'
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 579
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be1b4dc3cd5db8150800000000000000
+      internalID: 5876025280725037547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_13'
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 579
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b158933275c5c8560800000000000000
+      internalID: 7317325023893095707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_14'
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 579
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec51ac9160db93bb0800000000000000
+      internalID: -4955722081044392498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_15'
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 579
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a38b5a23fed6f3c0800000000000000
+      internalID: -4326025256073722967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_16'
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 579
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db82a3dfb149cebe0800000000000000
+      internalID: -1446618532359296835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_17'
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 579
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3aff447ed35d47900800000000000000
+      internalID: 681403905489567651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_18'
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 579
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18a4142d1ac599090800000000000000
+      internalID: -8027283010724214143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_19'
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 483
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1a376f5a735e3860800000000000000
+      internalID: 7511533013552282138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '!Flags_banner_Inside_20'
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 483
+        width: 36
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a4f2590d6dc6fc60800000000000000
+      internalID: 7851688868558599336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

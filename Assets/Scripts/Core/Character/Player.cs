@@ -44,6 +44,7 @@ public class Player : NetworkBehaviour
                 PlayerName.Value = userData.userName;
                 TeamIndex.Value = userData.teamIndex;
                 OnPlayerSpawned?.Invoke(this);
+                GameManager.Instance.RegisterPlayer(this);
             }
 
 #if UNITY_SERVER
@@ -54,6 +55,7 @@ public class Player : NetworkBehaviour
                 PlayerName.Value = userData.userName;
                 TeamIndex.Value = userData.teamIndex;
                 OnPlayerSpawned?.Invoke(this);
+                GameManager.Instance.RegisterPlayer(this);
             }
             return;
 #endif
@@ -71,8 +73,7 @@ public class Player : NetworkBehaviour
 
             cmCamera.PreviousStateIsValid = false;
 
-            blackscreen.SetActive(true);
-            StartCoroutine(FadeOutblackscreen());
+            BlackscreenFade(0.5f, fadeDuration);
 
             minimapIconRenderer.color = playerIconColor;
 
@@ -99,6 +100,16 @@ public class Player : NetworkBehaviour
         else
         {
             Debug.LogError("Player: cmCamera is null, cannot set Follow or LookAt");
+        }
+    }
+
+    [ClientRpc]
+    public void TeleportClientRpc(Vector3 targetPosition)
+    {
+        Debug.Log($"Player: TeleportClientRpc called for Player {OwnerClientId} to position {targetPosition}");
+        if (IsOwner)
+        {
+            transform.position = targetPosition;
         }
     }
 
@@ -145,8 +156,9 @@ public class Player : NetworkBehaviour
     }
 
 
-    private IEnumerator FadeOutblackscreen()
+    private IEnumerator FadeOutblackscreen(float blackDuration, float duration)
     {
+        yield return new WaitForSeconds(blackDuration); // Ensure blackscreen is active before fading out
         Image blackscreenImage = blackscreen.GetComponentInChildren<Image>();
         if (blackscreenImage != null)
         {
@@ -169,6 +181,12 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public void BlackscreenFade(float blackDuration = 1f, float duration = 1f)
+    {
+        blackscreen.SetActive(true);
+        StartCoroutine(FadeOutblackscreen(blackDuration, duration));
+    }
+
     private static GameObject FindChildWithTag(GameObject parent, string tag)
     {
         foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
@@ -185,5 +203,6 @@ public class Player : NetworkBehaviour
         {
             OnPlayerDespawned?.Invoke(this);
         }
+        GameManager.Instance.UnregisterPlayer(this);
     }
 }

@@ -14,11 +14,18 @@ public class HealthDisplay : NetworkBehaviour
     {
         if (!IsClient) { return; }
 
-        if (health != null)
+        Player player = GetComponent<Player>();
+        if (player != null && player.IsOwner)
         {
-            health.CurrentHealth.OnValueChanged += OnHealthChanged;
-            OnHealthChanged(0, health.CurrentHealth.Value);
+            healthBarImage.gameObject.SetActive(false);
+            return;
         }
+
+        if (health != null)
+            {
+                health.CurrentHealth.OnValueChanged += OnHealthChanged;
+                OnHealthChanged(0, health.CurrentHealth.Value);
+            }
     }
 
     public void InitializeGameHUDHealthBar(GameObject character)

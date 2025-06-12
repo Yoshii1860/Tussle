@@ -209,7 +209,7 @@ public abstract class Character : NetworkBehaviour
         if (!IsOwner) return;
 
         bool facingLeft = isFacingLeft.Value;
-        transform.GetChild(0).localScale = new Vector3(facingLeft ? -1 : 1, 1, 1);
+        transform.localScale = new Vector3(facingLeft ? -1 : 1, 1, 1);
     }
 
     private void OnFacingLeftChanged(bool previousValue, bool newValue)

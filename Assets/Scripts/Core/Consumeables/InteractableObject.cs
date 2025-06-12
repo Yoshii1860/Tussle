@@ -1,9 +1,11 @@
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Collections;
+using System;
 
 public abstract class InteractableObject : NetworkBehaviour
 {
+    public event Action<InteractableObject> OnPickup; // Event to notify when an object is picked up
     [SerializeField] private ObjectType objectType; // Enum for object type
     [SerializeField] private string editorObjectName; // Editor-friendly string for input
     [SerializeField] private int value = 10;
@@ -43,6 +45,7 @@ public abstract class InteractableObject : NetworkBehaviour
             return;
         }
 
+        OnPickup?.Invoke(this);
         IsPickedUp.Value = true;
         UseEffect(clientId); // Apply effect immediately
         DestroyClientRpc();

@@ -29,13 +29,13 @@ public class SecondStat : NetworkBehaviour
         if (CurrentSecondStat.Value < secondStatCost) { return false; }
 
         Debug.Log($"SecondStat: Casting spell with cost: {secondStatCost}");
-        ModifySecondStat(-secondStatCost);
+        ModifySecondStatServerRpc(-secondStatCost);
         return true;
     }
 
     public void Restore(int secondStatAmount)
     {
-        ModifySecondStat(secondStatAmount);
+        ModifySecondStatServerRpc(secondStatAmount);
     }
 
     private void ApplyRegeneration(int regenerationAmount)
@@ -47,12 +47,13 @@ public class SecondStat : NetworkBehaviour
     {
         while (true)
         {
-            ModifySecondStat(regenerationAmount);
+            ModifySecondStatServerRpc(regenerationAmount);
             yield return new WaitForSeconds(secondStatRegInterval);
         }
     }
 
-    private void ModifySecondStat(int value)
+    [ServerRpc(RequireOwnership = false)]
+    private void ModifySecondStatServerRpc(int value)
     {
         if (!IsServer) { return; }
 

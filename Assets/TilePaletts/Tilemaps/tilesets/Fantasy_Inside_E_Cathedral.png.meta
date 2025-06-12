@@ -1,0 +1,1183 @@
+fileFormatVersion: 2
+guid: bf1f6f5859987d04e84744a96e702e83
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6956918886083070138
+    second: Fantasy_Inside_E_Cathedral_0
+  - first:
+      213: -1712262679052545661
+    second: Fantasy_Inside_E_Cathedral_1
+  - first:
+      213: 6649585651766124119
+    second: Fantasy_Inside_E_Cathedral_2
+  - first:
+      213: 7283460500490455488
+    second: Fantasy_Inside_E_Cathedral_3
+  - first:
+      213: -6026722774407787521
+    second: Fantasy_Inside_E_Cathedral_4
+  - first:
+      213: -2656149736356368499
+    second: Fantasy_Inside_E_Cathedral_5
+  - first:
+      213: 1858508300977679173
+    second: Fantasy_Inside_E_Cathedral_6
+  - first:
+      213: -5766855690487122160
+    second: Fantasy_Inside_E_Cathedral_7
+  - first:
+      213: 2777573957457153342
+    second: Fantasy_Inside_E_Cathedral_8
+  - first:
+      213: -1023430910141040595
+    second: Fantasy_Inside_E_Cathedral_9
+  - first:
+      213: 1694844394638479314
+    second: Fantasy_Inside_E_Cathedral_10
+  - first:
+      213: -2268682680093802660
+    second: Fantasy_Inside_E_Cathedral_11
+  - first:
+      213: -1642828817813802958
+    second: Fantasy_Inside_E_Cathedral_12
+  - first:
+      213: -6913987242189634906
+    second: Fantasy_Inside_E_Cathedral_13
+  - first:
+      213: -5366350227891454061
+    second: Fantasy_Inside_E_Cathedral_14
+  - first:
+      213: 707746233121761968
+    second: Fantasy_Inside_E_Cathedral_15
+  - first:
+      213: -7312948775083296462
+    second: Fantasy_Inside_E_Cathedral_16
+  - first:
+      213: 1519039434723646579
+    second: Fantasy_Inside_E_Cathedral_17
+  - first:
+      213: 9129042114897670053
+    second: Fantasy_Inside_E_Cathedral_18
+  - first:
+      213: 1272560521126387473
+    second: Fantasy_Inside_E_Cathedral_19
+  - first:
+      213: 8839523752299594312
+    second: Fantasy_Inside_E_Cathedral_20
+  - first:
+      213: 9106172557872824606
+    second: Fantasy_Inside_E_Cathedral_21
+  - first:
+      213: 7909882991963316381
+    second: Fantasy_Inside_E_Cathedral_22
+  - first:
+      213: 1330363999679897191
+    second: Fantasy_Inside_E_Cathedral_23
+  - first:
+      213: -3043114465730865334
+    second: Fantasy_Inside_E_Cathedral_24
+  - first:
+      213: -2274431267886380799
+    second: Fantasy_Inside_E_Cathedral_25
+  - first:
+      213: -3949391495122513010
+    second: Fantasy_Inside_E_Cathedral_26
+  - first:
+      213: 8461550698215211985
+    second: Fantasy_Inside_E_Cathedral_27
+  - first:
+      213: 910613211631005300
+    second: Fantasy_Inside_E_Cathedral_28
+  - first:
+      213: -1341825621527709549
+    second: Fantasy_Inside_E_Cathedral_29
+  - first:
+      213: -7470782679443257359
+    second: Fantasy_Inside_E_Cathedral_30
+  - first:
+      213: 6081890919485034936
+    second: Fantasy_Inside_E_Cathedral_31
+  - first:
+      213: -127956941948089305
+    second: Fantasy_Inside_E_Cathedral_32
+  - first:
+      213: 5984527423591228411
+    second: Fantasy_Inside_E_Cathedral_33
+  - first:
+      213: -8920282033868135240
+    second: Fantasy_Inside_E_Cathedral_34
+  - first:
+      213: -7781466332482987080
+    second: Fantasy_Inside_E_Cathedral_35
+  - first:
+      213: 5316473828817065445
+    second: Fantasy_Inside_E_Cathedral_36
+  - first:
+      213: -8330576389962949880
+    second: Fantasy_Inside_E_Cathedral_37
+  - first:
+      213: -3342287018603776001
+    second: Fantasy_Inside_E_Cathedral_38
+  - first:
+      213: 403511780706514168
+    second: Fantasy_Inside_E_Cathedral_39
+  - first:
+      213: -5918851838286476281
+    second: Fantasy_Inside_E_Cathedral_40
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 48
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 743
+        width: 176
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 647ffc7e12f047f90800000000000000
+      internalID: -6956918886083070138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_1
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 743
+        width: 176
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3811ae45a22dc38e0800000000000000
+      internalID: -1712262679052545661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_2
+      rect:
+        serializedVersion: 2
+        x: 411
+        y: 551
+        width: 262
+        height: 204
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75edd055be2184c50800000000000000
+      internalID: 6649585651766124119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_3
+      rect:
+        serializedVersion: 2
+        x: 675
+        y: 642
+        width: 46
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c9825b5cbc041560800000000000000
+      internalID: 7283460500490455488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_4
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 642
+        width: 45
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffbcaaf4197cc5ca0800000000000000
+      internalID: -6026722774407787521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 423
+        width: 409
+        height: 298
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8f2b3e33e5732bd0800000000000000
+      internalID: -2656149736356368499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_6
+      rect:
+        serializedVersion: 2
+        x: 676
+        y: 580
+        width: 40
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54ba3e3f37fbac910800000000000000
+      internalID: 1858508300977679173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_7
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 532
+        width: 41
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0173399bd4308ffa0800000000000000
+      internalID: -5766855690487122160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_8
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 537
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3d0c9f4ccceb8620800000000000000
+      internalID: 2777573957457153342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_9
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 537
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2873e4720b0cc1f0800000000000000
+      internalID: -1023430910141040595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 335
+        width: 166
+        height: 194
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2df0dfb4ffb458710800000000000000
+      internalID: 1694844394638479314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_11
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 451
+        width: 95
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5f7de85f150480e0800000000000000
+      internalID: -2268682680093802660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_12
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 450
+        width: 94
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 230fe6fe4ef7339e0800000000000000
+      internalID: -1642828817813802958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_13
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 450
+        width: 94
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a244bf2c359c00a0800000000000000
+      internalID: -6913987242189634906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_14
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 431
+        width: 44
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39f713e56e4e685b0800000000000000
+      internalID: -5366350227891454061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_15
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 383
+        width: 21
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bae750037b62d900800000000000000
+      internalID: 707746233121761968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_16
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 408
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2393880b5df238a90800000000000000
+      internalID: -7312948775083296462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_17
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 238
+        width: 194
+        height: 144
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37c53825156b41510800000000000000
+      internalID: 1519039434723646579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_18
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 335
+        width: 94
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5af6e0e8f6fd0be70800000000000000
+      internalID: 9129042114897670053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_19
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 335
+        width: 94
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11f9ce83d0b09a110800000000000000
+      internalID: 1272560521126387473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_20
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 364
+        width: 44
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8420277d40c4caa70800000000000000
+      internalID: 8839523752299594312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_21
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 91
+        width: 62
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e118b6fd1bf9f5e70800000000000000
+      internalID: 9106172557872824606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_22
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 234
+        width: 30
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d90a0ee3cac85cd60800000000000000
+      internalID: 7909882991963316381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_23
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 216
+        width: 100
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76e53e65207667210800000000000000
+      internalID: 1330363999679897191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_24
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 143
+        width: 18
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a47524b348fa4c5d0800000000000000
+      internalID: -3043114465730865334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_25
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 143
+        width: 18
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1094793ffc89f60e0800000000000000
+      internalID: -2274431267886380799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_26
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 47
+        width: 50
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8316462c51f039c0800000000000000
+      internalID: -3949391495122513010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_27
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 143
+        width: 30
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d3831067877d6570800000000000000
+      internalID: 8461550698215211985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_28
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 95
+        width: 40
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47e2b0f24e523ac00800000000000000
+      internalID: 910613211631005300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_29
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 143
+        width: 50
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 398b25ed4b0e06de0800000000000000
+      internalID: -1341825621527709549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_30
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 66
+        width: 46
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f7c4a52cb2725890800000000000000
+      internalID: -7470782679443257359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_31
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 0
+        width: 16
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b1549a6197376450800000000000000
+      internalID: 6081890919485034936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_32
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 0
+        width: 30
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72c83a8d6d7693ef0800000000000000
+      internalID: -127956941948089305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_33
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 0
+        width: 30
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf32dbffbff4d0350800000000000000
+      internalID: 5984527423591228411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_34
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 0
+        width: 18
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b4adfa70cac43480800000000000000
+      internalID: -8920282033868135240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_35
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 66
+        width: 98
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bb90bc399da20490800000000000000
+      internalID: -7781466332482987080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_36
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e55d4887c8e7c940800000000000000
+      internalID: 5316473828817065445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_37
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 0
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80b900e19e8d36c80800000000000000
+      internalID: -8330576389962949880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_38
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 0
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff7f8be2aafcd91d0800000000000000
+      internalID: -3342287018603776001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_39
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 0
+        width: 26
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f472bf93df899500800000000000000
+      internalID: 403511780706514168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fantasy_Inside_E_Cathedral_40
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 0
+        width: 46
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70c44cccc930cdda0800000000000000
+      internalID: -5918851838286476281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fantasy_Inside_E_Cathedral_0: -6956918886083070138
+      Fantasy_Inside_E_Cathedral_1: -1712262679052545661
+      Fantasy_Inside_E_Cathedral_10: 1694844394638479314
+      Fantasy_Inside_E_Cathedral_11: -2268682680093802660
+      Fantasy_Inside_E_Cathedral_12: -1642828817813802958
+      Fantasy_Inside_E_Cathedral_13: -6913987242189634906
+      Fantasy_Inside_E_Cathedral_14: -5366350227891454061
+      Fantasy_Inside_E_Cathedral_15: 707746233121761968
+      Fantasy_Inside_E_Cathedral_16: -7312948775083296462
+      Fantasy_Inside_E_Cathedral_17: 1519039434723646579
+      Fantasy_Inside_E_Cathedral_18: 9129042114897670053
+      Fantasy_Inside_E_Cathedral_19: 1272560521126387473
+      Fantasy_Inside_E_Cathedral_2: 6649585651766124119
+      Fantasy_Inside_E_Cathedral_20: 8839523752299594312
+      Fantasy_Inside_E_Cathedral_21: 9106172557872824606
+      Fantasy_Inside_E_Cathedral_22: 7909882991963316381
+      Fantasy_Inside_E_Cathedral_23: 1330363999679897191
+      Fantasy_Inside_E_Cathedral_24: -3043114465730865334
+      Fantasy_Inside_E_Cathedral_25: -2274431267886380799
+      Fantasy_Inside_E_Cathedral_26: -3949391495122513010
+      Fantasy_Inside_E_Cathedral_27: 8461550698215211985
+      Fantasy_Inside_E_Cathedral_28: 910613211631005300
+      Fantasy_Inside_E_Cathedral_29: -1341825621527709549
+      Fantasy_Inside_E_Cathedral_3: 7283460500490455488
+      Fantasy_Inside_E_Cathedral_30: -7470782679443257359
+      Fantasy_Inside_E_Cathedral_31: 6081890919485034936
+      Fantasy_Inside_E_Cathedral_32: -127956941948089305
+      Fantasy_Inside_E_Cathedral_33: 5984527423591228411
+      Fantasy_Inside_E_Cathedral_34: -8920282033868135240
+      Fantasy_Inside_E_Cathedral_35: -7781466332482987080
+      Fantasy_Inside_E_Cathedral_36: 5316473828817065445
+      Fantasy_Inside_E_Cathedral_37: -8330576389962949880
+      Fantasy_Inside_E_Cathedral_38: -3342287018603776001
+      Fantasy_Inside_E_Cathedral_39: 403511780706514168
+      Fantasy_Inside_E_Cathedral_4: -6026722774407787521
+      Fantasy_Inside_E_Cathedral_40: -5918851838286476281
+      Fantasy_Inside_E_Cathedral_5: -2656149736356368499
+      Fantasy_Inside_E_Cathedral_6: 1858508300977679173
+      Fantasy_Inside_E_Cathedral_7: -5766855690487122160
+      Fantasy_Inside_E_Cathedral_8: 2777573957457153342
+      Fantasy_Inside_E_Cathedral_9: -1023430910141040595
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

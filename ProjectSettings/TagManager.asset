@@ -8,6 +8,9 @@ TagManager:
   - Graveyard
   - GameHUD
   - Blackscreen
+  - SpawnPoint
+  - Exit
+  - ItemContainer
   layers:
   - Default
   - TransparentFX
