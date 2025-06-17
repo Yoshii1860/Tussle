@@ -14,6 +14,7 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected Rigidbody2D rb;
     [SerializeField] protected Animator animator;
     [SerializeField] protected CinemachineCamera cmCamera;
+    [SerializeField] protected Health health;
     protected GameHUD gameHUD;
     protected const string PlayerLayerMask = "Walk";
 
@@ -53,6 +54,7 @@ public abstract class Character : NetworkBehaviour
     public bool UsesMana => usesMana;
 
     private float startMoveSpeed;
+    private bool isDead = false;
 
     public override void OnNetworkSpawn()
     {
@@ -81,6 +83,8 @@ public abstract class Character : NetworkBehaviour
         inputReader.MoveEvent += HandleMove;
         inputReader.ZoomEvent += HandleZoom;
         inputReader.ChangeAttackEvent += OnAttackChange;
+
+        health.OnDie += OnDie;
 
         isMoving.OnValueChanged += OnIsMovingChanged;
         isFacingLeft.OnValueChanged += OnFacingLeftChanged;
@@ -139,7 +143,7 @@ public abstract class Character : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || isDead) return;
 
         UpdateMovement();
         UpdateAnimations();
@@ -272,6 +276,32 @@ public abstract class Character : NetworkBehaviour
         {
             float newFOV = cmCamera.Lens.OrthographicSize - (scrollInput * zoomSpeed);
             cmCamera.Lens.OrthographicSize = Mathf.Clamp(newFOV, minFOV, maxFOV);
+        }
+    }
+
+    private void OnDie(Health health)
+    {
+        isDead = true;
+
+        // Unsubscribe from input events to prevent further input
+        if (IsOwner && inputReader != null)
+        {
+            inputReader.MoveEvent -= HandleMove;
+            inputReader.ZoomEvent -= HandleZoom;
+            inputReader.ChangeAttackEvent -= OnAttackChange;
+        }
+
+        // Optionally, stop movement
+        if (rb != null)
+            rb.linearVelocity = Vector2.zero;
+                
+        // Reset all attack cooldowns
+        foreach (var key in attackCooldowns.Keys.ToList())
+        {
+            attackCooldowns[key] = 0f;
+            // Optionally, update the HUD as well:
+            float maxCooldown = key == -1 ? secondaryAttack.cooldown : attacks[key].cooldown;
+            gameHUD.UpdateCooldown(key, 0f);
         }
     }
 }

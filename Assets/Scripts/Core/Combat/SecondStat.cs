@@ -28,7 +28,6 @@ public class SecondStat : NetworkBehaviour
     {
         if (CurrentSecondStat.Value < secondStatCost) { return false; }
 
-        Debug.Log($"SecondStat: Casting spell with cost: {secondStatCost}");
         ModifySecondStatServerRpc(-secondStatCost);
         return true;
     }
@@ -57,7 +56,6 @@ public class SecondStat : NetworkBehaviour
     {
         if (!IsServer) { return; }
 
-        Debug.Log($"SecondStat: Modifying second stat by {value}. Current: {CurrentSecondStat.Value}, Max: {MaxSecondStat}");
         CurrentSecondStat.Value = Mathf.Clamp(CurrentSecondStat.Value + value, 0, MaxSecondStat);
 
         if (CurrentSecondStat.Value == 0)

@@ -63,6 +63,9 @@ TagManager:
   - name: Foreground
     uniqueID: 2382473851
     locked: 0
+  - name: LastResort
+    uniqueID: 336451369
+    locked: 0
   - name: UI
     uniqueID: 2542504511
     locked: 0

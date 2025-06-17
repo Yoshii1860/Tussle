@@ -12,6 +12,7 @@ public class PlayerNameDisplay : MonoBehaviour
     
     private void Start()
     {
+        if (player == null) { return; }
         if (!NetworkManager.Singleton.IsClient) { return; }
         if (player.IsOwner)
         {

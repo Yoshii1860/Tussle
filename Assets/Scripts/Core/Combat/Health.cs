@@ -22,7 +22,7 @@ public class Health : NetworkBehaviour
         CurrentHealth.Value = MaxHealth;
     }
 
-    public void TakeDamage(int damageAmount, ulong attackerClientId)
+    public void TakeDamage(int damageAmount, ulong attackerClientId = default)
     {
         Debug.Log($"Health: Taking damage: {damageAmount} from attacker: {attackerClientId}");
         ModifyHealth(-damageAmount, attackerClientId);
@@ -105,13 +105,16 @@ public class Health : NetworkBehaviour
         int newHealth = CurrentHealth.Value + (int)(value * protectionPercentage);
         CurrentHealth.Value = Mathf.Clamp(newHealth, 0, MaxHealth);
 
-        if (CurrentHealth.Value == 0)
+        if (CurrentHealth.Value <= 0)
         {
             Debug.Log($"Health: Player died. Last attacker: {lastAttackerClientId}");
             OnDie?.Invoke(this);
             isDead = true;
 
-            UpdateKillsOnCounter(lastAttackerClientId);
+            if (lastAttackerClientId != default)
+            {
+                UpdateKillsOnCounter(lastAttackerClientId);
+            }
         }
     }
 

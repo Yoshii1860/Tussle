@@ -16,10 +16,17 @@ public class DealMeleeDamageOnContact : MonoBehaviour
     private NetworkObject parentNetworkObject;
 
     private int damageOnStart;
+    private int npcTeamIndex = -2; // Default value for NPCs
 
     private void Start()
     {
-        teamIndexStorage.Initialize(player.TeamIndex.Value);
+        if (teamIndexStorage == null)
+        {
+            Debug.LogWarning("TeamIndexStorage is not assigned in DealMeleeDamageOnContact!");
+            return;
+        }
+        int teamIndex = player != null ? player.TeamIndex.Value : npcTeamIndex;
+        teamIndexStorage.Initialize(teamIndex);
         damageOnStart = damageAmount;
     }
 
@@ -56,18 +63,32 @@ public class DealMeleeDamageOnContact : MonoBehaviour
         Debug.Log($"DealMeleeDamageOnContact: OnTriggerEnter2D with {other.name}");
         if (Time.time - lastDamageTime < damageCooldown || hasDealtDamageThisFrame) return;
         if (other.attachedRigidbody == null) return;
+        if (other.gameObject == transform.root.gameObject) return; // Ignore self
 
-        damageAmount = character.CurrentAttack.damage;
-
-        if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
+        if (character != null)
         {
-            if (networkObject.OwnerClientId == ownerClientId) return;
+            damageAmount = character.CurrentAttack.damage;
         }
-        if (teamIndexStorage.TeamIndex != -1)
+
+        if (teamIndexStorage != null && teamIndexStorage.TeamIndex != -1)
         {
+            Debug.Log($"DealDamageOnContact: Checking team index for {other.name} with team index {teamIndexStorage.TeamIndex}");
+
             if (other.attachedRigidbody.TryGetComponent<Player>(out Player player))
             {
-                if (player.TeamIndex.Value == teamIndexStorage.TeamIndex) return; // Ignore teammates
+                if (player.TeamIndex.Value == teamIndexStorage.TeamIndex)
+                {
+                    Debug.Log($"DealDamageOnContact: Ignoring contact with teammate {player.name} on team {player.TeamIndex.Value}");
+                    return;
+                }
+            }
+            else if (other.attachedRigidbody.TryGetComponent<NetworkedNPC>(out NetworkedNPC npc))
+            {
+                if (npc.TeamIndex == teamIndexStorage.TeamIndex)
+                {
+                    Debug.Log($"DealDamageOnContact: Ignoring contact with NPC {npc.name} on team {npc.TeamIndex}");
+                    return;
+                }
             }
         }
 

@@ -17,6 +17,7 @@ public class DealDamageOnContact : MonoBehaviour
     [SerializeField] private float damageInterval = 0;
     [SerializeField] private int damageOverTime = 0;
 
+    private Vector2 initialVelocity;
     private ulong ownerClientId;
     private Dictionary<Health, Coroutine> activeDamageOverTimeCoroutines = new Dictionary<Health, Coroutine>();
 
@@ -30,8 +31,12 @@ public class DealDamageOnContact : MonoBehaviour
         Debug.Log($"DealDamageOnContact: OnTriggerEnter2D with {other.name}");
         if (other.attachedRigidbody == null) { return; }
 
-        if (teamIndexStorage.TeamIndex != -1)
+        Debug.Log($"DealDamageOnContact: Checking if {other.name} has a TeamIndexStorage component");
+
+        if (teamIndexStorage != null && teamIndexStorage.TeamIndex != -1)
         {
+            Debug.Log($"DealDamageOnContact: Checking team index for {other.name} with team index {teamIndexStorage.TeamIndex}");
+
             if (other.attachedRigidbody.TryGetComponent<Player>(out Player player))
             {
                 if (player.TeamIndex.Value == teamIndexStorage.TeamIndex)
@@ -40,16 +45,29 @@ public class DealDamageOnContact : MonoBehaviour
                     return;
                 }
             }
+            else if (other.attachedRigidbody.TryGetComponent<NetworkedNPC>(out NetworkedNPC npc))
+            {
+                if (npc.TeamIndex == teamIndexStorage.TeamIndex)
+                {
+                    Debug.Log($"DealDamageOnContact: Ignoring contact with NPC {npc.name} on team {npc.TeamIndex}");
+                    return;
+                }
+            }
         }
 
         if (other.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject netObj))
         {
-            if (netObj.OwnerClientId == ownerClientId)
+            if (!other.attachedRigidbody.GetComponent<NetworkedNPC>() && !NetworkManager.Singleton.IsHost)
             {
-                // Ignore self
-                return;
+                if (netObj.OwnerClientId == ownerClientId)
+                {
+                    Debug.Log($"DealDamageOnContact: Ignoring contact with own object {netObj.name} owned by client {ownerClientId}");
+                    return;
+                }
             }
         }
+
+        Debug.Log($"DealDamageOnContact: Attempting to deal damage to {other.name}");
 
         if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
@@ -90,7 +108,7 @@ public class DealDamageOnContact : MonoBehaviour
             }
         }
     }
-    
+
     private IEnumerator StartDamageOverTime(Health health)
     {
         while (true)

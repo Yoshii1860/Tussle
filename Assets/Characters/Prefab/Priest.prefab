@@ -572,6 +572,7 @@ MonoBehaviour:
   rb: {fileID: 2936913498640377188}
   animator: {fileID: 95000010463452298}
   cmCamera: {fileID: 915836288802541399}
+  health: {fileID: 7931177626035245099}
   moveSpeed: 5
   sprintSpeed: 10
   characterType: 2
@@ -1609,7 +1610,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1752462785
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 0.6604271, b: 0, a: 1}

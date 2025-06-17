@@ -13,11 +13,22 @@ public class DestroySelfOnContact : MonoBehaviour
             {
                 if (player.TeamIndex.Value == teamIndexStorage.TeamIndex)
                 {
+                    Debug.Log($"DestroySelfOnContact: Ignoring contact with teammate {player.name} on team {player.TeamIndex.Value}");
                     return; // Ignore contact with teammates
                 }
             }
         }
 
+        if (other.attachedRigidbody.TryGetComponent<NetworkedNPC>(out NetworkedNPC npc))
+        {
+            if (npc.TeamIndex == teamIndexStorage.TeamIndex)
+            {
+                Debug.Log($"DestroySelfOnContact: Ignoring contact with NPC {npc.name} on team {npc.TeamIndex}");
+                return; // Ignore contact with NPCs on the same team
+            }
+        }
+
+        Debug.Log($"DestroySelfOnContact: Destroying {gameObject.name} on contact with {other.gameObject.name}");
         Destroy(gameObject, 0.1f);
     }
 }

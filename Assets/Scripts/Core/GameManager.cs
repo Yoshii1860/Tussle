@@ -29,4 +29,9 @@ public class GameManager : MonoBehaviour
         playersByClientId.TryGetValue(clientId, out var player);
         return player;
     }
+
+    public Player[] GetAllPlayers()
+    {
+        return new List<Player>(playersByClientId.Values).ToArray();
+    }
 }

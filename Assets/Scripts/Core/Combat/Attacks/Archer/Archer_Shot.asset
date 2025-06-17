@@ -21,6 +21,6 @@ MonoBehaviour:
   animationTrigger: SecondaryRelease
   isTriggerBool: 0
   icon: {fileID: 21300000, guid: e2f7cf4dcbe48ed43a010d3cf95019c5, type: 3}
-  serverPrefab: {fileID: 0}
-  clientPrefab: {fileID: 0}
+  serverPrefab: {fileID: 2712701700556377562, guid: 901031d0bc6a31141a593de8415541d1, type: 3}
+  clientPrefab: {fileID: 8007173203346397459, guid: 2295afcfde980274d876632007cd6064, type: 3}
   projectileBehavior: {fileID: 11400000, guid: 2707b28e67f0aab488ea0a208605d11f, type: 2}

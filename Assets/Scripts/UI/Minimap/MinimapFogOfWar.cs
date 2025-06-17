@@ -48,6 +48,7 @@ public class MinimapFogOfWar : MonoBehaviour
 
     private void Start()
     {
+        if (NetworkManager.Singleton == null) { return; }
         if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsHost) { return; }
         
         StartCoroutine(UpdateFogOfWar());

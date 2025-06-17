@@ -78,8 +78,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamIndexStorage: {fileID: 8895618261086822915}
-  DamageAmount: 15
+  DamageAmount: 5
   isDamageOverTime: 0
+  isDamageWhileInContact: 0
   damageDuration: 0
   damageInterval: 0
   damageOverTime: 0

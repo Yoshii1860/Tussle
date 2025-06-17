@@ -11,7 +11,6 @@ public class Knight : Character
 {
     [Header("References")]
     [SerializeField] private Collider2D swordCollider;
-    [SerializeField] private Health health;
     [SerializeField] private float protectionPercentage = 0.5f;
 
     public override void OnNetworkSpawn()

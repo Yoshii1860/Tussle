@@ -80,6 +80,7 @@ MonoBehaviour:
   teamIndexStorage: {fileID: 8895618261086822915}
   DamageAmount: 15
   isDamageOverTime: 1
+  isDamageWhileInContact: 0
   damageDuration: 3
   damageInterval: 0.5
   damageOverTime: 2

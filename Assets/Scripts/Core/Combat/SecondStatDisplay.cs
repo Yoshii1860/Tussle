@@ -43,8 +43,6 @@ public class SecondStatDisplay : NetworkBehaviour
     {
         float secondStatPercentage = (float)newSecondStat / secondStat.MaxSecondStat;
         secondStatBarImage.fillAmount = secondStatPercentage;
-        Debug.Log($"SecondStat changed: {oldSecondStat} -> {newSecondStat}, Percentage: {secondStatPercentage}");
-        Debug.Log($"SecondStatBarImage fill amount: {secondStatBarImage.fillAmount}");
         //healthBarImage.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercentage);
     }
 }
