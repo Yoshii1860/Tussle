@@ -62,13 +62,23 @@ public class DealMeleeDamageOnContact : MonoBehaviour
         if (!NetworkManager.Singleton.IsServer) return;
         Debug.Log($"DealMeleeDamageOnContact: OnTriggerEnter2D with {other.name}");
         if (Time.time - lastDamageTime < damageCooldown || hasDealtDamageThisFrame) return;
-        if (other.attachedRigidbody == null) return;
-        if (other.gameObject == transform.root.gameObject) return; // Ignore self
 
         if (character != null)
         {
             damageAmount = character.CurrentAttack.damage;
         }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Destructable"))
+        {
+            if (other.transform.root.TryGetComponent<PropHealth>(out PropHealth propHealth))
+            {
+                propHealth.TakeDamage(damageAmount);
+            }
+            return;
+        }
+
+        if (other.attachedRigidbody == null) return;
+        if (other.gameObject == transform.root.gameObject) return; // Ignore self
 
         if (teamIndexStorage != null && teamIndexStorage.TeamIndex != -1)
         {

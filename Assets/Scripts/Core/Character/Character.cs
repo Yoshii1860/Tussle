@@ -16,7 +16,9 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected CinemachineCamera cmCamera;
     [SerializeField] protected Health health;
     protected GameHUD gameHUD;
+    protected const string HitLayerMask = "HitBox";
     protected const string PlayerLayerMask = "Walk";
+    protected const string DestructableLayerMask = "Destructable";
 
     [Header("Movement Settings")]
     [SerializeField] protected float moveSpeed = 5f;
@@ -55,6 +57,7 @@ public abstract class Character : NetworkBehaviour
 
     private float startMoveSpeed;
     private bool isDead = false;
+    public bool IsDead { get { return isDead; } }
 
     public override void OnNetworkSpawn()
     {
@@ -127,6 +130,8 @@ public abstract class Character : NetworkBehaviour
     private void OnAttackChange(int index)
     {
         if (!IsOwner) return;
+        if (isAttacking.Value) return;
+
         currentAttackIndex.Value = index;
 
         if (attackCooldowns[index] > 0f)
@@ -172,7 +177,7 @@ public abstract class Character : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || isDead) return;
 
         rb.linearVelocity = new Vector2(previousMovementInput.x * moveSpeed, previousMovementInput.y * moveSpeed);
     }
@@ -268,6 +273,43 @@ public abstract class Character : NetworkBehaviour
             attackCooldowns[-1] = secondaryAttack.cooldown;
         }
     }
+    
+    protected virtual void DealAOEDamage()
+    {
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
+            transform.position,
+            currentAttack.range,
+            LayerMask.GetMask(HitLayerMask, DestructableLayerMask, PlayerLayerMask)
+            );
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.gameObject.layer == LayerMask.NameToLayer(DestructableLayerMask))
+            {
+                if (hitCollider.transform.root.TryGetComponent<PropHealth>(out PropHealth propHealth))
+                {
+                    propHealth.TakeDamage(currentAttack.damage);
+                }
+            }
+            else if (hitCollider.gameObject.layer == LayerMask.NameToLayer(HitLayerMask))
+            {
+                if (hitCollider.attachedRigidbody.gameObject == gameObject) continue; // Ignore self
+
+                int myTeam = GetComponent<Player>().TeamIndex.Value;
+                if (myTeam != -1)
+                {
+                    if (hitCollider.attachedRigidbody.TryGetComponent<Player>(out Player player))
+                    {
+                        if (player.TeamIndex.Value == myTeam) continue; // Ignore teammates
+                    }
+                }
+
+                if (hitCollider.attachedRigidbody.TryGetComponent<Health>(out Health health))
+                {
+                    health.TakeDamage(currentAttack.damage, OwnerClientId);
+                }
+            }
+        }
+    }
 
     private void HandleZoom(Vector2 vector)
     {
@@ -279,7 +321,7 @@ public abstract class Character : NetworkBehaviour
         }
     }
 
-    private void OnDie(Health health)
+    private void OnDie()
     {
         isDead = true;
 
@@ -294,7 +336,7 @@ public abstract class Character : NetworkBehaviour
         // Optionally, stop movement
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
-                
+
         // Reset all attack cooldowns
         foreach (var key in attackCooldowns.Keys.ToList())
         {

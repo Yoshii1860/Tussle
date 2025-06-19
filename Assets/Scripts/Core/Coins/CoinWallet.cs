@@ -32,7 +32,7 @@ public class CoinWallet : NetworkBehaviour
         health.OnDie -= HandleCoinsAfterDeath;
     }
 
-    private void HandleCoinsAfterDeath(Health health)
+    private void HandleCoinsAfterDeath()
     {
         int bountyValue = (int)(CoinCount.Value * bountyPercentage);
         int bountyCoinValue = bountyValue / bountyCoinCount;

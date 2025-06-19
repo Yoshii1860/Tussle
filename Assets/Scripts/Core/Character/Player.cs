@@ -27,6 +27,8 @@ public class Player : NetworkBehaviour
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private Color playerIconColor = Color.orange;
 
+    [HideInInspector] public bool IsInvisible { get; private set; } = false;
+
     public NetworkVariable<FixedString32Bytes> PlayerName = new NetworkVariable<FixedString32Bytes>(new FixedString32Bytes("Player"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<int> TeamIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public static event Action<Player> OnPlayerSpawned;
@@ -131,6 +133,7 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     private void SetInvisibilityClientRpc()
     {
+        IsInvisible = true;
         foreach (SpriteRenderer sr in GetComponentsInChildren<SpriteRenderer>())
         {
             sr.enabled = false;
@@ -153,6 +156,7 @@ public class Player : NetworkBehaviour
         {
             playerUICanvas.SetActive(true);
         }
+        IsInvisible = false;
     }
 
 

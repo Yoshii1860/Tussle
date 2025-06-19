@@ -20,7 +20,7 @@ public class NetworkedNPC : NetworkBehaviour
     [Header("NPC Settings")]
     [SerializeField, Range(1, 6)] private float moveSpeed = 2f;
     [SerializeField, Range(5, 150)] private int maxHealth = 10;
-    [SerializeField, Range (3, 25)] private int attackDamage = 5;
+    [SerializeField, Range(3, 25)] private int attackDamage = 5;
     [Space(10)]
 
     [Header("NPC Ranges")]
@@ -34,6 +34,7 @@ public class NetworkedNPC : NetworkBehaviour
     [SerializeField] private float idleDurationMin = 2f; // Minimum idle time (2 seconds)
     [SerializeField] private float idleDurationMax = 3f; // Maximum idle time (3 seconds)
     [SerializeField] private float deathDespawnDelay = 2f; // Delay before despawning NPC after death
+    [SerializeField] private float timeUntilHealed = 30f;
     public int TeamIndex = -2;
     [Space(10)]
 
@@ -41,7 +42,7 @@ public class NetworkedNPC : NetworkBehaviour
     private NPCState currentState = NPCState.Idle;
     private NetworkVariable<NPCState> syncState = new NetworkVariable<NPCState>(NPCState.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<Vector2> syncPosition = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    private NetworkVariable<bool> isMoving =  new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<bool> isMoving = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<int> attackId = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private float lastAttackTime = 0f;
@@ -50,6 +51,7 @@ public class NetworkedNPC : NetworkBehaviour
     private Player currentTarget;
     //private bool isMoving = false; // Track active movement
     private float idleTimer = 0f; // Timer for idle duration
+    private float healTimer = 0f; // Timer for healing
 
     private bool isDead = false; // Track if NPC is dead
 
@@ -94,7 +96,7 @@ public class NetworkedNPC : NetworkBehaviour
         healthComponent.OnDie += OnDie;
     }
 
-    private void OnDie(Health health)
+    private void OnDie()
     {
         SetState(NPCState.Dead); // Optional: set state to Dead
         PlayDeathAnimationClientRpc();
@@ -106,6 +108,27 @@ public class NetworkedNPC : NetworkBehaviour
         if (!IsServer || isDead) return;
 
         StateMachine();
+        ResetHealth();
+    }
+
+    private void ResetHealth()
+    {
+        if (currentState == NPCState.Idle || currentState == NPCState.Patrolling)
+        {
+            if (healTimer >= timeUntilHealed)
+            {
+                healthComponent.Heal(maxHealth);
+                healTimer = 0f; // Reset heal timer
+            }
+            else
+            {
+                healTimer += Time.deltaTime; // Increment heal timer
+            }
+        }
+        else
+        {
+            healTimer = 0f; // Reset heal timer when not idle
+        }
     }
 
     private void StateMachine()
@@ -118,6 +141,7 @@ public class NetworkedNPC : NetworkBehaviour
         {
             idleTimer += Time.deltaTime;
             float idleDuration = Random.Range(idleDurationMin, idleDurationMax);
+
             if (idleTimer >= idleDuration && patrolPoints.Length > 0)
             {
                 SetState(NPCState.Patrolling);
@@ -141,13 +165,12 @@ public class NetworkedNPC : NetworkBehaviour
                         {
                             currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length; // Advance to next point
                             SetState(NPCState.Idle);
-                            idleTimer = 0f; // Start idle timer
                         }
                     }
                     break;
 
                 case NPCState.Approaching:
-                    if (currentTarget != null)
+                    if (currentTarget != null && !currentTarget.IsInvisible && !currentTarget.GetComponent<Character>().IsDead)
                     {
                         agent.stoppingDistance = attackRange;
                         targetPosition = currentTarget.transform.position;
@@ -189,6 +212,10 @@ public class NetworkedNPC : NetworkBehaviour
                     break;
                 case NPCState.Dead:
                     isDead = true;
+                    foreach (Collider collider in GetComponents<Collider>())
+                    {
+                        collider.enabled = false; // Disable all colliders
+                    }
                     return;
             }
         }
@@ -220,9 +247,6 @@ public class NetworkedNPC : NetworkBehaviour
         }
 
         UpdateSpriteDirection(moveDirection);
-
-        // Check for player-triggered state changes
-        UpdateStateBasedOnTrigger();
     }
 
     private void RemoveNPC()
@@ -236,7 +260,7 @@ public class NetworkedNPC : NetworkBehaviour
 
     public void TriggerDistanceAttack()
     {
-        if (currentTarget == null)
+        if (currentTarget == null || currentTarget.IsInvisible || currentTarget.GetComponent<Character>().IsDead)
         {
             Debug.LogWarning("No current target for distance attack.");
             return;
@@ -247,19 +271,28 @@ public class NetworkedNPC : NetworkBehaviour
 
     public void TriggerMeleeAttack()
     {
+        if (currentTarget == null || currentTarget.IsInvisible || currentTarget.GetComponent<Character>().IsDead)
+        {
+            Debug.LogWarning("No current target for melee attack.");
+            return;
+        }
         npcMeleeAttacks.MeleeAttack();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"OnTriggerEnter2D: {other.name}");
         if (IsServer && other.TryGetComponent<Player>(out Player player))
         {
+            if (player.IsInvisible || player.GetComponent<Character>().IsDead) return;
+
             if (!playersInRange.Contains(player))
             {
                 Debug.Log($"Player {player.name} entered trigger range and added to playersInRange.");
                 playersInRange.Add(player);
-                if (currentTarget == null) currentTarget = player;
+                if (currentTarget == null || currentTarget.IsInvisible)
+                {
+                    currentTarget = player;
+                }
                 UpdateStateBasedOnTrigger();
             }
         }
@@ -270,7 +303,38 @@ public class NetworkedNPC : NetworkBehaviour
         if (IsServer && other.TryGetComponent<Player>(out Player player))
         {
             Debug.Log($"OnTriggerStay2D: {player.name}");
-            UpdateStateBasedOnTrigger();
+
+            if (player.IsInvisible)
+            {
+                if (playersInRange.Contains(player))
+                {
+                    playersInRange.Remove(player);
+                    if (currentTarget == player)
+                    {
+                        currentTarget = playersInRange.FirstOrDefault(p => !p.IsInvisible);
+                        if (currentTarget == null)
+                        {
+                            SetState(NPCState.Idle);
+                        }
+                        else
+                        {
+                            UpdateStateBasedOnTrigger();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (!playersInRange.Contains(player))
+                {
+                    playersInRange.Add(player);
+                    if (currentTarget == null || currentTarget.IsInvisible)
+                    {
+                        currentTarget = player;
+                    }
+                }
+                UpdateStateBasedOnTrigger();
+            }
         }
     }
 
@@ -282,16 +346,36 @@ public class NetworkedNPC : NetworkBehaviour
             playersInRange.Remove(player);
             if (player == currentTarget)
             {
-                currentTarget = playersInRange.Count > 0 ? playersInRange[0] : null;
-                if (currentTarget == null) SetState(NPCState.Idle);
-                else UpdateStateBasedOnTrigger();
+                currentTarget = playersInRange.FirstOrDefault(p => !p.IsInvisible);
+                if (currentTarget == null)
+                {
+                    SetState(NPCState.Idle);
+                }
+                else
+                {
+                    UpdateStateBasedOnTrigger();
+                }
             }
         }
     }
 
     private void UpdateStateBasedOnTrigger()
     {
-        if (!IsServer || currentTarget == null) return;
+        if (!IsServer) return;
+
+        playersInRange = playersInRange.Where(p => p != null && !p.IsInvisible && !p.GetComponent<Character>().IsDead).ToList();
+
+        if (currentTarget == null || currentTarget.IsInvisible || currentTarget.GetComponent<Character>().IsDead)
+        {
+            currentTarget = playersInRange.FirstOrDefault(p => !p.IsInvisible && !p.GetComponent<Character>().IsDead);
+        }
+
+        if (currentTarget == null)
+        {
+            SetState(NPCState.Idle);
+            return;
+        }
+
         float distance = Vector2.Distance(transform.position, currentTarget.transform.position);
 
         if (distance <= attackRange && Time.time - lastAttackTime >= attackCooldown)
@@ -319,26 +403,12 @@ public class NetworkedNPC : NetworkBehaviour
     {
         if (currentState != newState)
         {
+            if (currentState == NPCState.Idle && newState != NPCState.Idle)
+            {
+                idleTimer = 0f; // Start idle timer
+            }
             currentState = newState;
             syncState.Value = newState;
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void DamagePlayerServerRpc(ulong playerId, int damage)
-    {
-        Player player = GameManager.Instance.GetPlayer(playerId);
-        if (player != null)
-        {
-            Health maxHealth = player.GetComponent<Health>();
-            if (maxHealth != null)
-            {
-                maxHealth.TakeDamage(damage, default);
-                if (maxHealth.CurrentHealth.Value <= 0)
-                {
-                    SetState(NPCState.Idle);
-                }
-            }
         }
     }
 

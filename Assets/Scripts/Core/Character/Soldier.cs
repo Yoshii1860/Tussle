@@ -103,36 +103,6 @@ public class Soldier : Character
         }
     }
 
-    private void DealAOEDamage()
-    {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, currentAttack.range, LayerMask.GetMask(PlayerLayerMask));
-        foreach (var hitCollider in hitColliders)
-        {
-            if (hitCollider.attachedRigidbody == null) continue;
-
-            if (hitCollider.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
-            {
-                if (networkObject.OwnerClientId == OwnerClientId) continue; // Ignore self
-            }
-
-            int myTeam = GetComponent<Player>().TeamIndex.Value;
-            if (myTeam != -1)
-            {
-                if (hitCollider.attachedRigidbody.TryGetComponent<Player>(out Player player))
-                {
-                    if (player.TeamIndex.Value == myTeam) continue; // Ignore teammates
-                }
-            }
-
-            if (hitCollider.attachedRigidbody.TryGetComponent<Health>(out Health health))
-            {
-                Debug.Log($"Knight: AOE Attack - Dealing {currentAttack.damage} damage to {hitCollider.name}");
-                health.TakeDamage(currentAttack.damage, OwnerClientId);
-                // Optionally, you can add knockback or other effects here
-            }
-        }
-    }
-
     private void ResetAttack()
     {
         if (IsOwner)

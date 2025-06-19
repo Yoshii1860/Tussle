@@ -665,6 +665,7 @@ MonoBehaviour:
   idleDurationMin: 2
   idleDurationMax: 5
   deathDespawnDelay: 2
+  timeUntilHealed: 30
   TeamIndex: -2
 --- !u!114 &7825161520025853341
 MonoBehaviour:
@@ -697,6 +698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 7931177626035245099}
+  propHealth: {fileID: 0}
   coinPrefab: {fileID: 299007157586753494, guid: 0c3fb658dbdcc454ab1298ae7968a7f3, type: 3}
   itemPrefabs:
   - {fileID: 2492130882921122834, guid: 3a96ca49ceb9fff4992afbc880fc602c, type: 3}
@@ -812,7 +814,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1000013226060160}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}

@@ -1,12 +1,28 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[ExecuteAlways]
 public class ObjectLayerSorting : MonoBehaviour
 {
-    void Start()
+    public bool updateOnEnable = true;
+    private void OnEnable()
     {
-        if (!ApplicationData.Mode().Equals("server"))
+        UpdateSortingOrder();
+    }
+
+    private void Update()
+    {
+        if (updateOnEnable)
         {
+            UpdateSortingOrder();
+            updateOnEnable = false; // Disable further updates unless explicitly re-enabled
+        }
+    }
+
+    private void UpdateSortingOrder()
+    {
+        //if (Application.isPlaying && !ApplicationData.Mode().Equals("server"))
+        //{
             // Get all SpriteRenderers in children
             SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
             if (spriteRenderer != null)
@@ -45,6 +61,6 @@ public class ObjectLayerSorting : MonoBehaviour
             {
                 Debug.LogWarning("ObjectLayerSorting: No SpriteRenderer or TilemapRenderer found on the GameObject.");
             }
-        }
+        //}
     }
 }

@@ -13,7 +13,7 @@ public class Health : NetworkBehaviour
     private bool isDead;
     private float protectionPercentage = 1;
 
-    public Action<Health> OnDie;
+    public Action OnDie;
 
     public override void OnNetworkSpawn()
     {
@@ -108,7 +108,7 @@ public class Health : NetworkBehaviour
         if (CurrentHealth.Value <= 0)
         {
             Debug.Log($"Health: Player died. Last attacker: {lastAttackerClientId}");
-            OnDie?.Invoke(this);
+            OnDie?.Invoke();
             isDead = true;
 
             if (lastAttackerClientId != default)

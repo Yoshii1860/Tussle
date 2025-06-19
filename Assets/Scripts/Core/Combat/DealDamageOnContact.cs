@@ -28,7 +28,16 @@ public class DealDamageOnContact : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"DealDamageOnContact: OnTriggerEnter2D with {other.name}");
+        if (other.gameObject.layer == LayerMask.NameToLayer("Destructable"))
+        {
+            if (other.transform.root.TryGetComponent<PropHealth>(out PropHealth propHealth))
+            {
+                Debug.Log($"DealDamageOnContact: Dealing {DamageAmount} damage to destructable object {other.name}");
+                propHealth.TakeDamage(DamageAmount);
+                return;
+            }
+        }
+
         if (other.attachedRigidbody == null) { return; }
 
         Debug.Log($"DealDamageOnContact: Checking if {other.name} has a TeamIndexStorage component");

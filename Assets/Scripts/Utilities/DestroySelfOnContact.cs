@@ -6,6 +6,11 @@ public class DestroySelfOnContact : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Destructable"))
+        {
+            Destroy(gameObject, 0.1f);
+            return;
+        }
         if (teamIndexStorage.TeamIndex != -1)
         {
             if (other.attachedRigidbody == null) return;

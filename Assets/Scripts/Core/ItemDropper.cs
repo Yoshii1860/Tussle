@@ -1,10 +1,11 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class NpcItemDropper : MonoBehaviour
+public class ItemDropper : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Health health;
+    [SerializeField] private PropHealth propHealth;
     [Space(10)]
 
     [Header("Prefabs")]
@@ -27,10 +28,11 @@ public class NpcItemDropper : MonoBehaviour
     {
         coinRadius = coinPrefab.GetComponent<CircleCollider2D>().radius;
 
-        health.OnDie += DropItems;
+        if (health != null) health.OnDie += DropItems;
+        else propHealth.OnDestroyed += DropItems;
     }
 
-    public void DropItems(Health health)
+    public void DropItems()
     {
         int bountyCoinCount = Mathf.RoundToInt(Random.Range(minBountyCoinCount, maxBountyCoinCount + 1) * difficultyMultiplier);
         int bountyCoinValue = Mathf.RoundToInt(Random.Range(minBountyCoinValue, maxBountyCoinValue + 1) * difficultyMultiplier);
@@ -69,9 +71,7 @@ public class NpcItemDropper : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (health != null)
-        {
-            health.OnDie -= DropItems;
-        }
+        if (health != null) health.OnDie -= DropItems;
+        else propHealth.OnDestroyed -= DropItems;
     }
 }
