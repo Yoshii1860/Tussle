@@ -61,7 +61,7 @@ public class ItemDropper : MonoBehaviour
         while (true)
         {
             Vector2 spawnPoint = (Vector2)transform.position + Random.insideUnitCircle * coinSpread;
-            bool isOccupied = Physics2D.OverlapCircle(spawnPoint, coinRadius, layerMask) != null;
+            bool isOccupied = Physics2D.OverlapCircle(spawnPoint, coinRadius) != null;
             if (!isOccupied)
             {
                 return spawnPoint;

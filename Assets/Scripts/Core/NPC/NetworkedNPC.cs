@@ -14,7 +14,7 @@ public class NetworkedNPC : NetworkBehaviour
     [SerializeField] private NpcDistanceAttacks npcDistanceAttacks;
     [SerializeField] private NpcMeleeAttacks npcMeleeAttacks;
     [SerializeField] private Transform patrolPointsContainer;
-    private Transform[] patrolPoints;
+    public Transform[] PatrolPoints;
     [Space(10)]
 
     [Header("NPC Settings")]
@@ -94,6 +94,7 @@ public class NetworkedNPC : NetworkBehaviour
         isMoving.OnValueChanged += OnIsMovingChanged;
         attackId.OnValueChanged += OnAttackIdChanged;
         healthComponent.OnDie += OnDie;
+        healthComponent.OnDamaged += OnDamaged;
     }
 
     private void OnDie()
@@ -102,6 +103,23 @@ public class NetworkedNPC : NetworkBehaviour
         PlayDeathAnimationClientRpc();
         Invoke(nameof(RemoveNPC), deathDespawnDelay);
     }
+
+    private void OnDamaged(Player attacker)
+{
+    if (!IsServer || isDead) return;
+    if (attacker != null)
+    {
+        if (!playersInRange.Contains(attacker))
+            playersInRange.Add(attacker);
+
+        // If no target or current target is dead/invisible, set new target
+        if (currentTarget == null || currentTarget.IsInvisible || currentTarget.GetComponent<Character>().IsDead)
+        {
+            currentTarget = attacker;
+            SetState(NPCState.Approaching);
+        }
+    }
+}
 
     private void Update()
     {
@@ -142,7 +160,7 @@ public class NetworkedNPC : NetworkBehaviour
             idleTimer += Time.deltaTime;
             float idleDuration = Random.Range(idleDurationMin, idleDurationMax);
 
-            if (idleTimer >= idleDuration && patrolPoints.Length > 0)
+            if (idleTimer >= idleDuration && PatrolPoints.Length > 0)
             {
                 SetState(NPCState.Patrolling);
                 idleTimer = 0f; // Reset timer
@@ -155,15 +173,15 @@ public class NetworkedNPC : NetworkBehaviour
             switch (currentState)
             {
                 case NPCState.Patrolling:
-                    if (patrolPoints.Length > 0)
+                    if (PatrolPoints.Length > 0)
                     {
                         agent.stoppingDistance = 0.1f;
-                        targetPosition = patrolPoints[currentPatrolIndex].position;
+                        targetPosition = PatrolPoints[currentPatrolIndex].position;
                         moveDirection = (targetPosition - (Vector2)transform.position).normalized;
                         Debug.DrawLine(transform.position, targetPosition, Color.green); // Debug line for patrol path
                         if (Vector2.Distance(transform.position, targetPosition) < 0.8f)
                         {
-                            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length; // Advance to next point
+                            currentPatrolIndex = (currentPatrolIndex + 1) % PatrolPoints.Length; // Advance to next point
                             SetState(NPCState.Idle);
                         }
                     }
@@ -477,16 +495,16 @@ public class NetworkedNPC : NetworkBehaviour
     {
         if (patrolPointsContainer != null)
         {
-            patrolPoints = new Transform[patrolPointsContainer.childCount];
+            PatrolPoints = new Transform[patrolPointsContainer.childCount];
             for (int i = 0; i < patrolPointsContainer.childCount; i++)
             {
-                patrolPoints[i] = patrolPointsContainer.GetChild(i);
+                PatrolPoints[i] = patrolPointsContainer.GetChild(i);
             }
-            if (patrolPoints.Length > 0) SetState(NPCState.Patrolling);
+            if (PatrolPoints.Length > 0) SetState(NPCState.Patrolling);
         }
         else
         {
-            patrolPoints = new Transform[] { transform };
+            PatrolPoints = new Transform[] { transform };
         }
     }
 

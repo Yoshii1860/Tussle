@@ -14,6 +14,7 @@ public class Health : NetworkBehaviour
     private float protectionPercentage = 1;
 
     public Action OnDie;
+    public Action<Player> OnDamaged;
 
     public override void OnNetworkSpawn()
     {
@@ -25,6 +26,8 @@ public class Health : NetworkBehaviour
     public void TakeDamage(int damageAmount, ulong attackerClientId = default)
     {
         Debug.Log($"Health: Taking damage: {damageAmount} from attacker: {attackerClientId}");
+        Player attacker = GameManager.Instance.GetPlayer(attackerClientId);
+        OnDamaged?.Invoke(attacker);
         ModifyHealth(-damageAmount, attackerClientId);
     }
 

@@ -52,6 +52,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClientFireSpell
       objectReference: {fileID: 0}
+    - target: {fileID: 5373828859666893964, guid: 9ad7f6bdb1e4fdd4fad7ae1169d39e99, type: 3}
+      propertyPath: m_SortingLayer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5373828859666893964, guid: 9ad7f6bdb1e4fdd4fad7ae1169d39e99, type: 3}
+      propertyPath: m_SortingOrder
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5373828859666893964, guid: 9ad7f6bdb1e4fdd4fad7ae1169d39e99, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 336451369
+      objectReference: {fileID: 0}
     - target: {fileID: 7694235161658934301, guid: 9ad7f6bdb1e4fdd4fad7ae1169d39e99, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 132091801

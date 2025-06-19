@@ -8,8 +8,11 @@ public class BuffEntity : MonoBehaviour
     private float duration; // Duration of the buff
     private float remainingTime; // Remaining time for the buff
 
+    private ObjectType objectType;
+
     public void Initialize(ObjectType objectType, float duration)
     {
+        this.objectType = objectType;
         this.duration = duration;
         this.remainingTime = duration;
 
@@ -33,4 +36,12 @@ public class BuffEntity : MonoBehaviour
             Destroy(gameObject); // Despawn the UI element when the buff expires
         }
     }
+
+    public void AddTime(float extraTime)
+    {
+        remainingTime += extraTime;
+        duration += extraTime;
+    }
+
+    public ObjectType GetObjectType() => objectType;
 }
