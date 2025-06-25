@@ -28,8 +28,8 @@ TagManager:
   - Minimap
   - Sun
   - Ground
-  - 
-  - 
+  - AreaMusic
+  - Interact
   - 
   - 
   - 
@@ -50,6 +50,9 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Decals
+    uniqueID: 3758320403
     locked: 0
   - name: Environment
     uniqueID: 2506699615

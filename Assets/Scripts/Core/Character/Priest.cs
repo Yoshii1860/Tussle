@@ -110,8 +110,11 @@ public class Priest : Character
     public void AOEAttack()
     {
         if (!IsOwner) { return; }
+        Debug.Log($"Priest: AOE Attack at position {transform.position}");
         AOEAttackServerRpc(transform.position);
+        Debug.Log($"Priest: AOE Attack ServerRpc Invoked at position {transform.position}");
         Invoke(nameof(ResetAttack), currentAttack.cooldown);
+        Debug.Log($"Priest: AOE Attack Reset Attack Invoked at position {transform.position}");
     }
 
     public void AOEDistantAttack()

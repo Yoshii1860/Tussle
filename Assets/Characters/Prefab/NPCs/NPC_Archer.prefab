@@ -312,6 +312,8 @@ MonoBehaviour:
   npcDistanceAttacks: {fileID: 7553730132445652143}
   npcMeleeAttacks: {fileID: 0}
   patrolPointsContainer: {fileID: 0}
+  PatrolPoints: []
+  attackSound: {fileID: 8300000, guid: e8f7109cbfa191646bb93d76865a53f7, type: 3}
   moveSpeed: 4
   maxHealth: 25
   attackDamage: 7
@@ -322,6 +324,7 @@ MonoBehaviour:
   idleDurationMin: 2
   idleDurationMax: 5
   deathDespawnDelay: 2
+  timeUntilHealed: 30
   TeamIndex: -2
 --- !u!114 &7553730132445652143
 MonoBehaviour:
@@ -354,6 +357,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 3729823565419170127}
+  propHealth: {fileID: 0}
   coinPrefab: {fileID: 299007157586753494, guid: 0c3fb658dbdcc454ab1298ae7968a7f3, type: 3}
   itemPrefabs:
   - {fileID: 2492130882921122834, guid: 3a96ca49ceb9fff4992afbc880fc602c, type: 3}

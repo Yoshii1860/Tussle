@@ -34,6 +34,8 @@ public class RespawningCoin : Coin
 
         isCollected = true;
 
+        AudioManager.Instance.PlayCoinSFX();
+
         OnCollected?.Invoke(this);
 
         return coinValue;

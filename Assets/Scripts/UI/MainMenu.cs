@@ -77,6 +77,8 @@ public class MainMenu : MonoBehaviour
             Debug.Log("MainMenu: Dedicated server mode detected. Disabling UI.");
             gameObject.SetActive(false);
         }
+
+        AudioManager.Instance.PlayMenuMusic();
     }
 
     private void Start()

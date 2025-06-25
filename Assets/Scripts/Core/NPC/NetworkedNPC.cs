@@ -15,6 +15,7 @@ public class NetworkedNPC : NetworkBehaviour
     [SerializeField] private NpcMeleeAttacks npcMeleeAttacks;
     [SerializeField] private Transform patrolPointsContainer;
     public Transform[] PatrolPoints;
+    [SerializeField] private AudioClip attackSound;
     [Space(10)]
 
     [Header("NPC Settings")]
@@ -101,25 +102,27 @@ public class NetworkedNPC : NetworkBehaviour
     {
         SetState(NPCState.Dead); // Optional: set state to Dead
         PlayDeathAnimationClientRpc();
+        AudioManager.Instance.PlayRandomSFX("Die");
         Invoke(nameof(RemoveNPC), deathDespawnDelay);
+        Debug.Log($"NPC {name} has died and will be removed after {deathDespawnDelay} seconds.");
     }
 
     private void OnDamaged(Player attacker)
-{
-    if (!IsServer || isDead) return;
-    if (attacker != null)
     {
-        if (!playersInRange.Contains(attacker))
-            playersInRange.Add(attacker);
-
-        // If no target or current target is dead/invisible, set new target
-        if (currentTarget == null || currentTarget.IsInvisible || currentTarget.GetComponent<Character>().IsDead)
+        if (!IsServer || isDead) return;
+        if (attacker != null)
         {
-            currentTarget = attacker;
-            SetState(NPCState.Approaching);
+            if (!playersInRange.Contains(attacker))
+                playersInRange.Add(attacker);
+
+            // If no target or current target is dead/invisible, set new target
+            if (currentTarget == null || currentTarget.IsInvisible || currentTarget.GetComponent<Character>().IsDead)
+            {
+                currentTarget = attacker;
+                SetState(NPCState.Approaching);
+            }
         }
     }
-}
 
     private void Update()
     {
@@ -524,5 +527,10 @@ public class NetworkedNPC : NetworkBehaviour
         agent.autoBraking = false; // Disable auto-braking to allow smooth transitions
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+    }
+
+    public void PlayAttackSound()
+    {
+        AudioManager.Instance.PlaySFX(attackSound);
     }
 }

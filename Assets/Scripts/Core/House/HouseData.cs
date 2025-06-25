@@ -8,6 +8,7 @@ public class HouseData : NetworkBehaviour
     [SerializeField] private Transform playerEnterPoint;
     [SerializeField] private Transform playerExitPoint;
     [SerializeField] private GameObject houseInstance;
+    [SerializeField] private string areaName;
     private HashSet<ulong> playersInside = new HashSet<ulong>();
 
     public override void OnNetworkSpawn()
@@ -19,16 +20,25 @@ public class HouseData : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!IsServer || !collision.TryGetComponent<NetworkObject>(out NetworkObject networkObject)) return;
-
-        ulong clientId = networkObject.OwnerClientId;
-        if (!playersInside.Contains(clientId))
+        if (!IsServer || collision.gameObject.layer != LayerMask.NameToLayer("Walk")) return;
+        
+        if (collision.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {
-            if (networkObject.TryGetComponent<Player>(out Player player))
+            ulong clientId = networkObject.OwnerClientId;
+            if (!playersInside.Contains(clientId))
             {
-                EnterHouseClientRpc(clientId);
-                player.TeleportClientRpc(playerEnterPoint.position);
-                EnterHouseServerRpc(clientId);
+                if (networkObject.TryGetComponent<Player>(out Player player))
+                {
+                    AudioManager.Instance.PlayDoorSFX();
+                    EnterHouseClientRpc(clientId);
+                    player.TeleportClientRpc(playerEnterPoint.position);
+                    EnterHouseServerRpc(clientId);
+
+                    if (!string.IsNullOrEmpty(areaName))
+                    {
+                        AudioManager.Instance.PlayAreaMusic(areaName);
+                    }
+                }
             }
         }
     }

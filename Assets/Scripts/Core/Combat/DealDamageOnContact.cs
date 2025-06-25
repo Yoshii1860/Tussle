@@ -32,7 +32,6 @@ public class DealDamageOnContact : MonoBehaviour
         {
             if (other.transform.root.TryGetComponent<PropHealth>(out PropHealth propHealth))
             {
-                Debug.Log($"DealDamageOnContact: Dealing {DamageAmount} damage to destructable object {other.name}");
                 propHealth.TakeDamage(DamageAmount);
                 return;
             }
@@ -40,17 +39,13 @@ public class DealDamageOnContact : MonoBehaviour
 
         if (other.attachedRigidbody == null) { return; }
 
-        Debug.Log($"DealDamageOnContact: Checking if {other.name} has a TeamIndexStorage component");
-
         if (teamIndexStorage != null && teamIndexStorage.TeamIndex != -1)
         {
-            Debug.Log($"DealDamageOnContact: Checking team index for {other.name} with team index {teamIndexStorage.TeamIndex}");
 
             if (other.attachedRigidbody.TryGetComponent<Player>(out Player player))
             {
                 if (player.TeamIndex.Value == teamIndexStorage.TeamIndex)
                 {
-                    Debug.Log($"DealDamageOnContact: Ignoring contact with teammate {player.name} on team {player.TeamIndex.Value}");
                     return;
                 }
             }
@@ -58,7 +53,6 @@ public class DealDamageOnContact : MonoBehaviour
             {
                 if (npc.TeamIndex == teamIndexStorage.TeamIndex)
                 {
-                    Debug.Log($"DealDamageOnContact: Ignoring contact with NPC {npc.name} on team {npc.TeamIndex}");
                     return;
                 }
             }
@@ -70,24 +64,19 @@ public class DealDamageOnContact : MonoBehaviour
             {
                 if (netObj.OwnerClientId == ownerClientId)
                 {
-                    Debug.Log($"DealDamageOnContact: Ignoring contact with own object {netObj.name} owned by client {ownerClientId}");
                     return;
                 }
             }
         }
 
-        Debug.Log($"DealDamageOnContact: Attempting to deal damage to {other.name}");
-
         if (other.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
-            Debug.Log($"DealDamageOnContact: Dealing {DamageAmount} damage to Health component on {other.name}");
             health.TakeDamage(DamageAmount, ownerClientId);
 
             if (isDamageOverTime)
             {
                 if (!isDamageWhileInContact)
                 {
-                    Debug.Log($"DealDamageOnContact: Starting damage over time on {other.name} while in contact");
                     health.TakeDamageOverTime(damageOverTime, damageDuration, damageInterval, ownerClientId);
                 }
                 else
@@ -108,7 +97,6 @@ public class DealDamageOnContact : MonoBehaviour
 
             if (collision.attachedRigidbody.TryGetComponent<Health>(out Health health))
             {
-                Debug.Log($"DealDamageOnContact: Stopping damage over time on {health.name} due to exit contact");
                 if (activeDamageOverTimeCoroutines.TryGetValue(health, out Coroutine dotCoroutine))
                 {
                     StopCoroutine(dotCoroutine);

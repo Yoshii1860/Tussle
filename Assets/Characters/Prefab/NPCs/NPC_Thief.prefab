@@ -995,6 +995,8 @@ MonoBehaviour:
   npcDistanceAttacks: {fileID: 0}
   npcMeleeAttacks: {fileID: -6766986460547835189}
   patrolPointsContainer: {fileID: 0}
+  PatrolPoints: []
+  attackSound: {fileID: 8300000, guid: 4df243e0fb9595544940686aeefdd0fb, type: 3}
   moveSpeed: 4
   maxHealth: 20
   attackDamage: 15

@@ -7,6 +7,7 @@ public class PlayerPickup : NetworkBehaviour
     {
         if (!IsOwner || !other.TryGetComponent<InteractableObject>(out InteractableObject obj)) return;
 
+        AudioManager.Instance.PlayPotionSFX(); // Play pickup sound
         obj.PickupServerRpc(OwnerClientId);
     }
 }

@@ -25,7 +25,6 @@ public class PropHealth : NetworkBehaviour
     {
         if (!IsServer)
         {
-            Debug.LogWarning("Health: ModifyHealth called on client, but should only be called on server.");
             return;
         }
 

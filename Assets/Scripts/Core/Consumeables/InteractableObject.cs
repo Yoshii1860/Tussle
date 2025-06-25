@@ -46,6 +46,7 @@ public abstract class InteractableObject : NetworkBehaviour
         }
 
         OnPickup?.Invoke(this);
+        AudioManager.Instance.PlayPotionSFX(); // Play pickup sound
         IsPickedUp.Value = true;
         UseEffect(clientId); // Apply effect immediately
         DestroyClientRpc();

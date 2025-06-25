@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
 
 public class ItemDropper : MonoBehaviour
 {
@@ -23,13 +24,18 @@ public class ItemDropper : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private float itemDropChance = 0.5f;
     private float coinRadius;
+    private bool isLocked = false;
+    public bool IsLocked() => isLocked;
+    private bool isChest = false;
+    public bool IsChest() => isChest;
 
     private void Start()
     {
         coinRadius = coinPrefab.GetComponent<CircleCollider2D>().radius;
 
         if (health != null) health.OnDie += DropItems;
-        else propHealth.OnDestroyed += DropItems;
+        else if (propHealth != null) propHealth.OnDestroyed += DropItems;
+        else isChest = true;
     }
 
     public void DropItems()
@@ -56,9 +62,39 @@ public class ItemDropper : MonoBehaviour
         }
     }
 
+    public void OpenChest()
+    {
+        if (isLocked) return;
+        isLocked = true;
+
+        StartCoroutine(ChestRoutine());
+    }
+
+    private IEnumerator ChestRoutine()
+    {
+        SetChestOpenClientRpc(true);
+        yield return new WaitForSeconds(1.5f);
+        DropItems();
+        yield return new WaitForSeconds(3f);
+        SetChestOpenClientRpc(false);
+        yield return new WaitForSeconds(2f);
+        GetComponent<NetworkObject>().Despawn(true);
+    }
+
+    [ClientRpc]
+    private void SetChestOpenClientRpc(bool open)
+    {
+        Animator anim = GetComponent<Animator>();
+        if (anim != null)
+        {
+            anim.SetBool("Open", open);
+        }
+    }
+
     private Vector2 GetSpawnPosition()
     {
-        while (true)
+        int maxAttempts = 50;
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
             Vector2 spawnPoint = (Vector2)transform.position + Random.insideUnitCircle * coinSpread;
             bool isOccupied = Physics2D.OverlapCircle(spawnPoint, coinRadius) != null;
@@ -67,11 +103,22 @@ public class ItemDropper : MonoBehaviour
                 return spawnPoint;
             }
         }
+        float coinSpreadIncrease = coinSpread * 2f;
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            Vector2 spawnPoint = (Vector2)transform.position + Random.insideUnitCircle * coinSpreadIncrease;
+            bool isOccupied = Physics2D.OverlapCircle(spawnPoint, coinRadius, layerMask) != null;
+            if (!isOccupied)
+            {
+                return spawnPoint;
+            }
+        }
+        return (Vector2)transform.position; // Fallback to original position if no valid spawn found
     }
 
     private void OnDestroy()
     {
         if (health != null) health.OnDie -= DropItems;
-        else propHealth.OnDestroyed -= DropItems;
+        else if (propHealth != null) propHealth.OnDestroyed -= DropItems;
     }
 }

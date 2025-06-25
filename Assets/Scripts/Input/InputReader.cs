@@ -47,6 +47,7 @@ public class InputReader : ScriptableObject, IPlayerActions
     {
         if (context.performed)
         {
+            Debug.Log("Interact action triggered.");
             InteractEvent?.Invoke();
         }
     }

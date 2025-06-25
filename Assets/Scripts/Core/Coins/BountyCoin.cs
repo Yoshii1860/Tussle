@@ -15,6 +15,8 @@ public class BountyCoin : Coin
 
         isCollected = true;
 
+        AudioManager.Instance.PlayCoinSFX();
+
         Destroy(gameObject);
 
         return coinValue;

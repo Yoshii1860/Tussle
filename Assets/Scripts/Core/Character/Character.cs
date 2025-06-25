@@ -30,6 +30,7 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected SecondStat secondStat;
     [SerializeField] protected Attack[] attacks;
     [SerializeField] protected Attack secondaryAttack;
+    [SerializeField] protected AudioClip[] attackSounds;
     protected Attack currentAttack;
     public Attack CurrentAttack { get; protected set; }
 
@@ -273,7 +274,7 @@ public abstract class Character : NetworkBehaviour
             attackCooldowns[-1] = secondaryAttack.cooldown;
         }
     }
-    
+
     protected virtual void DealAOEDamage()
     {
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
@@ -325,6 +326,8 @@ public abstract class Character : NetworkBehaviour
     {
         isDead = true;
 
+        AudioManager.Instance.PlaySFX("PlayerDeath");
+
         // Unsubscribe from input events to prevent further input
         if (IsOwner && inputReader != null)
         {
@@ -344,6 +347,14 @@ public abstract class Character : NetworkBehaviour
             // Optionally, update the HUD as well:
             float maxCooldown = key == -1 ? secondaryAttack.cooldown : attacks[key].cooldown;
             gameHUD.UpdateCooldown(key, 0f);
+        }
+    }
+
+    public void AttackSoundOne(int i)
+    {
+        if (attackSounds.Length > 0)
+        {
+            AudioManager.Instance.PlaySFX(attackSounds[i]);
         }
     }
 }
