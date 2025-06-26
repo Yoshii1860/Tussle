@@ -34,10 +34,12 @@ public class Player : NetworkBehaviour
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
 
+    [SerializeField] private bool hasKey = false;
+
     public override void OnNetworkSpawn()
     {
 
-    if (IsServer)
+        if (IsServer)
         {
             if (IsHost)
             {
@@ -87,6 +89,8 @@ public class Player : NetworkBehaviour
             {
                 Debug.LogWarning("Player: cursorTexture is null, using default cursor");
             }
+
+            hasKey = GameManager.Instance.GetPlayerHasKey(OwnerClientId);
         }
         else
         {
@@ -199,6 +203,29 @@ public class Player : NetworkBehaviour
                 return child.gameObject;
         }
         return null;
+    }
+
+    public void ReceiveKey()
+    {
+        if (IsServer)
+        {
+            hasKey = true;
+            GameManager.Instance.SetPlayerHasKey(OwnerClientId, true);
+            Debug.Log($"Player {OwnerClientId} received a key.");
+        }
+    }
+
+    public bool HasKey()
+    {
+        if (IsServer)
+        {
+            return hasKey;
+        }
+        else
+        {
+            Debug.LogWarning("Player: HasKey called on client, should only be called on server.");
+            return false;
+        }
     }
 
     public override void OnNetworkDespawn()

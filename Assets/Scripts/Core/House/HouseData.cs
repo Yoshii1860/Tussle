@@ -9,7 +9,9 @@ public class HouseData : NetworkBehaviour
     [SerializeField] private Transform playerExitPoint;
     [SerializeField] private GameObject houseInstance;
     [SerializeField] private string areaName;
+    [SerializeField] private bool isLocked = false;
     private HashSet<ulong> playersInside = new HashSet<ulong>();
+    private Dictionary<ulong, Action> playerDieHandlers = new Dictionary<ulong, Action>();
 
     public override void OnNetworkSpawn()
     {
@@ -21,7 +23,24 @@ public class HouseData : NetworkBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!IsServer || collision.gameObject.layer != LayerMask.NameToLayer("Walk")) return;
-        
+
+        if (isLocked)
+        {
+            if (collision.TryGetComponent<Player>(out Player player))
+            {
+                if (!player.HasKey())
+                {
+                    Debug.Log($"House {gameObject.name} is locked and player {player.PlayerName.Value} does not have a key.");
+                    return; // Prevent entering if the house is locked and player doesn't have a key
+                }
+                else
+                {
+                    player.GetComponent<PlayerUIManager>().RemoveBuffClientRpc(ObjectType.Key);
+                    Debug.Log($"House {gameObject.name} is locked, but player {player.PlayerName.Value} has a key.");
+                }
+            }
+        }
+
         if (collision.TryGetComponent<NetworkObject>(out NetworkObject networkObject))
         {
             ulong clientId = networkObject.OwnerClientId;
@@ -33,6 +52,10 @@ public class HouseData : NetworkBehaviour
                     EnterHouseClientRpc(clientId);
                     player.TeleportClientRpc(playerEnterPoint.position);
                     EnterHouseServerRpc(clientId);
+
+                    Action handler = () => PlayerRequestingExitServerRpc(clientId, true);
+                    player.GetComponent<Health>().OnDie += handler;
+                    playerDieHandlers[clientId] = handler;
 
                     if (!string.IsNullOrEmpty(areaName))
                     {
@@ -72,15 +95,25 @@ public class HouseData : NetworkBehaviour
     ////////// Exit House Rpcs //////////
 
     [ServerRpc(RequireOwnership = false)]
-    public void PlayerRequestingExitServerRpc(ulong clientId)
+    public void PlayerRequestingExitServerRpc(ulong clientId, bool forceExit = false)
     {
         if (!IsServer || !playersInside.Contains(clientId)) return;
 
         Player player = GameManager.Instance.GetPlayer(clientId);
         if (player != null)
         {
-            ExitHouseClientRpc(clientId);
-            player.TeleportClientRpc(playerExitPoint.position);
+            if (playerDieHandlers.TryGetValue(clientId, out Action handler))
+            {
+                player.GetComponent<Health>().OnDie -= handler;
+                playerDieHandlers.Remove(clientId);
+            }
+
+            if (!forceExit)
+            {
+                ExitHouseClientRpc(clientId);
+                player.TeleportClientRpc(playerExitPoint.position);
+            }
+
             ExitHouseServerRpc(clientId);
         }
     }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
+using UnityEngine.Tilemaps;
 
 public class ItemDropper : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class ItemDropper : MonoBehaviour
     [SerializeField] private float difficultyMultiplier = 1f;
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private float itemDropChance = 0.5f;
+
+    [Space(10)]
+    [Header("Chest Settings")]
+    [SerializeField] private float chestOpenDuration = 3f;
+    public float ChestOpenDuration => chestOpenDuration;
     private float coinRadius;
     private bool isLocked = false;
     public bool IsLocked() => isLocked;
@@ -87,33 +93,81 @@ public class ItemDropper : MonoBehaviour
         Animator anim = GetComponent<Animator>();
         if (anim != null)
         {
+            AudioManager.Instance.PlaySFXAtPosition("Chest", transform.position);
             anim.SetBool("Open", open);
         }
     }
 
     private Vector2 GetSpawnPosition()
     {
+        Tilemap[] tilemaps = GameManager.Instance.GetAllTilemaps();
         int maxAttempts = 50;
         for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
             Vector2 spawnPoint = (Vector2)transform.position + Random.insideUnitCircle * coinSpread;
             bool isOccupied = Physics2D.OverlapCircle(spawnPoint, coinRadius) != null;
+
+            if (tilemaps != null)
+            {
+                foreach (Tilemap tm in tilemaps)
+                {
+                    if (tm != null && tm.GetComponent<TilemapCollider2D>() != null)
+                    {
+                        Vector3Int cellPosition = tm.WorldToCell(spawnPoint);
+                        TileBase tile = tm.GetTile(cellPosition);
+                        if (tile != null)
+                        {
+                            Collider2D tileCollider = Physics2D.OverlapPoint(spawnPoint, layerMask);
+                            if (tileCollider != null && tileCollider is TilemapCollider2D)
+                            {
+                                isOccupied = true;
+                                Debug.Log($"Collision with tilemap at {spawnPoint}, Cell: {cellPosition}, Tilemap: {tm.name}");
+                            }
+                        }
+                    }
+                }
+            }
             if (!isOccupied)
             {
+                Debug.Log($"Valid spawn at {spawnPoint}");
                 return spawnPoint;
             }
         }
+
         float coinSpreadIncrease = coinSpread * 2f;
+        
         for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
             Vector2 spawnPoint = (Vector2)transform.position + Random.insideUnitCircle * coinSpreadIncrease;
-            bool isOccupied = Physics2D.OverlapCircle(spawnPoint, coinRadius, layerMask) != null;
+            bool isOccupied = Physics2D.OverlapCircle(spawnPoint, coinRadius / 2) != null;
+            if (tilemaps != null)
+            {
+                foreach (Tilemap tm in tilemaps)
+                {
+                    if (tm != null && tm.GetComponent<TilemapCollider2D>() != null)
+                    {
+                        Vector3Int cellPosition = tm.WorldToCell(spawnPoint);
+                        TileBase tile = tm.GetTile(cellPosition);
+                        if (tile != null)
+                        {
+                            Collider2D tileCollider = Physics2D.OverlapPoint(spawnPoint, layerMask);
+                            if (tileCollider != null && tileCollider is TilemapCollider2D)
+                            {
+                                isOccupied = true;
+                                Debug.Log($"Collision with tilemap at {spawnPoint}, Cell: {cellPosition}, Tilemap: {tm.name}");
+                            }
+                        }
+                    }
+                }
+            }
             if (!isOccupied)
             {
+                Debug.Log($"Valid spawn at {spawnPoint}");
                 return spawnPoint;
             }
         }
-        return (Vector2)transform.position; // Fallback to original position if no valid spawn found
+        Debug.LogWarning($"Falling back to FindValidFallbackPosition");
+        return (Vector2)transform.position + Random.insideUnitCircle;
     }
 
     private void OnDestroy()
@@ -122,3 +176,6 @@ public class ItemDropper : MonoBehaviour
         else if (propHealth != null) propHealth.OnDestroyed -= DropItems;
     }
 }
+
+
+

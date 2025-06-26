@@ -6,4 +6,5 @@ public enum ObjectType
     PotionInvisibility = 3,
     PotionProtection = 4,
     PotionRegeneration = 5,
+    Key = 6,
 }

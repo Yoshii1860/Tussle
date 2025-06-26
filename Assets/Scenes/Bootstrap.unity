@@ -712,6 +712,12 @@ MonoBehaviour:
     pitchMax: 1.3
     volumeMin: 0.6
     volumeMax: 0.8
+  - name: Chest
+    clip: {fileID: 8300000, guid: 34ccfb9ce4f0e5747bca41c3676f441c, type: 3}
+    pitchMin: 0.7
+    pitchMax: 1.3
+    volumeMin: 0.6
+    volumeMax: 0.8
 --- !u!82 &762103446
 AudioSource:
   m_ObjectHideFlags: 0

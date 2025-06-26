@@ -7,12 +7,18 @@ public class BuffEntity : MonoBehaviour
     [SerializeField] private Sprite[] buffSprites; // Array of sprites for each ObjectType, assigned in the Inspector
     private float duration; // Duration of the buff
     private float remainingTime; // Remaining time for the buff
+    private bool isPermanent = false; // Whether the buff is permanent (duration = 0)
 
     private ObjectType objectType;
 
     public void Initialize(ObjectType objectType, float duration)
     {
         this.objectType = objectType;
+        if (duration == 0)
+        {
+            isPermanent = true;
+        }
+        else
         this.duration = duration;
         this.remainingTime = duration;
 
@@ -26,12 +32,12 @@ public class BuffEntity : MonoBehaviour
 
     private void Update()
     {
-        if (remainingTime > 0)
+        if (!isPermanent && remainingTime > 0)
         {
             remainingTime -= Time.deltaTime;
             // Optional: Update a UI timer or progress bar (e.g., buffImage.fillAmount = remainingTime / duration)
         }
-        else
+        else if (!isPermanent && remainingTime <= 0)
         {
             Destroy(gameObject); // Despawn the UI element when the buff expires
         }

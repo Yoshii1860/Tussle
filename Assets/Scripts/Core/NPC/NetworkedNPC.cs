@@ -98,6 +98,14 @@ public class NetworkedNPC : NetworkBehaviour
         healthComponent.OnDamaged += OnDamaged;
     }
 
+    private void Start()
+    {
+        if (PatrolPoints.Length == 0)
+        {
+            FallbackPatrolPoint();
+        }   
+    }
+
     private void OnDie()
     {
         SetState(NPCState.Dead); // Optional: set state to Dead
@@ -126,9 +134,12 @@ public class NetworkedNPC : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsServer || isDead) return;
+        if (!IsServer) return;
 
         StateMachine();
+
+        if (isDead) return;
+
         ResetHealth();
     }
 
@@ -302,7 +313,7 @@ public class NetworkedNPC : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (IsServer && other.TryGetComponent<Player>(out Player player))
+        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead)
         {
             if (player.IsInvisible || player.GetComponent<Character>().IsDead) return;
 
@@ -321,7 +332,7 @@ public class NetworkedNPC : NetworkBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (IsServer && other.TryGetComponent<Player>(out Player player))
+        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead)
         {
             Debug.Log($"OnTriggerStay2D: {player.name}");
 
@@ -361,7 +372,7 @@ public class NetworkedNPC : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (IsServer && other.TryGetComponent<Player>(out Player player))
+        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead)
         {
             Debug.Log($"OnTriggerExit2D: {player.name}");
             playersInRange.Remove(player);
@@ -505,10 +516,14 @@ public class NetworkedNPC : NetworkBehaviour
             }
             if (PatrolPoints.Length > 0) SetState(NPCState.Patrolling);
         }
-        else
-        {
-            PatrolPoints = new Transform[] { transform };
-        }
+    }
+
+    private void FallbackPatrolPoint()
+    {
+        PatrolPoints = new Transform[1];
+        GameObject patrolPoint = new GameObject($"{gameObject.name}_StartPoint");
+        patrolPoint.transform.position = transform.position;
+        PatrolPoints[0] = patrolPoint.transform;
     }
 
     private void SetUpNavMesh()

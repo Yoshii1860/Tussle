@@ -28,6 +28,16 @@ public class PlayerUIManager : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void RemoveBuffClientRpc(ObjectType objectType)
+    {
+        if (activeBuffs.TryGetValue(objectType, out BuffEntity buff))
+        {
+            Destroy(buff.gameObject);
+            activeBuffs.Remove(objectType);
+        }
+    }
+
     private void Update()
     {
         // Clean up buffs that have been destroyed

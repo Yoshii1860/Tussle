@@ -59,6 +59,8 @@ public abstract class Character : NetworkBehaviour
     private float startMoveSpeed;
     private bool isDead = false;
     public bool IsDead { get { return isDead; } }
+    public bool IsMoving => isMoving.Value;
+    public bool IsAttacking => isAttacking.Value;
 
     public override void OnNetworkSpawn()
     {

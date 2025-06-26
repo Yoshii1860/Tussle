@@ -206,12 +206,17 @@ public class AudioManager : MonoBehaviour
        
     }
 
-    public void PlaySFXAtPosition(string name, Vector3 position, float volume = 1f)
+    public void PlaySFXAtPosition(string name, Vector3 position)
     {
-        if (sfxDict.TryGetValue(name, out var clip) && clip != null)
-            AudioSource.PlayClipAtPoint(clip, position, volume);
+        var sfx = soundEffects.Find(s => s.name == name);
+        if (sfx != null && sfx.clip != null)
+        {
+            float volume = Random.Range(sfx.volumeMin, sfx.volumeMax);
+            AudioSource.PlayClipAtPoint(sfx.clip, position, volume);
+            return;
+        }
     }
-
+    
     // --- UI ---
 
     public void PlayClickSFX()
