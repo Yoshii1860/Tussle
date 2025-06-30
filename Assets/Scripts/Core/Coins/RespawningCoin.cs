@@ -26,6 +26,7 @@ public class RespawningCoin : Coin
     {
         if (!IsServer)
         {
+            AudioManager.Instance.PlayCoinSFX();
             Show(false);
             return 0;
         }
@@ -33,8 +34,6 @@ public class RespawningCoin : Coin
         if (isCollected) return 0;
 
         isCollected = true;
-
-        AudioManager.Instance.PlayCoinSFX();
 
         OnCollected?.Invoke(this);
 

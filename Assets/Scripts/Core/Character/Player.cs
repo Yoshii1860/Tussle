@@ -31,10 +31,13 @@ public class Player : NetworkBehaviour
 
     public NetworkVariable<FixedString32Bytes> PlayerName = new NetworkVariable<FixedString32Bytes>(new FixedString32Bytes("Player"), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<int> TeamIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<bool> HasKey = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public static event Action<Player> OnPlayerSpawned;
     public static event Action<Player> OnPlayerDespawned;
 
     [SerializeField] private bool hasKey = false;
+
+    public static Player LocalPlayer { get; private set; }
 
     public override void OnNetworkSpawn()
     {
@@ -49,6 +52,7 @@ public class Player : NetworkBehaviour
                 TeamIndex.Value = userData.teamIndex;
                 OnPlayerSpawned?.Invoke(this);
                 GameManager.Instance.RegisterPlayer(this);
+                HasKey.Value = GameManager.Instance.GetPlayerHasKey(OwnerClientId);
             }
 
 #if UNITY_SERVER
@@ -60,6 +64,7 @@ public class Player : NetworkBehaviour
                 TeamIndex.Value = userData.teamIndex;
                 OnPlayerSpawned?.Invoke(this);
                 GameManager.Instance.RegisterPlayer(this);
+                HasKey.Value = GameManager.Instance.GetPlayerHasKey(OwnerClientId);
             }
             return;
 #endif
@@ -90,7 +95,8 @@ public class Player : NetworkBehaviour
                 Debug.LogWarning("Player: cursorTexture is null, using default cursor");
             }
 
-            hasKey = GameManager.Instance.GetPlayerHasKey(OwnerClientId);
+            GameManager.Instance.RegisterPlayer(this);
+            LocalPlayer = this;
         }
         else
         {
@@ -195,37 +201,17 @@ public class Player : NetworkBehaviour
         StartCoroutine(FadeOutblackscreen(blackDuration, duration));
     }
 
-    private static GameObject FindChildWithTag(GameObject parent, string tag)
-    {
-        foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
-        {
-            if (child.CompareTag(tag))
-                return child.gameObject;
-        }
-        return null;
-    }
-
     public void ReceiveKey()
     {
-        if (IsServer)
-        {
-            hasKey = true;
-            GameManager.Instance.SetPlayerHasKey(OwnerClientId, true);
-            Debug.Log($"Player {OwnerClientId} received a key.");
-        }
+        if (!IsServer) { return; }
+        HasKey.Value = true;
+        GameManager.Instance.SetPlayerHasKey(OwnerClientId, true);
+        Debug.Log($"Player {OwnerClientId} received a key.");
     }
 
-    public bool HasKey()
+    public bool DoesPlayerHaveKey()
     {
-        if (IsServer)
-        {
-            return hasKey;
-        }
-        else
-        {
-            Debug.LogWarning("Player: HasKey called on client, should only be called on server.");
-            return false;
-        }
+        return HasKey.Value;
     }
 
     public override void OnNetworkDespawn()

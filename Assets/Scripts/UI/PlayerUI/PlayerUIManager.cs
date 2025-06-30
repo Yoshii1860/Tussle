@@ -12,12 +12,15 @@ public class PlayerUIManager : NetworkBehaviour
     [ClientRpc]
     public void SpawnBuffClientRpc(ObjectType objectType, float duration)
     {
+        Debug.Log($"PlayerUIManager: Spawning buff {objectType} with duration {duration} for Player {OwnerClientId}");
         if (activeBuffs.TryGetValue(objectType, out BuffEntity existingBuff) && existingBuff != null)
         {
+            Debug.Log($"PlayerUIManager: Found existing buff for {objectType}, extending duration.");
             existingBuff.AddTime(duration);
         }
         else
         {
+            Debug.Log($"PlayerUIManager: No existing buff found for {objectType}, creating a new one.");
             GameObject buffEntity = Instantiate(buffPrefab, buffHolder);
             BuffEntity buff = buffEntity.GetComponent<BuffEntity>();
             if (buff != null)

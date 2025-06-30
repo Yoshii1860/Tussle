@@ -16,7 +16,8 @@ public class DealMeleeDamageOnContact : MonoBehaviour
     private NetworkObject parentNetworkObject;
 
     private int damageOnStart;
-    private int npcTeamIndex = -2; // Default value for NPCs
+    private const int NPCTeamIndex = -2; // Default value for NPCs
+    private const int FFAIndex = -1; // Free-for-all index
 
     private void Start()
     {
@@ -25,7 +26,7 @@ public class DealMeleeDamageOnContact : MonoBehaviour
             Debug.LogWarning("TeamIndexStorage is not assigned in DealMeleeDamageOnContact!");
             return;
         }
-        int teamIndex = player != null ? player.TeamIndex.Value : npcTeamIndex;
+        int teamIndex = player != null ? player.TeamIndex.Value : NPCTeamIndex;
         teamIndexStorage.Initialize(teamIndex);
         damageOnStart = damageAmount;
     }
@@ -72,15 +73,17 @@ public class DealMeleeDamageOnContact : MonoBehaviour
         {
             if (other.transform.root.TryGetComponent<PropHealth>(out PropHealth propHealth))
             {
+                if (teamIndexStorage.TeamIndex == NPCTeamIndex) { return; }
+
                 propHealth.TakeDamage(damageAmount);
+                return;
             }
-            return;
         }
 
         if (other.attachedRigidbody == null) return;
         if (other.gameObject == transform.root.gameObject) return; // Ignore self
 
-        if (teamIndexStorage != null && teamIndexStorage.TeamIndex != -1)
+        if (teamIndexStorage != null && teamIndexStorage.TeamIndex != FFAIndex)
         {
             Debug.Log($"DealDamageOnContact: Checking team index for {other.name} with team index {teamIndexStorage.TeamIndex}");
 

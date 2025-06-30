@@ -1,6 +1,8 @@
+using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
-public class MerchantNPC : MonoBehaviour
+public class MerchantNPC : NetworkBehaviour
 {
     [SerializeField] private GameObject symbol;
     [SerializeField] private GameObject talkMessage;
@@ -16,52 +18,78 @@ public class MerchantNPC : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void InteractWithMerchant(ulong clientId)
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestMerchantInteractionServerRpc(ulong clientId)
     {
         Player player = GameManager.Instance.GetPlayer(clientId);
-        int coinCount = player.GetComponent<CoinWallet>().CoinCount.Value;
-
-        if (player.HasKey())
+        if (player == null)
         {
-            GiveAdvice();
+            Debug.LogError($"MerchantNPC: Player with clientId {clientId} not found.");
+            return;
+        }
+
+        CoinWallet coinWallet = player.GetComponent<CoinWallet>();
+        if (coinWallet == null)
+        {
+            Debug.LogError($"MerchantNPC: CoinWallet component not found on player {player.name}.");
+            return;
+        }
+
+        int coinCount = coinWallet.CoinCount.Value;
+
+        if (player.DoesPlayerHaveKey())
+        {
+            GiveAdviceClientRpc(clientId);
         }
         else if (coinCount >= minCoinCount)
         {
-            BuyFromMerchant(player);
+            player.ReceiveKey();
+
+            BuyFromMerchantClientRpc(clientId);
+
+            player.GetComponent<PlayerUIManager>().SpawnBuffClientRpc(ObjectType.Key, 0);
         }
         else
         {
-            TalkToMerchant();
+            TalkToMerchantClientRpc(clientId);
         }
     }
 
-    private void GiveAdvice()
+    [ClientRpc]
+    private void GiveAdviceClientRpc(ulong clientId)
     {
         animator.SetTrigger("Talking");
-        Debug.Log("Giving advice to player...");
+        
+        
+        if (NetworkManager.Singleton.LocalClientId != clientId) { return; }
+
         symbol.SetActive(false);
         adviceMessage.SetActive(true);
-        Invoke(nameof(HideMessage), 5f); // Hide message after 5 seconds
+        Invoke(nameof(HideMessage), 5f);
     }
 
-    private void BuyFromMerchant(Player player)
+    [ClientRpc]
+    private void BuyFromMerchantClientRpc(ulong clientId)
     {
         animator.SetTrigger("Buying");
-        Debug.Log($"Buying from merchant with {player.GetComponent<CoinWallet>().CoinCount.Value} coins.");
+
+        if (NetworkManager.Singleton.LocalClientId != clientId) { return; }
+
         symbol.SetActive(false);
         buyMessage.SetActive(true);
-        player.GetComponent<PlayerUIManager>().SpawnBuffClientRpc(objectType, 0);
-        player.ReceiveKey();
-        Invoke(nameof(HideMessage), 8f); // Hide message after 5 seconds
+        Invoke(nameof(HideMessage), 8f);
     }
 
-    private void TalkToMerchant()
+    [ClientRpc]
+    private void TalkToMerchantClientRpc(ulong clientId)
     {
         animator.SetTrigger("Talking");
-        Debug.Log("Talking to merchant...");
+        
+        if (NetworkManager.Singleton.LocalClientId != clientId) { return; }
+
         symbol.SetActive(false);
         talkMessage.SetActive(true);
-        Invoke(nameof(HideMessage), 5f); // Hide message after 3 seconds
+        Invoke(nameof(HideMessage), 5f);
     }
 
     private void HideMessage()

@@ -558,166 +558,206 @@ MonoBehaviour:
   soundEffects:
   - name: Click
     clip: {fileID: 8300000, guid: 46e1e2fe8b9aaeb45a368e179162de0b, type: 3}
+    audioRange: 50
     pitchMin: 1
     pitchMax: 1
     volumeMin: 0.4
     volumeMax: 0.4
   - name: HitBig
     clip: {fileID: 8300000, guid: 8d70aac9ac4e4d6499ee2f7a9a8b0cf2, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: Slash
     clip: {fileID: 8300000, guid: 39c10ad60b1754445b641f2de0523d01, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: SlashDouble
     clip: {fileID: 8300000, guid: 4df243e0fb9595544940686aeefdd0fb, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: SlashLongSwing
     clip: {fileID: 8300000, guid: 6e58e764dbe305c459d58293cf8f99c4, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: SlashLongSwing2
     clip: {fileID: 8300000, guid: 294b275e1adfff640871328d0bb370ba, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: Stab
     clip: {fileID: 8300000, guid: d800583b674866849a3d49a898f2eb90, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: Swing
     clip: {fileID: 8300000, guid: 6d8b28e35b8bf894996a9f4ad4ca4488, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: SwingBig
     clip: {fileID: 8300000, guid: 56f4649b6ce56a8428ee8f34ad6e0799, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 1
     volumeMax: 0.6
   - name: SwingBlade
     clip: {fileID: 8300000, guid: 09e5ec1d6f29e194a94a9d6c0a8a58da, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: WeaponSlashBig
     clip: {fileID: 8300000, guid: f0dbe72aca4e983409744fd978b68a70, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: IceBomb
     clip: {fileID: 8300000, guid: 7a27dacb45850a647b43709408fcd82d, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: IceSpell
     clip: {fileID: 8300000, guid: 6c0946e56245bcf4e87d339af7db8479, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: Arrow
     clip: {fileID: 8300000, guid: e8f7109cbfa191646bb93d76865a53f7, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: TrippleArrow
     clip: {fileID: 8300000, guid: de7fc6a6cb831944cb98fcd5cad6f7aa, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.6
   - name: Die1
     clip: {fileID: 8300000, guid: c0f8faa299edcd140bd3319377133e57, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: Die2
     clip: {fileID: 8300000, guid: 0cdbf13df26676d4d831c01dc209b4f5, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: Die3
     clip: {fileID: 8300000, guid: db59addff6573e74da3052e8b0cd7b36, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: Die4
     clip: {fileID: 8300000, guid: f0b9281aed9712440859669a3d211ef6, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: Die5
     clip: {fileID: 8300000, guid: da42d2c1e3dacc145a9119891d775240, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: Die6
     clip: {fileID: 8300000, guid: 216784565edea4f4c98e4194f0c55418, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: Die7
     clip: {fileID: 8300000, guid: 5dd5dc8ddcdb0154abf866d4d512ff3d, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: PlayerDeath
     clip: {fileID: 8300000, guid: 2e478db20848ef04cb2413ec085b6747, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.4
     volumeMax: 0.8
   - name: Coin
     clip: {fileID: 8300000, guid: 5cce271511b00614e9ab03d62843b2cc, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.1
     volumeMax: 0.4
   - name: Potion
     clip: {fileID: 8300000, guid: 8c553a905f700ff458fa68ceac46eedb, type: 3}
+    audioRange: 50
     pitchMin: 0.8
     pitchMax: 1.2
     volumeMin: 0.3
     volumeMax: 0.5
   - name: Door
     clip: {fileID: 8300000, guid: b5e2af9531b8df84b94a2a331fd95f07, type: 3}
+    audioRange: 50
     pitchMin: 0.7
     pitchMax: 1.3
     volumeMin: 0.6
     volumeMax: 0.8
   - name: Chest
     clip: {fileID: 8300000, guid: 34ccfb9ce4f0e5747bca41c3676f441c, type: 3}
+    audioRange: 50
     pitchMin: 0.7
     pitchMax: 1.3
     volumeMin: 0.6
     volumeMax: 0.8
+  characters:
+  - {fileID: 6364669205076820887, guid: a3c1faf915dc240bca8ed7566d46910c, type: 3}
+  - {fileID: 3850975424279790614, guid: 978fa2fb617654f5eaeff9da6fc7d116, type: 3}
+  - {fileID: 2277287093713288670, guid: 389c7e1a1dabb4e1e917001420b89c9a, type: 3}
+  - {fileID: 505655969538696325, guid: 315058484cf2044ce8dcb608b4678ff6, type: 3}
+  - {fileID: -3158061666021011625, guid: 13c470c5b8dcd4854834911f7e0a9a6c, type: 3}
+  networkedNPCs:
+  - {fileID: 8467848890405903091, guid: 120713ef3d6a2cb429f9902a264a99f0, type: 3}
+  - {fileID: 483453635870000043, guid: bf8690ab150d1e84685a41d3b39db127, type: 3}
+  - {fileID: 8410473954910345545, guid: 360d60f49b2c13b4c9c7eb79be929c0f, type: 3}
+  - {fileID: 1955393499207218771, guid: d1e422bff9d2fae43894ad414fce06ac, type: 3}
+  - {fileID: 7258937772264357362, guid: 97c27359be6504d4e8a786864c3c4992, type: 3}
+  networkAudioManager: {fileID: 0}
 --- !u!82 &762103446
 AudioSource:
   m_ObjectHideFlags: 0

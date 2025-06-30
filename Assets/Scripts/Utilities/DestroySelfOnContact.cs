@@ -3,15 +3,18 @@ using UnityEngine;
 public class DestroySelfOnContact : MonoBehaviour
 {
     [SerializeField] private TeamIndexStorage teamIndexStorage;
+    private const int NPCTeamIndex = -2; // Default value for NPCs
+    private const int FFAIndex = -1; // Free-for-all index
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Destructable"))
         {
+            if (teamIndexStorage.TeamIndex == NPCTeamIndex) { return; }
             Destroy(gameObject, 0.1f);
             return;
         }
-        if (teamIndexStorage.TeamIndex != -1)
+        if (teamIndexStorage.TeamIndex != FFAIndex)
         {
             if (other.attachedRigidbody == null) return;
             if (other.attachedRigidbody.TryGetComponent<Player>(out Player player))

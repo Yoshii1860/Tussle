@@ -5,45 +5,45 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 // On the Player GameObject
-public class PlayerInteractor : MonoBehaviour
+public class PlayerInteractor : NetworkBehaviour
 {
+    private NetworkVariable<bool> isOpeningChest = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    private NetworkVariable<bool> wasAttacked = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Owner, NetworkVariableWritePermission.Server);
     [SerializeField] private InputReader inputReader;
     private ItemDropper chestInRange;
     private MerchantNPC merchantInRange;
     private Coroutine chestOpenCoroutine;
-    private bool isOpeningChest = false;
-    private Character character;
+    [SerializeField] private Character character;
     private Health health;
-    private bool wasAttacked = false;
+    private Animator animator;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        character = GetComponentInParent<Character>();
-        if (character == null)
+        animator = character.GetComponent<Animator>();
+        health = character.GetComponent<Health>();
+        isOpeningChest.OnValueChanged += OnIsOpeningChestChanged;
+        OnIsOpeningChestChanged(false, isOpeningChest.Value);
+        if (IsOwner)
         {
-            Debug.LogError("PlayerInteractor: Character component not found in parent.");
-        }
-        else
-        {
-            health = character.GetComponent<Health>();
-            health.OnDamaged += OnDamaged;
-        }
-    }
-
-    private void OnEnable()
-    {
-        if (inputReader != null)
             inputReader.InteractEvent += OnInteract;
-    }
-    private void OnDisable()
-    {
-        if (inputReader != null)
-            inputReader.InteractEvent -= OnInteract;
+        }
+        else if (IsServer)
+        {
+            health.OnDamaged += OnDamaged; 
+        }
     }
 
-    private void OnDestroy()
+    public override void OnNetworkDespawn()
     {
-        health.OnDamaged -= OnDamaged;
+        if (IsOwner)
+        {
+            inputReader.InteractEvent -= OnInteract;
+        }
+        else if (IsServer)
+        {
+            health.OnDamaged -= OnDamaged;
+        }
+        isOpeningChest.OnValueChanged -= OnIsOpeningChestChanged;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -97,36 +97,34 @@ public class PlayerInteractor : MonoBehaviour
     private void OnInteract()
     {
         Debug.Log("Interact action triggered.");
-        if (chestInRange != null && !chestInRange.IsLocked() && !isOpeningChest)
+        if (chestInRange != null && !chestInRange.IsLocked() && !isOpeningChest.Value)
         {
             chestOpenCoroutine = StartCoroutine(OpenChestRoutine(chestInRange));
             Debug.Log($"Started opening chest: {chestInRange.name}");
         }
         else if (merchantInRange != null)
         {
-            ulong clientId = NetworkManager.Singleton.LocalClientId;
-            merchantInRange.InteractWithMerchant(clientId);
+            merchantInRange.RequestMerchantInteractionServerRpc(NetworkManager.Singleton.LocalClientId);
             Debug.Log($"Interacted with merchant: {merchantInRange.name}");
         }
     }
 
     private IEnumerator OpenChestRoutine(ItemDropper chest)
     {
-        isOpeningChest = true;
-        wasAttacked = false;
+        ResetWasAttackedServerRpc();
         float timer = 0f;
         float chestOpenDuration = chest.ChestOpenDuration;
         Image progressBar = chest.GetComponentInChildren<Image>();
-        ToggleOpeningAnimClientRpc();
+        isOpeningChest.Value = true;
 
         while (timer < chestOpenDuration)
         {
-            if (character.IsMoving || character.IsAttacking || WasAttacked())
+            if (character.IsMoving || character.IsAttacking || wasAttacked.Value)
             {
                 Debug.Log("Chest opening interrupted!");
-                isOpeningChest = false;
                 progressBar.fillAmount = 0f;
-                ToggleOpeningAnimClientRpc();
+                isOpeningChest.Value = false;
+                ResetWasAttackedServerRpc();
                 yield break;
             }
 
@@ -138,36 +136,23 @@ public class PlayerInteractor : MonoBehaviour
 
         chest.OpenChest();
         Debug.Log($"Chest opened: {chest.name}");
-        isOpeningChest = false;
         progressBar.fillAmount = 0f;
-        ToggleOpeningAnimClientRpc();
+        isOpeningChest.Value = false;
     }
 
-    [ClientRpc]
-    private void ToggleOpeningAnimClientRpc()
+    private void OnIsOpeningChestChanged(bool previousValue, bool newValue)
     {
-        if (character != null)
-        {
-            Animator anim = character.GetComponent<Animator>();
-            if (anim != null)
-            {
-                anim.SetBool("Open", isOpeningChest);
-            }
-        }
+        animator.SetBool("Open", newValue);
     }
 
     private void OnDamaged(Player attacker)
     {
-        wasAttacked = true;
+        wasAttacked.Value = true;
     }
 
-    private bool WasAttacked()
+    [ServerRpc(RequireOwnership = false)]
+    private void ResetWasAttackedServerRpc()
     {
-        if (wasAttacked)
-        {
-            wasAttacked = false;
-            return true;
-        }
-        return false;
+        wasAttacked.Value = false;
     }
 }

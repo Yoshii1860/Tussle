@@ -2,8 +2,9 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
 using UnityEngine.Tilemaps;
+using Unity.VisualScripting;
 
-public class ItemDropper : MonoBehaviour
+public class ItemDropper : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private Health health;
@@ -70,9 +71,22 @@ public class ItemDropper : MonoBehaviour
 
     public void OpenChest()
     {
-        if (isLocked) return;
+        if (isChest && isLocked) return;
         isLocked = true;
 
+        if (IsServer)
+        {
+            StartCoroutine(ChestRoutine());
+        }
+        else
+        {
+            TryOpenChestServerRpc();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void TryOpenChestServerRpc()
+    {
         StartCoroutine(ChestRoutine());
     }
 
@@ -93,7 +107,10 @@ public class ItemDropper : MonoBehaviour
         Animator anim = GetComponent<Animator>();
         if (anim != null)
         {
-            AudioManager.Instance.PlaySFXAtPosition("Chest", transform.position);
+            if (open)
+            {
+                AudioManager.Instance.PlayLocalSFXAtPosition("Chest", transform.position);
+            }
             anim.SetBool("Open", open);
         }
     }

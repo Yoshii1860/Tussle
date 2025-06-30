@@ -380,6 +380,28 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 56f4649b6ce56a8428ee8f34ad6e0799, type: 3}
   - {fileID: 8300000, guid: f0dbe72aca4e983409744fd978b68a70, type: 3}
   - {fileID: 8300000, guid: 294b275e1adfff640871328d0bb370ba, type: 3}
+  attackSoundEffects:
+  - name: SwingBig
+    clip: {fileID: 8300000, guid: 56f4649b6ce56a8428ee8f34ad6e0799, type: 3}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.3
+    volumeMax: 0.6
+  - name: WeaponSlashBig
+    clip: {fileID: 8300000, guid: f0dbe72aca4e983409744fd978b68a70, type: 3}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.3
+    volumeMax: 0.6
+  - name: SlashLongSwing2
+    clip: {fileID: 8300000, guid: 294b275e1adfff640871328d0bb370ba, type: 3}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.3
+    volumeMax: 0.6
   zoomSpeed: 0.5
   minFOV: 5
   maxFOV: 10
@@ -538,6 +560,8 @@ MonoBehaviour:
         byte0028: 0
         byte0029: 0
   TeamIndex:
+    m_InternalValue: 0
+  HasKey:
     m_InternalValue: 0
   hasKey: 0
 --- !u!114 &-1539910570736620033
@@ -1652,7 +1676,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73307d7ccb55e8742a73394d2a5e0a5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   inputReader: {fileID: 11400000, guid: c7cc11eec82d4684f9c97801455368cf, type: 2}
+  character: {fileID: 505655969538696325}
 --- !u!1 &3987921084868497875
 GameObject:
   m_ObjectHideFlags: 0

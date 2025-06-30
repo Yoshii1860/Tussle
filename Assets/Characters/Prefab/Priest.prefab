@@ -589,6 +589,35 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 7a27dacb45850a647b43709408fcd82d, type: 3}
   - {fileID: 0}
   - {fileID: 8300000, guid: 6d8b28e35b8bf894996a9f4ad4ca4488, type: 3}
+  attackSoundEffects:
+  - name: IceSpell
+    clip: {fileID: 8300000, guid: 6c0946e56245bcf4e87d339af7db8479, type: 3}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.4
+    volumeMax: 0.7
+  - name: IceBomb
+    clip: {fileID: 8300000, guid: 7a27dacb45850a647b43709408fcd82d, type: 3}
+    audioRange: 15
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.4
+    volumeMax: 0.7
+  - name: 
+    clip: {fileID: 0}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.4
+    volumeMax: 0.7
+  - name: Swing
+    clip: {fileID: 8300000, guid: 6d8b28e35b8bf894996a9f4ad4ca4488, type: 3}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.3
+    volumeMax: 0.6
   zoomSpeed: 0.5
   minFOV: 5
   maxFOV: 10
@@ -785,6 +814,8 @@ MonoBehaviour:
         byte0028: 0
         byte0029: 0
   TeamIndex:
+    m_InternalValue: 0
+  HasKey:
     m_InternalValue: 0
   hasKey: 0
 --- !u!114 &-8602882873542424961
@@ -1625,7 +1656,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73307d7ccb55e8742a73394d2a5e0a5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   inputReader: {fileID: 11400000, guid: c7cc11eec82d4684f9c97801455368cf, type: 2}
+  character: {fileID: 2277287093713288670}
 --- !u!1 &4284259782965046833
 GameObject:
   m_ObjectHideFlags: 0

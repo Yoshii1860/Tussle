@@ -7,6 +7,7 @@ public class BountyCoin : Coin
     {
         if (!IsServer)
         {
+            AudioManager.Instance.PlayCoinSFX();
             Show(false);
             return 0;
         }
@@ -14,8 +15,6 @@ public class BountyCoin : Coin
         if (isCollected) return 0;
 
         isCollected = true;
-
-        AudioManager.Instance.PlayCoinSFX();
 
         Destroy(gameObject);
 

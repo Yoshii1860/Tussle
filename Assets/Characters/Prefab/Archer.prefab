@@ -207,6 +207,21 @@ MonoBehaviour:
   attackSounds:
   - {fileID: 8300000, guid: e8f7109cbfa191646bb93d76865a53f7, type: 3}
   - {fileID: 8300000, guid: de7fc6a6cb831944cb98fcd5cad6f7aa, type: 3}
+  attackSoundEffects:
+  - name: Arrow
+    clip: {fileID: 8300000, guid: e8f7109cbfa191646bb93d76865a53f7, type: 3}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.3
+    volumeMax: 0.6
+  - name: TrippleArrow
+    clip: {fileID: 8300000, guid: de7fc6a6cb831944cb98fcd5cad6f7aa, type: 3}
+    audioRange: 10
+    pitchMin: 0.8
+    pitchMax: 1.2
+    volumeMin: 0.3
+    volumeMax: 0.6
   zoomSpeed: 0.5
   minFOV: 5
   maxFOV: 10
@@ -384,6 +399,8 @@ MonoBehaviour:
         byte0028: 0
         byte0029: 0
   TeamIndex:
+    m_InternalValue: 0
+  HasKey:
     m_InternalValue: 0
   hasKey: 0
 --- !u!114 &4960955379030346940
@@ -1752,7 +1769,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73307d7ccb55e8742a73394d2a5e0a5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   inputReader: {fileID: 11400000, guid: c7cc11eec82d4684f9c97801455368cf, type: 2}
+  character: {fileID: 6364669205076820887}
 --- !u!1 &3883173715628723578
 GameObject:
   m_ObjectHideFlags: 0

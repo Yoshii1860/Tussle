@@ -30,7 +30,7 @@ public abstract class Character : NetworkBehaviour
     [SerializeField] protected SecondStat secondStat;
     [SerializeField] protected Attack[] attacks;
     [SerializeField] protected Attack secondaryAttack;
-    [SerializeField] protected AudioClip[] attackSounds;
+    [SerializeField] public SoundEffect[] attackSoundEffects;
     protected Attack currentAttack;
     public Attack CurrentAttack { get; protected set; }
 
@@ -49,6 +49,7 @@ public abstract class Character : NetworkBehaviour
     protected NetworkVariable<bool> isAttacking = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<bool> isSecondaryAction = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     protected NetworkVariable<int> currentAttackIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    protected NetworkVariable<bool> isDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     protected Vector2 previousMovementInput;
 
@@ -57,10 +58,9 @@ public abstract class Character : NetworkBehaviour
     public bool UsesMana => usesMana;
 
     private float startMoveSpeed;
-    private bool isDead = false;
-    public bool IsDead { get { return isDead; } }
     public bool IsMoving => isMoving.Value;
     public bool IsAttacking => isAttacking.Value;
+    public bool IsDead => isDead.Value;
 
     public override void OnNetworkSpawn()
     {
@@ -72,6 +72,8 @@ public abstract class Character : NetworkBehaviour
             isFacingLeft.OnValueChanged += OnFacingLeftChanged;
             isAttacking.OnValueChanged += OnIsAttackingChanged;
             isSecondaryAction.OnValueChanged += OnIsSecondaryActionChanged;
+
+            health.OnDie += OnDie;
 
             // Apply initial states
             OnIsMovingChanged(false, isMoving.Value);
@@ -151,7 +153,7 @@ public abstract class Character : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner || isDead) return;
+        if (!IsOwner || isDead.Value) return;
 
         UpdateMovement();
         UpdateAnimations();
@@ -180,7 +182,7 @@ public abstract class Character : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!IsOwner || isDead) return;
+        if (!IsOwner || isDead.Value) return;
 
         rb.linearVelocity = new Vector2(previousMovementInput.x * moveSpeed, previousMovementInput.y * moveSpeed);
     }
@@ -326,9 +328,11 @@ public abstract class Character : NetworkBehaviour
 
     private void OnDie()
     {
-        isDead = true;
+        Debug.LogError($"Character.OnDie: {gameObject.name} has died.");
 
-        AudioManager.Instance.PlaySFX("PlayerDeath");
+        isDead.Value = true;
+
+        AudioManager.Instance.PlayNetworkSFX("PlayerDeath", transform.position);
 
         // Unsubscribe from input events to prevent further input
         if (IsOwner && inputReader != null)
@@ -338,6 +342,8 @@ public abstract class Character : NetworkBehaviour
             inputReader.ChangeAttackEvent -= OnAttackChange;
         }
 
+        previousMovementInput = Vector2.zero;
+        
         // Optionally, stop movement
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
@@ -354,9 +360,10 @@ public abstract class Character : NetworkBehaviour
 
     public void AttackSoundOne(int i)
     {
-        if (attackSounds.Length > 0)
+        if (attackSoundEffects.Length > 0 && IsServer)
         {
-            AudioManager.Instance.PlaySFX(attackSounds[i]);
+            string name = attackSoundEffects[i].name;
+            AudioManager.Instance.PlayNetworkSFX(name, transform.position);
         }
     }
 }

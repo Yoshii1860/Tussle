@@ -34,15 +34,14 @@ public class PropHealth : NetworkBehaviour
         if (CurrentPropHealth.Value <= 0)
         {
             OnDestroyed?.Invoke();
-            DestroyObjectServerRpc();
+            DestroyObject();
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void DestroyObjectServerRpc()
+    private void DestroyObject()
     {
         DestroyObjectClientRpc();
-        gameObject.GetComponent<NetworkObject>().Despawn();
+        GetComponent<NetworkObject>().Despawn();
     }
 
     [ClientRpc]

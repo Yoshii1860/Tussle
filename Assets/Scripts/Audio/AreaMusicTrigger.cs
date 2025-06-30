@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class AreaMusicTrigger : MonoBehaviour
@@ -9,16 +10,17 @@ public class AreaMusicTrigger : MonoBehaviour
         if (string.IsNullOrEmpty(areaName))
         {
             areaName = gameObject.name;
-        }   
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"AreaMusicTrigger: {gameObject.name} entered by {other.gameObject.name}");
         if (other.TryGetComponent<Player>(out Player player))
         {
-            Debug.Log($"AreaMusicTrigger: {areaName} triggered by player {player.name}");
-            AudioManager.Instance.PlayAreaMusic(areaName);
+            if (player.IsOwner)
+            {
+                AudioManager.Instance.PlayAreaMusic(areaName);
+            }
         }
     }
 }

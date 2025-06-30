@@ -21,6 +21,9 @@ public class DealDamageOnContact : MonoBehaviour
     private ulong ownerClientId;
     private Dictionary<Health, Coroutine> activeDamageOverTimeCoroutines = new Dictionary<Health, Coroutine>();
 
+    private const int NPCTeamIndex = -2;
+    private const int FFAIndex = -1; // Free-for-all index
+
     public void SetOwner(ulong ownerClientId)
     {
         this.ownerClientId = ownerClientId;
@@ -32,6 +35,8 @@ public class DealDamageOnContact : MonoBehaviour
         {
             if (other.transform.root.TryGetComponent<PropHealth>(out PropHealth propHealth))
             {
+                if (teamIndexStorage.TeamIndex == NPCTeamIndex) { return; }
+
                 propHealth.TakeDamage(DamageAmount);
                 return;
             }
@@ -39,7 +44,7 @@ public class DealDamageOnContact : MonoBehaviour
 
         if (other.attachedRigidbody == null) { return; }
 
-        if (teamIndexStorage != null && teamIndexStorage.TeamIndex != -1)
+        if (teamIndexStorage != null && teamIndexStorage.TeamIndex != FFAIndex)
         {
 
             if (other.attachedRigidbody.TryGetComponent<Player>(out Player player))

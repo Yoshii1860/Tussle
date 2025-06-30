@@ -15,7 +15,7 @@ public class NetworkedNPC : NetworkBehaviour
     [SerializeField] private NpcMeleeAttacks npcMeleeAttacks;
     [SerializeField] private Transform patrolPointsContainer;
     public Transform[] PatrolPoints;
-    [SerializeField] private AudioClip attackSound;
+    [SerializeField] public SoundEffect attackSoundEffect;
     [Space(10)]
 
     [Header("NPC Settings")]
@@ -45,6 +45,7 @@ public class NetworkedNPC : NetworkBehaviour
     private NetworkVariable<Vector2> syncPosition = new NetworkVariable<Vector2>(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<bool> isMoving = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<int> attackId = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<bool> isDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private float lastAttackTime = 0f;
     private CircleCollider2D triggerCollider;
@@ -53,8 +54,6 @@ public class NetworkedNPC : NetworkBehaviour
     //private bool isMoving = false; // Track active movement
     private float idleTimer = 0f; // Timer for idle duration
     private float healTimer = 0f; // Timer for healing
-
-    private bool isDead = false; // Track if NPC is dead
 
     public enum NPCState
     {
@@ -110,14 +109,15 @@ public class NetworkedNPC : NetworkBehaviour
     {
         SetState(NPCState.Dead); // Optional: set state to Dead
         PlayDeathAnimationClientRpc();
-        AudioManager.Instance.PlayRandomSFX("Die");
+        string deathSound = "Die" + Random.Range(1, 8).ToString();
+        AudioManager.Instance.PlayNetworkSFX(deathSound, transform.position);
         Invoke(nameof(RemoveNPC), deathDespawnDelay);
         Debug.Log($"NPC {name} has died and will be removed after {deathDespawnDelay} seconds.");
     }
 
     private void OnDamaged(Player attacker)
     {
-        if (!IsServer || isDead) return;
+        if (!IsServer || isDead.Value) return;
         if (attacker != null)
         {
             if (!playersInRange.Contains(attacker))
@@ -138,7 +138,7 @@ public class NetworkedNPC : NetworkBehaviour
 
         StateMachine();
 
-        if (isDead) return;
+        if (isDead.Value) return;
 
         ResetHealth();
     }
@@ -243,7 +243,7 @@ public class NetworkedNPC : NetworkBehaviour
                     }
                     break;
                 case NPCState.Dead:
-                    isDead = true;
+                    isDead.Value = true;
                     foreach (Collider collider in GetComponents<Collider>())
                     {
                         collider.enabled = false; // Disable all colliders
@@ -313,7 +313,7 @@ public class NetworkedNPC : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead)
+        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead.Value)
         {
             if (player.IsInvisible || player.GetComponent<Character>().IsDead) return;
 
@@ -332,10 +332,8 @@ public class NetworkedNPC : NetworkBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead)
+        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead.Value)
         {
-            Debug.Log($"OnTriggerStay2D: {player.name}");
-
             if (player.IsInvisible)
             {
                 if (playersInRange.Contains(player))
@@ -372,7 +370,7 @@ public class NetworkedNPC : NetworkBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead)
+        if (IsServer && other.TryGetComponent<Player>(out Player player) && !isDead.Value)
         {
             Debug.Log($"OnTriggerExit2D: {player.name}");
             playersInRange.Remove(player);
@@ -412,12 +410,10 @@ public class NetworkedNPC : NetworkBehaviour
 
         if (distance <= attackRange && Time.time - lastAttackTime >= attackCooldown)
         {
-            Debug.Log($"Target {currentTarget.name} is within attack range. Attacking.");
             SetState(NPCState.Attacking);
         }
         else if (distance <= triggerRadius && currentState != NPCState.Attacking && currentState != NPCState.Fleeing)
         {
-            Debug.Log($"Target {currentTarget.name} is within trigger radius. Approaching.");
             SetState(NPCState.Approaching);
         }
     }
@@ -546,6 +542,9 @@ public class NetworkedNPC : NetworkBehaviour
 
     public void PlayAttackSound()
     {
-        AudioManager.Instance.PlaySFX(attackSound);
+        if (IsServer)
+        {
+            AudioManager.Instance.PlayNetworkSFX(attackSoundEffect.name, transform.position);
+        }
     }
 }

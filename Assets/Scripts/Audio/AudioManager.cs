@@ -9,6 +9,7 @@ public class SoundEffect
 {
     public string name;
     public AudioClip clip;
+    public float audioRange = 50f;
     [Range(0.5f, 2f)] public float pitchMin = 1f;
     [Range(0.5f, 2f)] public float pitchMax = 1f;
     [Range(0f, 1f)] public float volumeMin = 1f;
@@ -34,6 +35,11 @@ public class AudioManager : MonoBehaviour
     [Header("SFX")]
     public AudioSource sfxSource;
     public List<SoundEffect> soundEffects;
+    public Character[] characters;
+    public NetworkedNPC[] networkedNPCs;
+
+    [Header("References")]
+    [SerializeField] private NetworkAudioManager networkAudioManager;
 
     private Dictionary<string, AudioClip> sfxDict = new();
 
@@ -89,6 +95,12 @@ public class AudioManager : MonoBehaviour
         }
         else if (scene.name == GameSceneName)
         {
+            networkAudioManager = FindFirstObjectByType<NetworkAudioManager>();
+            if (networkAudioManager == null)
+            {
+                Debug.LogError("NetworkAudioManager not found in the scene!");
+                return;
+            }
             PlayRandomAreaMusic();
         }
     }
@@ -141,7 +153,7 @@ public class AudioManager : MonoBehaviour
             if (musicSource.isPlaying && musicSource.clip == randomClip)
                 return;
             if (musicSource.isPlaying)
-            { 
+            {
                 if (fadeCoroutine != null)
                 {
                     StopCoroutine(fadeCoroutine);
@@ -158,10 +170,10 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
-                
 
-    // --- SFX ---
-    public void PlaySFX(string name)
+
+    // --- Local SFX ---
+    public void PlayLocalSFX(string name)
     {
         var sfx = soundEffects.Find(s => s.name == name);
         if (sfx != null && sfx.clip != null)
@@ -174,7 +186,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySFX(AudioClip clip)
+    public void PlayLocalSFX(AudioClip clip)
     {
         var sfx = soundEffects.Find(s => s.clip == clip);
         if (sfx != null)
@@ -191,7 +203,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayRandomSFX(string name)
+    public void PlayRandomLocalSFX(string name)
     {
         var matches = soundEffects.FindAll(s => s.name.StartsWith(name));
         if (matches.Count > 0)
@@ -203,10 +215,10 @@ public class AudioManager : MonoBehaviour
             sfxSource.volume = volume;
             sfxSource.PlayOneShot(sfx.clip, volume);
         }
-       
+
     }
 
-    public void PlaySFXAtPosition(string name, Vector3 position)
+    public void PlayLocalSFXAtPosition(string name, Vector3 position)
     {
         var sfx = soundEffects.Find(s => s.name == name);
         if (sfx != null && sfx.clip != null)
@@ -216,27 +228,34 @@ public class AudioManager : MonoBehaviour
             return;
         }
     }
-    
+
     // --- UI ---
 
     public void PlayClickSFX()
     {
-        PlaySFX("Click");
+        PlayLocalSFX("Click");
     }
 
     public void PlayCoinSFX()
     {
-        PlaySFX("Coin");
+        PlayLocalSFX("Coin");
     }
 
     public void PlayPotionSFX()
     {
-        PlaySFX("Potion");
+        PlayLocalSFX("Potion");
     }
 
     public void PlayDoorSFX()
     {
-        PlaySFX("Door");
+        PlayLocalSFX("Door");
+    }
+
+    // --- Networked SFX ---
+
+    public void PlayNetworkSFX(string name, Vector3 position)
+    {
+        networkAudioManager.PlaySFXAtPosition(name, position);
     }
 
     // --- Utils ---
@@ -269,5 +288,35 @@ public class AudioManager : MonoBehaviour
             yield return null;
         }
         musicSource.volume = volume; // Ensure volume is set to full after fade in
+    }
+
+    private void GatherAllSFXFromCharacters()
+    {
+        foreach (Character character in characters)
+        {
+            if (character == null) continue;
+
+            foreach (SoundEffect sfx in character.attackSoundEffects)
+            {
+                if (!sfxDict.ContainsKey(sfx.name))
+                {
+                    sfxDict.Add(sfx.name, sfx.clip);
+                    soundEffects.Add(sfx);
+                }
+            }
+        }
+
+        foreach (NetworkedNPC npc in networkedNPCs)
+        {
+            if (npc == null) continue;
+
+            SoundEffect sfx = npc.attackSoundEffect;
+            
+            if (!sfxDict.ContainsKey(sfx.name))
+            {
+                sfxDict.Add(sfx.name, sfx.clip);
+                soundEffects.Add(sfx);
+            }
+        }
     }
 }

@@ -28,7 +28,7 @@ public class HouseData : NetworkBehaviour
         {
             if (collision.TryGetComponent<Player>(out Player player))
             {
-                if (!player.HasKey())
+                if (!player.DoesPlayerHaveKey())
                 {
                     Debug.Log($"House {gameObject.name} is locked and player {player.PlayerName.Value} does not have a key.");
                     return; // Prevent entering if the house is locked and player doesn't have a key
@@ -48,7 +48,7 @@ public class HouseData : NetworkBehaviour
             {
                 if (networkObject.TryGetComponent<Player>(out Player player))
                 {
-                    AudioManager.Instance.PlayDoorSFX();
+                    PlayDoorClientRpc(clientId);
                     EnterHouseClientRpc(clientId);
                     player.TeleportClientRpc(playerEnterPoint.position);
                     EnterHouseServerRpc(clientId);
@@ -59,10 +59,28 @@ public class HouseData : NetworkBehaviour
 
                     if (!string.IsNullOrEmpty(areaName))
                     {
-                        AudioManager.Instance.PlayAreaMusic(areaName);
+                        PlayAreaMusicClientRpc(clientId, areaName);
                     }
                 }
             }
+        }
+    }
+
+    [ClientRpc]
+    private void PlayDoorClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            AudioManager.Instance.PlayDoorSFX();
+        }
+    }
+
+    [ClientRpc]
+    private void PlayAreaMusicClientRpc(ulong clientId, string area)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            AudioManager.Instance.PlayAreaMusic(area);
         }
     }
 
